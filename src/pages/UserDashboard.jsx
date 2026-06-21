@@ -73,7 +73,7 @@ export default function UserDashboard() {
       {/* Statistik Keseluruhan */}
       <div>
         <h2 className="text-xl font-bold text-slate-800 mb-4 px-1">Rapor Kehadiran Global</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <div className="bg-white border border-slate-100 p-5 rounded-2xl shadow-sm flex flex-col items-center justify-center text-center">
             <div className="text-slate-400 mb-2"><CheckCircle size={24} className="text-teal-500" /></div>
             <p className="text-3xl font-black text-slate-800 mb-1">{summary.hadir}</p>
@@ -81,18 +81,13 @@ export default function UserDashboard() {
           </div>
           <div className="bg-white border border-slate-100 p-5 rounded-2xl shadow-sm flex flex-col items-center justify-center text-center">
             <div className="text-slate-400 mb-2"><XCircle size={24} className="text-red-500" /></div>
-            <p className="text-3xl font-black text-slate-800 mb-1">{summary.alfa}</p>
+            <p className="text-3xl font-black text-slate-800 mb-1">{summary.alpa}</p>
             <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Alfa</p>
           </div>
           <div className="bg-white border border-slate-100 p-5 rounded-2xl shadow-sm flex flex-col items-center justify-center text-center">
             <div className="text-slate-400 mb-2"><Clock size={24} className="text-blue-500" /></div>
             <p className="text-3xl font-black text-slate-800 mb-1">{summary.izin}</p>
             <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Izin</p>
-          </div>
-          <div className="bg-white border border-slate-100 p-5 rounded-2xl shadow-sm flex flex-col items-center justify-center text-center">
-            <div className="text-slate-400 mb-2"><AlertCircle size={24} className="text-amber-500" /></div>
-            <p className="text-3xl font-black text-slate-800 mb-1">{summary.sakit}</p>
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Sakit</p>
           </div>
         </div>
       </div>
@@ -119,7 +114,7 @@ export default function UserDashboard() {
                   ></div>
                 </div>
 
-                <div className="grid grid-cols-4 gap-2 text-center text-xs">
+                <div className="grid grid-cols-3 gap-2 text-center text-xs">
                   <div>
                     <p className="text-slate-400 mb-1">Hadir</p>
                     <p className="font-bold text-slate-700">{item.hadir}</p>
@@ -131,10 +126,6 @@ export default function UserDashboard() {
                   <div>
                     <p className="text-slate-400 mb-1">Izin</p>
                     <p className="font-bold text-slate-700">{item.izin}</p>
-                  </div>
-                  <div>
-                    <p className="text-slate-400 mb-1">Sakit</p>
-                    <p className="font-bold text-slate-700">{item.sakit}</p>
                   </div>
                 </div>
               </div>
@@ -176,7 +167,7 @@ export default function UserDashboard() {
                       <td className="px-5 py-3 text-center">
                         <span className={`inline-flex px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider border ${
                           item.status === 'hadir' ? 'bg-teal-50 text-teal-700 border-teal-100' :
-                          item.status === 'alfa' ? 'bg-red-50 text-red-700 border-red-100' :
+                          item.status === 'alpa' ? 'bg-red-50 text-red-700 border-red-100' :
                           item.status === 'izin' ? 'bg-blue-50 text-blue-700 border-blue-100' :
                           'bg-amber-50 text-amber-700 border-amber-100'
                         }`}>
