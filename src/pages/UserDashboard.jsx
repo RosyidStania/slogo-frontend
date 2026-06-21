@@ -81,7 +81,7 @@ export default function UserDashboard() {
           </div>
           <div className="bg-white border border-slate-100 p-5 rounded-2xl shadow-sm flex flex-col items-center justify-center text-center">
             <div className="text-slate-400 mb-2"><XCircle size={24} className="text-red-500" /></div>
-            <p className="text-3xl font-black text-slate-800 mb-1">{summary.alpa}</p>
+            <p className="text-3xl font-black text-slate-800 mb-1">{summary.alfa}</p>
             <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Alfa</p>
           </div>
           <div className="bg-white border border-slate-100 p-5 rounded-2xl shadow-sm flex flex-col items-center justify-center text-center">
