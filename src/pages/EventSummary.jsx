@@ -103,7 +103,6 @@ export default function EventSummary() {
             <p className="text-slate-400 text-sm mt-0.5">{event.name} • {new Date(event.event_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
           </div>
         </div>
-        <button className="w-full md:w-auto justify-center bg-white border border-slate-200 hover:bg-teal-50 hover:text-teal-600 hover:border-teal-200 text-slate-700 px-4 py-2.5 rounded-xl flex items-center gap-2 font-bold text-sm shadow-sm transition-all active:scale-95"><Download size={16} strokeWidth={2} /> Export Excel</button>
       </div>
 
       {/* STAT CARDS */}
