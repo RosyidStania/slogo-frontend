@@ -85,7 +85,7 @@ export default function Layout() {
         <div className={`h-20 flex items-center shrink-0 overflow-hidden transition-all duration-300 ${isSidebarOpen ? 'px-6 justify-between' : 'justify-center px-0'}`}>
           <div className="flex items-center gap-2.5 overflow-hidden">
             <div className="w-8 h-8 bg-teal-400 rounded-[10px] flex items-center justify-center shrink-0 shadow-[0_4px_10px_rgba(45,212,191,0.4)]">
-              <span className="text-white font-black text-sm">S</span>
+              <span className="text-white font-black text-sm tracking-tight">DS</span>
             </div>
             {isSidebarOpen && (
               <span className="font-extrabold text-white tracking-tight text-base whitespace-nowrap animate-in fade-in duration-200">
