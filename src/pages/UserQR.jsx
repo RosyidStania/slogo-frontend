@@ -48,7 +48,8 @@ export default function UserQR() {
   }
 
   const { generus } = report;
-  const qrValue = generus.id.toString();
+  // Harus sama persis dengan yang ada di ManageGenerus agar bisa di-scan oleh Admin
+  const qrValue = `SLOGO-GEN-${generus.id}`;
 
   const handleDownloadQR = () => {
     const svg = document.getElementById("qr-code-svg");

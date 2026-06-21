@@ -155,7 +155,7 @@ export default function UserDashboard() {
                     <th className="px-5 py-3 text-[10px] font-bold uppercase tracking-wider">Tanggal</th>
                     <th className="px-5 py-3 text-[10px] font-bold uppercase tracking-wider">Kegiatan</th>
                     <th className="px-5 py-3 text-[10px] font-bold uppercase tracking-wider text-center">Status</th>
-                    <th className="px-5 py-3 text-[10px] font-bold uppercase tracking-wider">Keterangan</th>
+                    <th className="px-5 py-3 text-[10px] font-bold uppercase tracking-wider">Waktu Kehadiran</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
@@ -184,7 +184,13 @@ export default function UserDashboard() {
                         </span>
                       </td>
                       <td className="px-5 py-3 text-sm text-slate-500 italic">
-                        {item.keterangan || '-'}
+                        {item.status === 'hadir' && item.time_arrived && item.time_arrived !== '-' ? (
+                          <span className={item.is_late ? 'text-amber-600 font-medium' : 'text-slate-500'}>
+                            {item.is_late ? `Terlambat (Tiba ${item.time_arrived})` : `Tiba jam ${item.time_arrived}`}
+                          </span>
+                        ) : (
+                          '-'
+                        )}
                       </td>
                     </tr>
                   ))}
