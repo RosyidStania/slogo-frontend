@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, Mail, Phone, MapPin, Calendar, Activity, Hash, Camera, Save, RefreshCw, Smartphone, Lock, Key, Edit2, X } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Calendar, Activity, Hash, Camera, Save, RefreshCw, Smartphone, Lock, Key, Edit2, X, Eye, EyeOff } from 'lucide-react';
 import api from '../api/axios';
 
 export default function UserProfile() {
@@ -18,6 +18,10 @@ export default function UserProfile() {
   const [passSaving, setPassSaving] = useState(false);
   const [passError, setPassError] = useState(null);
   const [passSuccess, setPassSuccess] = useState(null);
+
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -453,13 +457,20 @@ export default function UserProfile() {
                   <Key size={18} className="text-slate-400" />
                 </div>
                 <input 
-                  type="password" 
+                  type={showOldPassword ? "text" : "password"} 
                   name="old_password" 
                   value={passwordData.old_password} 
                   onChange={handlePasswordChange} 
                   required
-                  className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2"
+                  className="pl-10 pr-12 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowOldPassword(!showOldPassword)}
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-teal-600 transition-colors"
+                >
+                  {showOldPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
               </div>
             </div>
 
@@ -470,14 +481,21 @@ export default function UserProfile() {
                   <Lock size={18} className="text-slate-400" />
                 </div>
                 <input 
-                  type="password" 
+                  type={showNewPassword ? "text" : "password"} 
                   name="new_password" 
                   value={passwordData.new_password} 
                   onChange={handlePasswordChange} 
                   required
                   minLength={6}
-                  className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2"
+                  className="pl-10 pr-12 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-teal-600 transition-colors"
+                >
+                  {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
               </div>
             </div>
 
@@ -488,14 +506,21 @@ export default function UserProfile() {
                   <Lock size={18} className="text-slate-400" />
                 </div>
                 <input 
-                  type="password" 
+                  type={showConfirmPassword ? "text" : "password"} 
                   name="new_password_confirmation" 
                   value={passwordData.new_password_confirmation} 
                   onChange={handlePasswordChange} 
                   required
                   minLength={6}
-                  className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2"
+                  className="pl-10 pr-12 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-teal-600 transition-colors"
+                >
+                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
               </div>
             </div>
 
