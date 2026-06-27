@@ -359,7 +359,13 @@ export default function ManageGenerus() {
   const openQr = (item) => { setSelected(item); setShowQr(true); };
   const openDel = (item) => { setSelected(item); setShowDelete(true); };
 
-  const inp = (e) => setFormData(p => ({ ...p, [e.target.name]: e.target.value }));
+  const inp = (e) => {
+    let { name, value } = e.target;
+    if (name === 'no_hp' || name === 'umur') {
+      value = value.replace(/\D/g, '');
+    }
+    setFormData(p => ({ ...p, [name]: value }));
+  };
 
   // ─── Stats — ikut semua filter ──────────
   const totalAktif    = filtered.filter(g => g.status?.toLowerCase() === 'aktif').length;
