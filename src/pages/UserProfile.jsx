@@ -144,6 +144,61 @@ export default function UserProfile() {
     );
   }
 
+  const renderField = ({ label, name, icon: Icon, type = 'text', required = false, options = [], placeholder = '' }) => {
+    if (!isEditing) {
+      let displayValue = formData[name] || '-';
+      if (type === 'select' && displayValue !== '-') {
+        const opt = options.find(o => o.value === displayValue);
+        if (opt) displayValue = opt.label;
+      }
+      return (
+        <div className="bg-white border border-slate-200 rounded-2xl px-4 py-3 flex items-center gap-3 hover:border-teal-200 hover:shadow-sm transition-all">
+          <div className="w-10 h-10 bg-teal-50 text-teal-600 rounded-xl flex items-center justify-center shrink-0">
+            <Icon size={18} />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">{label}</p>
+            <p className="text-sm font-bold text-slate-800 leading-tight truncate">
+              {displayValue}
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4">
+        <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">{label}</label>
+        {type === 'select' ? (
+          <select 
+            name={name} 
+            value={formData[name]} 
+            onChange={handleChange} 
+            required={required}
+            className="w-full rounded-xl border-slate-200 bg-white border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 transition-all shadow-sm text-sm"
+          >
+            {options.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+          </select>
+        ) : (
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <Icon size={18} className="text-slate-400" />
+            </div>
+            <input 
+              type={type} 
+              name={name} 
+              value={formData[name]} 
+              onChange={handleChange} 
+              required={required}
+              placeholder={placeholder || `Masukkan ${label.toLowerCase()}`}
+              className="pl-11 w-full rounded-xl border-slate-200 bg-white border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 transition-all shadow-sm text-sm"
+            />
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="max-w-6xl mx-auto py-8 px-4 sm:px-6 lg:px-8 relative pb-24">
       
@@ -243,135 +298,33 @@ export default function UserProfile() {
               {/* Card: Data Akun */}
               <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 transition-all">
                 <h3 className="text-lg font-bold text-slate-800 mb-6 border-b pb-4">Data Akun</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Nama Lengkap</label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <User size={18} className="text-slate-400" />
-                      </div>
-                      <input 
-                        type="text" 
-                        name="name" 
-                        value={formData.name} 
-                        onChange={handleChange} 
-                        required
-                        disabled={!isEditing}
-                        className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 transition-all"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Username</label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Hash size={18} className="text-slate-400" />
-                      </div>
-                      <input 
-                        type="text" 
-                        name="username" 
-                        value={formData.username} 
-                        onChange={handleChange} 
-                        required
-                        disabled={!isEditing}
-                        className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 transition-all"
-                      />
-                    </div>
-                  </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {renderField({ label: 'Nama Lengkap', name: 'name', icon: User, required: true })}
+                  {renderField({ label: 'Username', name: 'username', icon: Hash, required: true })}
                 </div>
               </div>
 
               {/* Card: Organisasi & Pendidikan */}
               <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 transition-all">
                 <h3 className="text-lg font-bold text-slate-800 mb-6 border-b pb-4">Organisasi & Pendidikan</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Kelompok</label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Users size={18} className="text-slate-400" />
-                      </div>
-                      <input 
-                        type="text" 
-                        name="kelompok" 
-                        value={formData.kelompok} 
-                        onChange={handleChange} 
-                        placeholder={isEditing ? "Contoh: Slogo" : "-"}
-                        disabled={!isEditing}
-                        className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 transition-all"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Jenjang</label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <BookOpen size={18} className="text-slate-400" />
-                      </div>
-                      <input 
-                        type="text" 
-                        name="jenjang" 
-                        value={formData.jenjang} 
-                        onChange={handleChange} 
-                        placeholder={isEditing ? "Contoh: USMAN / 6 SD" : "-"}
-                        disabled={!isEditing}
-                        className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 transition-all"
-                      />
-                    </div>
-                  </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {renderField({ label: 'Kelompok', name: 'kelompok', icon: Users, placeholder: 'Contoh: Slogo' })}
+                  {renderField({ label: 'Jenjang', name: 'jenjang', icon: BookOpen, placeholder: 'Contoh: USMAN / 6 SD' })}
                 </div>
               </div>
 
               {/* Card: Data Pribadi */}
               <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 transition-all">
                 <h3 className="text-lg font-bold text-slate-800 mb-6 border-b pb-4">Data Pribadi</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Tempat Lahir</label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <MapPin size={18} className="text-slate-400" />
-                      </div>
-                      <input 
-                        type="text" 
-                        name="tempat_lahir" 
-                        value={formData.tempat_lahir} 
-                        onChange={handleChange} 
-                        placeholder={isEditing ? "Kota Lahir" : "-"}
-                        disabled={!isEditing}
-                        className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 transition-all"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Tanggal Lahir</label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Calendar size={18} className="text-slate-400" />
-                      </div>
-                      <input 
-                        type="date" 
-                        name="tanggal_lahir" 
-                        value={formData.tanggal_lahir} 
-                        onChange={handleChange}
-                        disabled={!isEditing} 
-                        className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 transition-all"
-                      />
-                    </div>
-                  </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {renderField({ label: 'Tempat Lahir', name: 'tempat_lahir', icon: MapPin, placeholder: 'Kota Lahir' })}
+                  {renderField({ label: 'Tanggal Lahir', name: 'tanggal_lahir', icon: Calendar, type: 'date' })}
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Jenis Kelamin</label>
-                    <select 
-                      name="jenis_kelamin" 
-                      value={formData.jenis_kelamin} 
-                      onChange={handleChange} 
-                      disabled={!isEditing}
-                      className="w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 disabled:appearance-none disabled:px-0 transition-all"
-                    >
-                      <option value="">- Pilih Jenis Kelamin -</option>
-                      <option value="L">Laki-Laki</option>
-                      <option value="P">Perempuan</option>
-                    </select>
+                    {renderField({ label: 'Jenis Kelamin', name: 'jenis_kelamin', icon: User, type: 'select', options: [
+                      { value: '', label: '- Pilih Jenis Kelamin -' },
+                      { value: 'L', label: 'Laki-Laki' },
+                      { value: 'P', label: 'Perempuan' }
+                    ]})}
                   </div>
                 </div>
               </div>
@@ -379,112 +332,22 @@ export default function UserProfile() {
               {/* Card: Keluarga */}
               <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 transition-all">
                 <h3 className="text-lg font-bold text-slate-800 mb-6 border-b pb-4">Keluarga</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Nama Ayah</label>
-                    <input 
-                      type="text" 
-                      name="nama_ayah" 
-                      value={formData.nama_ayah} 
-                      onChange={handleChange} 
-                      disabled={!isEditing}
-                      placeholder={isEditing ? "Nama Ayah" : "-"}
-                      className="w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 transition-all"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Nama Ibu</label>
-                    <input 
-                      type="text" 
-                      name="nama_ibu" 
-                      value={formData.nama_ibu} 
-                      onChange={handleChange} 
-                      disabled={!isEditing}
-                      placeholder={isEditing ? "Nama Ibu" : "-"}
-                      className="w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 transition-all"
-                    />
-                  </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {renderField({ label: 'Nama Ayah', name: 'nama_ayah', icon: User, placeholder: 'Nama Ayah' })}
+                  {renderField({ label: 'Nama Ibu', name: 'nama_ibu', icon: User, placeholder: 'Nama Ibu' })}
                 </div>
               </div>
 
               {/* Card: Kontak & Lainnya */}
               <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 transition-all">
                 <h3 className="text-lg font-bold text-slate-800 mb-6 border-b pb-4">Kontak & Informasi Tambahan</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">No. HP / WA</label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Phone size={18} className="text-slate-400" />
-                      </div>
-                      <input 
-                        type="text" 
-                        name="no_hp" 
-                        value={formData.no_hp} 
-                        onChange={handleChange} 
-                        disabled={!isEditing}
-                        placeholder={isEditing ? "Contoh: 0812345678" : "-"}
-                        className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 transition-all"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Akun Media Sosial</label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Smartphone size={18} className="text-slate-400" />
-                      </div>
-                      <input 
-                        type="text" 
-                        name="akun_media" 
-                        value={formData.akun_media} 
-                        onChange={handleChange} 
-                        placeholder={isEditing ? "@username atau link profil" : "-"}
-                        disabled={!isEditing}
-                        className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 transition-all"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Hobi</label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Activity size={18} className="text-slate-400" />
-                      </div>
-                      <input 
-                        type="text" 
-                        name="hobi" 
-                        value={formData.hobi} 
-                        onChange={handleChange} 
-                        disabled={!isEditing}
-                        placeholder={isEditing ? "Hobi Anda" : "-"}
-                        className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 transition-all"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Keterangan / Pekerjaan</label>
-                    <input 
-                      type="text" 
-                      name="keterangan" 
-                      value={formData.keterangan} 
-                      onChange={handleChange} 
-                      placeholder={isEditing ? "Pelajar / Karyawan..." : "-"}
-                      disabled={!isEditing}
-                      className="w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 transition-all"
-                    />
-                  </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {renderField({ label: 'No. HP / WA', name: 'no_hp', icon: Phone, placeholder: 'Contoh: 0812345678' })}
+                  {renderField({ label: 'Akun Media Sosial', name: 'akun_media', icon: Smartphone, placeholder: '@username atau link profil' })}
+                  {renderField({ label: 'Hobi', name: 'hobi', icon: Activity, placeholder: 'Hobi Anda' })}
+                  {renderField({ label: 'Keterangan / Pekerjaan', name: 'keterangan', icon: Activity, placeholder: 'Pelajar / Karyawan...' })}
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Hari Libur</label>
-                    <input 
-                      type="text" 
-                      name="libur" 
-                      value={formData.libur} 
-                      onChange={handleChange} 
-                      placeholder={isEditing ? "Contoh: Sabtu / Minggu" : "-"}
-                      disabled={!isEditing}
-                      className="w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 transition-all"
-                    />
+                    {renderField({ label: 'Hari Libur', name: 'libur', icon: Calendar, placeholder: 'Contoh: Sabtu / Minggu' })}
                   </div>
                 </div>
               </div>
