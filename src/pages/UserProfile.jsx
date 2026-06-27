@@ -157,63 +157,70 @@ export default function UserProfile() {
         </div>
       )}
 
-      <div className="flex justify-end items-center gap-3 mb-6">
-        <button 
-          type="button" 
-          onClick={() => setShowPasswordSection(!showPasswordSection)}
-          className="bg-white hover:bg-slate-50 text-slate-700 font-bold py-2.5 px-4 rounded-xl shadow-sm border border-slate-200/60 transition-all flex items-center gap-2"
-        >
-          <Key size={18} />
-          <span className="hidden sm:inline">Ubah Password</span>
-        </button>
 
-        {!isEditing ? (
-          <button 
-            type="button" 
-            onClick={() => setIsEditing(true)}
-            className="bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 px-6 rounded-xl shadow-sm transition-all flex items-center gap-2"
-          >
-            <Edit2 size={18} />
-            Edit Profil
-          </button>
-        ) : (
-          <div className="flex gap-3">
-            <button 
-              type="button" 
-              onClick={() => {
-                setIsEditing(false);
-                fetchProfile();
-              }}
-              className="bg-white hover:bg-slate-50 text-slate-700 font-bold py-2.5 px-6 rounded-xl shadow-sm border border-slate-200/60 transition-all flex items-center gap-2"
-            >
-              <X size={18} />
-              Batal
-            </button>
-            <button 
-              type="submit" 
-              form="profile-form"
-              disabled={saving}
-              className="bg-teal-500 hover:bg-teal-600 text-white font-bold py-2.5 px-6 rounded-xl shadow-md transition-all flex items-center gap-2 disabled:opacity-70"
-            >
-              {saving ? (
-                <RefreshCw size={18} className="animate-spin" />
-              ) : (
-                <Save size={18} />
-              )}
-              {saving ? 'Menyimpan...' : 'Simpan'}
-            </button>
-          </div>
-        )}
-      </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
         {/* Header Banner */}
         <div className="h-32 bg-gradient-to-r from-teal-400 to-teal-600 relative">
-          <div className="absolute -bottom-12 left-8">
+          <div className="absolute -bottom-12 left-8 flex items-end gap-4">
             <div className="w-24 h-24 bg-white rounded-full p-1 shadow-md">
               <div className="w-full h-full rounded-full bg-slate-100 flex items-center justify-center text-3xl font-bold text-teal-600">
                 {formData.name.charAt(0).toUpperCase()}
               </div>
+            </div>
+
+            <div className="flex gap-2 mb-2">
+              {!isEditing ? (
+                <>
+                  <button 
+                    type="button" 
+                    onClick={() => setIsEditing(true)}
+                    className="p-2.5 bg-white rounded-full shadow-md text-slate-600 hover:text-teal-600 transition-colors"
+                    title="Edit Profil"
+                  >
+                    <Edit2 size={20} />
+                  </button>
+                  <button 
+                    type="button" 
+                    onClick={() => {
+                      const willShow = !showPasswordSection;
+                      setShowPasswordSection(willShow);
+                      if (willShow) {
+                        setTimeout(() => {
+                          window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                        }, 100);
+                      }
+                    }}
+                    className="p-2.5 bg-white rounded-full shadow-md text-slate-600 hover:text-teal-600 transition-colors"
+                    title="Ubah Password"
+                  >
+                    <Key size={20} />
+                  </button>
+                </>
+              ) : (
+                <div className="flex gap-2">
+                  <button 
+                    type="button" 
+                    onClick={() => {
+                      setIsEditing(false);
+                      fetchProfile();
+                    }}
+                    className="p-2.5 bg-white rounded-full shadow-md text-red-500 hover:bg-red-50 transition-colors"
+                    title="Batal Edit"
+                  >
+                    <X size={20} />
+                  </button>
+                  <button 
+                    type="submit" 
+                    form="profile-form"
+                    disabled={saving}
+                    className="p-2.5 bg-teal-500 rounded-full shadow-md text-white hover:bg-teal-600 transition-colors disabled:opacity-70"
+                    title="Simpan Perubahan"
+                  >
+                    {saving ? <RefreshCw size={20} className="animate-spin" /> : <Save size={20} />}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
