@@ -253,7 +253,7 @@ export default function UserProfile() {
                         onChange={handleChange} 
                         required
                         disabled={!isEditing}
-                        className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 disabled:px-0 transition-all"
+                        className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 transition-all"
                       />
                     </div>
                   </div>
@@ -270,7 +270,7 @@ export default function UserProfile() {
                         onChange={handleChange} 
                         required
                         disabled={!isEditing}
-                        className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 disabled:px-0 transition-all"
+                        className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 transition-all"
                       />
                     </div>
                   </div>
@@ -294,7 +294,7 @@ export default function UserProfile() {
                         onChange={handleChange} 
                         placeholder={isEditing ? "Kota Lahir" : "-"}
                         disabled={!isEditing}
-                        className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 disabled:px-0 transition-all"
+                        className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 transition-all"
                       />
                     </div>
                   </div>
@@ -310,7 +310,7 @@ export default function UserProfile() {
                         value={formData.tanggal_lahir} 
                         onChange={handleChange}
                         disabled={!isEditing} 
-                        className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 disabled:px-0 transition-all"
+                        className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 transition-all"
                       />
                     </div>
                   </div>
@@ -344,7 +344,7 @@ export default function UserProfile() {
                       onChange={handleChange} 
                       disabled={!isEditing}
                       placeholder={isEditing ? "Nama Ayah" : "-"}
-                      className="w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 disabled:px-0 transition-all"
+                      className="w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 transition-all"
                     />
                   </div>
                   <div>
@@ -356,7 +356,7 @@ export default function UserProfile() {
                       onChange={handleChange} 
                       disabled={!isEditing}
                       placeholder={isEditing ? "Nama Ibu" : "-"}
-                      className="w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 disabled:px-0 transition-all"
+                      className="w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 transition-all"
                     />
                   </div>
                 </div>
@@ -379,7 +379,7 @@ export default function UserProfile() {
                         onChange={handleChange} 
                         disabled={!isEditing}
                         placeholder={isEditing ? "Contoh: 0812345678" : "-"}
-                        className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 disabled:px-0 transition-all"
+                        className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 transition-all"
                       />
                     </div>
                   </div>
@@ -396,7 +396,7 @@ export default function UserProfile() {
                         onChange={handleChange} 
                         placeholder={isEditing ? "@username atau link profil" : "-"}
                         disabled={!isEditing}
-                        className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 disabled:px-0 transition-all"
+                        className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 transition-all"
                       />
                     </div>
                   </div>
@@ -413,7 +413,7 @@ export default function UserProfile() {
                         onChange={handleChange} 
                         disabled={!isEditing}
                         placeholder={isEditing ? "Hobi Anda" : "-"}
-                        className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 disabled:px-0 transition-all"
+                        className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 transition-all"
                       />
                     </div>
                   </div>
@@ -426,7 +426,7 @@ export default function UserProfile() {
                       onChange={handleChange} 
                       placeholder={isEditing ? "Pelajar / Karyawan..." : "-"}
                       disabled={!isEditing}
-                      className="w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 disabled:px-0 transition-all"
+                      className="w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 transition-all"
                     />
                   </div>
                   <div className="md:col-span-2">
@@ -438,7 +438,7 @@ export default function UserProfile() {
                       onChange={handleChange} 
                       placeholder={isEditing ? "Contoh: Sabtu / Minggu" : "-"}
                       disabled={!isEditing}
-                      className="w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 disabled:px-0 transition-all"
+                      className="w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 transition-all"
                     />
                   </div>
                 </div>
