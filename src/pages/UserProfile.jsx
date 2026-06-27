@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, Mail, Phone, MapPin, Calendar, Activity, Hash, Camera, Save, RefreshCw, Smartphone, Lock, Key, Edit2, X, Eye, EyeOff, Shield } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Calendar, Activity, Hash, Camera, Save, RefreshCw, Smartphone, Lock, Key, Edit2, X, Eye, EyeOff, Shield, Users, BookOpen } from 'lucide-react';
 import api from '../api/axios';
 
 export default function UserProfile() {
@@ -37,6 +37,8 @@ export default function UserProfile() {
     hobi: '',
     keterangan: '',
     libur: '',
+    kelompok: '',
+    jenjang: '',
   });
 
   useEffect(() => {
@@ -64,6 +66,8 @@ export default function UserProfile() {
         hobi: userData.generus?.hobi || '',
         keterangan: userData.generus?.keterangan || '',
         libur: userData.generus?.libur || '',
+        kelompok: userData.generus?.kelompok || '',
+        jenjang: userData.generus?.jenjang || '',
       });
     } catch (err) {
       console.error(err);
@@ -269,6 +273,47 @@ export default function UserProfile() {
                         value={formData.username} 
                         onChange={handleChange} 
                         required
+                        disabled={!isEditing}
+                        className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 transition-all"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Card: Organisasi & Pendidikan */}
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 transition-all">
+                <h3 className="text-lg font-bold text-slate-800 mb-6 border-b pb-4">Organisasi & Pendidikan</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Kelompok</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <Users size={18} className="text-slate-400" />
+                      </div>
+                      <input 
+                        type="text" 
+                        name="kelompok" 
+                        value={formData.kelompok} 
+                        onChange={handleChange} 
+                        placeholder={isEditing ? "Contoh: Slogo" : "-"}
+                        disabled={!isEditing}
+                        className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 transition-all"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Jenjang</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <BookOpen size={18} className="text-slate-400" />
+                      </div>
+                      <input 
+                        type="text" 
+                        name="jenjang" 
+                        value={formData.jenjang} 
+                        onChange={handleChange} 
+                        placeholder={isEditing ? "Contoh: USMAN / 6 SD" : "-"}
                         disabled={!isEditing}
                         className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 transition-all"
                       />
