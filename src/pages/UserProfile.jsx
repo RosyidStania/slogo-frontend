@@ -306,7 +306,7 @@ export default function UserProfile() {
 
               {/* Card: Organisasi & Pendidikan */}
               <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 transition-all">
-                <h3 className="text-lg font-bold text-slate-800 mb-6 border-b pb-4">Organisasi & Pendidikan</h3>
+                <h3 className="text-lg font-bold text-slate-800 mb-6 border-b pb-4">Kelompok & Jenjang</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {renderField({ label: 'Kelompok', name: 'kelompok', icon: Users, placeholder: 'Contoh: Slogo' })}
                   {renderField({ label: 'Jenjang', name: 'jenjang', icon: BookOpen, placeholder: 'Contoh: USMAN / 6 SD' })}
