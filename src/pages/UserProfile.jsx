@@ -9,6 +9,7 @@ export default function UserProfile() {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [showPasswordSection, setShowPasswordSection] = useState(false);
 
   const [passwordData, setPasswordData] = useState({
     old_password: '',
@@ -143,10 +144,6 @@ export default function UserProfile() {
 
   return (
     <div className="max-w-4xl mx-auto py-6">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-800">Profil Saya</h1>
-        <p className="text-slate-500 mt-1">Kelola informasi data diri Anda.</p>
-      </div>
 
       {error && (
         <div className="mb-6 bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 flex items-center">
@@ -159,6 +156,55 @@ export default function UserProfile() {
           {success}
         </div>
       )}
+
+      <div className="flex justify-end items-center gap-3 mb-6">
+        <button 
+          type="button" 
+          onClick={() => setShowPasswordSection(!showPasswordSection)}
+          className="bg-white hover:bg-slate-50 text-slate-700 font-bold py-2.5 px-4 rounded-xl shadow-sm border border-slate-200/60 transition-all flex items-center gap-2"
+        >
+          <Key size={18} />
+          <span className="hidden sm:inline">Ubah Password</span>
+        </button>
+
+        {!isEditing ? (
+          <button 
+            type="button" 
+            onClick={() => setIsEditing(true)}
+            className="bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 px-6 rounded-xl shadow-sm transition-all flex items-center gap-2"
+          >
+            <Edit2 size={18} />
+            Edit Profil
+          </button>
+        ) : (
+          <div className="flex gap-3">
+            <button 
+              type="button" 
+              onClick={() => {
+                setIsEditing(false);
+                fetchProfile();
+              }}
+              className="bg-white hover:bg-slate-50 text-slate-700 font-bold py-2.5 px-6 rounded-xl shadow-sm border border-slate-200/60 transition-all flex items-center gap-2"
+            >
+              <X size={18} />
+              Batal
+            </button>
+            <button 
+              type="submit" 
+              form="profile-form"
+              disabled={saving}
+              className="bg-teal-500 hover:bg-teal-600 text-white font-bold py-2.5 px-6 rounded-xl shadow-md transition-all flex items-center gap-2 disabled:opacity-70"
+            >
+              {saving ? (
+                <RefreshCw size={18} className="animate-spin" />
+              ) : (
+                <Save size={18} />
+              )}
+              {saving ? 'Menyimpan...' : 'Simpan'}
+            </button>
+          </div>
+        )}
+      </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
         {/* Header Banner */}
@@ -173,7 +219,7 @@ export default function UserProfile() {
         </div>
 
         <div className="pt-16 px-8 pb-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form id="profile-form" onSubmit={handleSubmit} className="space-y-6">
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               
@@ -388,51 +434,13 @@ export default function UserProfile() {
               </div>
 
             </div>
-
-            <div className="pt-6 border-t mt-8 flex justify-end">
-              {!isEditing ? (
-                <button 
-                  type="button" 
-                  onClick={() => setIsEditing(true)}
-                  className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-6 rounded-xl shadow-sm transition-all flex items-center gap-2"
-                >
-                  <Edit2 size={18} />
-                  Edit Profil
-                </button>
-              ) : (
-                <div className="flex gap-3">
-                  <button 
-                    type="button" 
-                    onClick={() => {
-                      setIsEditing(false);
-                      fetchProfile(); // Reset to original data
-                    }}
-                    className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-6 rounded-xl shadow-sm transition-all flex items-center gap-2"
-                  >
-                    <X size={18} />
-                    Batal
-                  </button>
-                  <button 
-                    type="submit" 
-                    disabled={saving}
-                    className="bg-teal-500 hover:bg-teal-600 text-white font-bold py-2.5 px-6 rounded-xl shadow-md transition-all flex items-center gap-2 disabled:opacity-70"
-                  >
-                    {saving ? (
-                      <RefreshCw size={18} className="animate-spin" />
-                    ) : (
-                      <Save size={18} />
-                    )}
-                    {saving ? 'Menyimpan...' : 'Simpan Perubahan'}
-                  </button>
-                </div>
-              )}
-            </div>
             
           </form>
         </div>
       </div>
 
-      <div className="mt-8 bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
+      {showPasswordSection && (
+        <div className="mt-8 bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
         <div className="p-8">
           <h2 className="text-lg font-bold text-slate-800 mb-1">Ganti Password</h2>
           <p className="text-slate-500 text-sm mb-6">Perbarui password Anda untuk menjaga keamanan akun.</p>
@@ -541,6 +549,7 @@ export default function UserProfile() {
           </form>
         </div>
       </div>
+      )}
     </div>
   );
 }
