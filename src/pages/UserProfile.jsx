@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, Mail, Phone, MapPin, Calendar, Activity, Hash, Camera, Save, RefreshCw, Smartphone, Lock, Key, Edit2, X, Eye, EyeOff } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Calendar, Activity, Hash, Camera, Save, RefreshCw, Smartphone, Lock, Key, Edit2, X, Eye, EyeOff, Shield } from 'lucide-react';
 import api from '../api/axios';
 
 export default function UserProfile() {
@@ -9,7 +9,7 @@ export default function UserProfile() {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [showPasswordSection, setShowPasswordSection] = useState(false);
+  const [activeTab, setActiveTab] = useState('profil'); // 'profil' or 'keamanan'
 
   const [passwordData, setPasswordData] = useState({
     old_password: '',
@@ -124,8 +124,6 @@ export default function UserProfile() {
       setSuccess('Profil berhasil diperbarui!');
       setProfile(res.data.user);
       setIsEditing(false);
-      
-      // Update local storage if username changes (optional, usually token is still valid if username changes unless used in payload validation)
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.message || 'Terjadi kesalahan saat menyimpan profil.');
@@ -143,142 +141,148 @@ export default function UserProfile() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto py-6">
-
+    <div className="max-w-6xl mx-auto py-8 px-4 sm:px-6 lg:px-8 relative pb-24">
+      
+      {/* Notifications */}
       {error && (
-        <div className="mb-6 bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 flex items-center">
+        <div className="mb-6 bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 flex items-center shadow-sm">
           {error}
         </div>
       )}
 
       {success && (
-        <div className="mb-6 bg-teal-50 text-teal-600 p-4 rounded-xl border border-teal-100 flex items-center">
+        <div className="mb-6 bg-teal-50 text-teal-600 p-4 rounded-xl border border-teal-100 flex items-center shadow-sm">
           {success}
         </div>
       )}
 
-
-
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
-        {/* Header Banner */}
-        <div className="h-32 bg-gradient-to-r from-teal-400 to-teal-600 relative">
-          <div className="absolute -bottom-12 left-8 flex items-end gap-4">
-            <div className="w-24 h-24 bg-white rounded-full p-1 shadow-md">
-              <div className="w-full h-full rounded-full bg-slate-100 flex items-center justify-center text-3xl font-bold text-teal-600">
-                {formData.name.charAt(0).toUpperCase()}
-              </div>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        {/* SIDEBAR (Left Column) */}
+        <div className="lg:col-span-4">
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden sticky top-8">
+            <div className="h-32 bg-gradient-to-br from-teal-400 to-teal-600 relative">
+              <button 
+                onClick={() => {
+                  if (activeTab !== 'profil') setActiveTab('profil');
+                  setIsEditing(!isEditing);
+                  if (isEditing) fetchProfile(); // cancel edit
+                }}
+                className={`absolute top-4 right-4 p-2.5 rounded-full shadow-md transition-colors ${
+                  isEditing ? 'bg-red-500 text-white hover:bg-red-600' : 'bg-white text-slate-600 hover:text-teal-600'
+                }`}
+                title={isEditing ? 'Batal Edit' : 'Edit Profil'}
+              >
+                {isEditing ? <X size={20} /> : <Edit2 size={20} />}
+              </button>
             </div>
-
-            <div className="flex gap-2 mb-2">
-              {!isEditing ? (
-                <>
-                  <button 
-                    type="button" 
-                    onClick={() => setIsEditing(true)}
-                    className="p-2.5 bg-white rounded-full shadow-md text-slate-600 hover:text-teal-600 transition-colors"
-                    title="Edit Profil"
-                  >
-                    <Edit2 size={20} />
-                  </button>
-                  <button 
-                    type="button" 
-                    onClick={() => {
-                      const willShow = !showPasswordSection;
-                      setShowPasswordSection(willShow);
-                      if (willShow) {
-                        setTimeout(() => {
-                          window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-                        }, 100);
-                      }
-                    }}
-                    className="p-2.5 bg-white rounded-full shadow-md text-slate-600 hover:text-teal-600 transition-colors"
-                    title="Ubah Password"
-                  >
-                    <Key size={20} />
-                  </button>
-                </>
-              ) : (
-                <div className="flex gap-2">
-                  <button 
-                    type="button" 
-                    onClick={() => {
-                      setIsEditing(false);
-                      fetchProfile();
-                    }}
-                    className="p-2.5 bg-white rounded-full shadow-md text-red-500 hover:bg-red-50 transition-colors"
-                    title="Batal Edit"
-                  >
-                    <X size={20} />
-                  </button>
-                  <button 
-                    type="submit" 
-                    form="profile-form"
-                    disabled={saving}
-                    className="p-2.5 bg-teal-500 rounded-full shadow-md text-white hover:bg-teal-600 transition-colors disabled:opacity-70"
-                    title="Simpan Perubahan"
-                  >
-                    {saving ? <RefreshCw size={20} className="animate-spin" /> : <Save size={20} />}
-                  </button>
+            
+            <div className="px-8 pb-8 flex flex-col items-center -mt-16">
+              <div className="w-32 h-32 bg-white rounded-full p-1.5 shadow-lg relative mb-4">
+                <div className="w-full h-full rounded-full bg-slate-100 flex items-center justify-center text-5xl font-bold text-teal-600">
+                  {formData.name ? formData.name.charAt(0).toUpperCase() : '?'}
                 </div>
-              )}
+              </div>
+              <h2 className="text-xl font-bold text-slate-800 text-center">{formData.name || 'Nama Lengkap'}</h2>
+              <p className="text-slate-500 text-sm mb-6">@{formData.username}</p>
+
+              <div className="w-full space-y-4">
+                <div className="flex items-center gap-3 text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                  <Phone size={18} className="text-teal-500" />
+                  <span className="text-sm font-medium">{formData.no_hp || '-'}</span>
+                </div>
+                <div className="flex items-center gap-3 text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                  <Activity size={18} className="text-teal-500" />
+                  <span className="text-sm font-medium">{formData.keterangan || 'Pelajar/Karyawan'}</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="pt-16 px-8 pb-8">
-          <form id="profile-form" onSubmit={handleSubmit} className="space-y-6">
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* MAIN CONTENT (Right Column) */}
+        <div className="lg:col-span-8 space-y-6">
+          
+          {/* Tabs Navigation */}
+          <div className="flex gap-2 p-1 bg-white rounded-xl shadow-sm border border-slate-200/60 mb-6">
+            <button
+              onClick={() => setActiveTab('profil')}
+              className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 ${
+                activeTab === 'profil' 
+                  ? 'bg-slate-800 text-white shadow' 
+                  : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
+              }`}
+            >
+              <User size={18} />
+              Informasi Pribadi
+            </button>
+            <button
+              onClick={() => {
+                setActiveTab('keamanan');
+                setIsEditing(false); // Disable profile edit if switching to security
+              }}
+              className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 ${
+                activeTab === 'keamanan' 
+                  ? 'bg-slate-800 text-white shadow' 
+                  : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
+              }`}
+            >
+              <Shield size={18} />
+              Keamanan
+            </button>
+          </div>
+
+          {/* TAB 1: INFORMASI PRIBADI */}
+          {activeTab === 'profil' && (
+            <form id="profile-form" onSubmit={handleSubmit} className="space-y-6">
               
-              {/* Akun Section */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-slate-800 border-b pb-2">Data Akun</h3>
-                
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Nama Lengkap</label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <User size={18} className="text-slate-400" />
+              {/* Card: Data Akun */}
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 transition-all">
+                <h3 className="text-lg font-bold text-slate-800 mb-6 border-b pb-4">Data Akun</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Nama Lengkap</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <User size={18} className="text-slate-400" />
+                      </div>
+                      <input 
+                        type="text" 
+                        name="name" 
+                        value={formData.name} 
+                        onChange={handleChange} 
+                        required
+                        disabled={!isEditing}
+                        className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 disabled:px-0 transition-all"
+                      />
                     </div>
-                    <input 
-                      type="text" 
-                      name="name" 
-                      value={formData.name} 
-                      onChange={handleChange} 
-                      required
-                      disabled={!isEditing}
-                      className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 transition-all"
-                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Username</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <Hash size={18} className="text-slate-400" />
+                      </div>
+                      <input 
+                        type="text" 
+                        name="username" 
+                        value={formData.username} 
+                        onChange={handleChange} 
+                        required
+                        disabled={!isEditing}
+                        className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 disabled:px-0 transition-all"
+                      />
+                    </div>
                   </div>
                 </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Username</label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Hash size={18} className="text-slate-400" />
-                    </div>
-                    <input 
-                      type="text" 
-                      name="username" 
-                      value={formData.username} 
-                      onChange={handleChange} 
-                      required
-                      disabled={!isEditing}
-                      className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 transition-all"
-                    />
-                  </div>
-                </div>
-
               </div>
 
-              {/* Personal Section */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-slate-800 border-b pb-2">Data Pribadi</h3>
-                
-                <div className="grid grid-cols-2 gap-4">
+              {/* Card: Data Pribadi */}
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 transition-all">
+                <h3 className="text-lg font-bold text-slate-800 mb-6 border-b pb-4">Data Pribadi</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Tempat Lahir</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Tempat Lahir</label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <MapPin size={18} className="text-slate-400" />
@@ -288,13 +292,14 @@ export default function UserProfile() {
                         name="tempat_lahir" 
                         value={formData.tempat_lahir} 
                         onChange={handleChange} 
-                        className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2"
+                        placeholder={isEditing ? "Kota Lahir" : "-"}
+                        disabled={!isEditing}
+                        className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 disabled:px-0 transition-all"
                       />
                     </div>
                   </div>
-
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Tanggal Lahir</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Tanggal Lahir</label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <Calendar size={18} className="text-slate-400" />
@@ -303,117 +308,117 @@ export default function UserProfile() {
                         type="date" 
                         name="tanggal_lahir" 
                         value={formData.tanggal_lahir} 
-                        onChange={handleChange} 
-                        className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2"
+                        onChange={handleChange}
+                        disabled={!isEditing} 
+                        className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 disabled:px-0 transition-all"
                       />
                     </div>
                   </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Jenis Kelamin</label>
-                  <select 
-                    name="jenis_kelamin" 
-                    value={formData.jenis_kelamin} 
-                    onChange={handleChange} 
-                    disabled={!isEditing}
-                    className="w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 disabled:appearance-none transition-all"
-                  >
-                    <option value="">Pilih Jenis Kelamin</option>
-                    <option value="L">Laki-Laki</option>
-                    <option value="P">Perempuan</option>
-                  </select>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Jenis Kelamin</label>
+                    <select 
+                      name="jenis_kelamin" 
+                      value={formData.jenis_kelamin} 
+                      onChange={handleChange} 
+                      disabled={!isEditing}
+                      className="w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 disabled:appearance-none disabled:px-0 transition-all"
+                    >
+                      <option value="">- Pilih Jenis Kelamin -</option>
+                      <option value="L">Laki-Laki</option>
+                      <option value="P">Perempuan</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
-              {/* Keluarga Section */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-slate-800 border-b pb-2">Keluarga</h3>
-                
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Nama Ayah</label>
-                  <input 
-                    type="text" 
-                    name="nama_ayah" 
-                    value={formData.nama_ayah} 
-                    onChange={handleChange} 
-                    disabled={!isEditing}
-                    className="w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 transition-all"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Nama Ibu</label>
-                  <input 
-                    type="text" 
-                    name="nama_ibu" 
-                    value={formData.nama_ibu} 
-                    onChange={handleChange} 
-                    disabled={!isEditing}
-                    className="w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 transition-all"
-                  />
-                </div>
-              </div>
-
-              {/* Kontak & Tambahan Section */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-slate-800 border-b pb-2">Kontak & Lainnya</h3>
-                
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">No. HP / WA</label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Phone size={18} className="text-slate-400" />
-                    </div>
-                    <input 
-                      type="text" 
-                      name="no_hp" 
-                      value={formData.no_hp} 
-                      onChange={handleChange} 
-                      disabled={!isEditing}
-                      className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 transition-all"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Akun Media Sosial</label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Smartphone size={18} className="text-slate-400" />
-                    </div>
-                    <input 
-                      type="text" 
-                      name="akun_media" 
-                      value={formData.akun_media} 
-                      onChange={handleChange} 
-                      placeholder={isEditing ? "@username atau link profil" : "-"}
-                      disabled={!isEditing}
-                      className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 transition-all"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Hobi</label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Activity size={18} className="text-slate-400" />
-                    </div>
-                    <input 
-                      type="text" 
-                      name="hobi" 
-                      value={formData.hobi} 
-                      onChange={handleChange} 
-                      disabled={!isEditing}
-                      className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 transition-all"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Card: Keluarga */}
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 transition-all">
+                <h3 className="text-lg font-bold text-slate-800 mb-6 border-b pb-4">Keluarga</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Keterangan / Pekerjaan</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Nama Ayah</label>
+                    <input 
+                      type="text" 
+                      name="nama_ayah" 
+                      value={formData.nama_ayah} 
+                      onChange={handleChange} 
+                      disabled={!isEditing}
+                      placeholder={isEditing ? "Nama Ayah" : "-"}
+                      className="w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 disabled:px-0 transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Nama Ibu</label>
+                    <input 
+                      type="text" 
+                      name="nama_ibu" 
+                      value={formData.nama_ibu} 
+                      onChange={handleChange} 
+                      disabled={!isEditing}
+                      placeholder={isEditing ? "Nama Ibu" : "-"}
+                      className="w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 disabled:px-0 transition-all"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Card: Kontak & Lainnya */}
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 transition-all">
+                <h3 className="text-lg font-bold text-slate-800 mb-6 border-b pb-4">Kontak & Informasi Tambahan</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">No. HP / WA</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <Phone size={18} className="text-slate-400" />
+                      </div>
+                      <input 
+                        type="text" 
+                        name="no_hp" 
+                        value={formData.no_hp} 
+                        onChange={handleChange} 
+                        disabled={!isEditing}
+                        placeholder={isEditing ? "Contoh: 0812345678" : "-"}
+                        className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 disabled:px-0 transition-all"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Akun Media Sosial</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <Smartphone size={18} className="text-slate-400" />
+                      </div>
+                      <input 
+                        type="text" 
+                        name="akun_media" 
+                        value={formData.akun_media} 
+                        onChange={handleChange} 
+                        placeholder={isEditing ? "@username atau link profil" : "-"}
+                        disabled={!isEditing}
+                        className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 disabled:px-0 transition-all"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Hobi</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <Activity size={18} className="text-slate-400" />
+                      </div>
+                      <input 
+                        type="text" 
+                        name="hobi" 
+                        value={formData.hobi} 
+                        onChange={handleChange} 
+                        disabled={!isEditing}
+                        placeholder={isEditing ? "Hobi Anda" : "-"}
+                        className="pl-10 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 disabled:px-0 transition-all"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Keterangan / Pekerjaan</label>
                     <input 
                       type="text" 
                       name="keterangan" 
@@ -421,141 +426,172 @@ export default function UserProfile() {
                       onChange={handleChange} 
                       placeholder={isEditing ? "Pelajar / Karyawan..." : "-"}
                       disabled={!isEditing}
-                      className="w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 disabled:px-0 transition-all"
+                      className="w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 disabled:px-0 transition-all"
                     />
                   </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Hari Libur</label>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Hari Libur</label>
                     <input 
                       type="text" 
                       name="libur" 
                       value={formData.libur} 
                       onChange={handleChange} 
-                      placeholder={isEditing ? "Sabtu / Minggu" : "-"}
+                      placeholder={isEditing ? "Contoh: Sabtu / Minggu" : "-"}
                       disabled={!isEditing}
-                      className="w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 disabled:px-0 transition-all"
+                      className="w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 disabled:bg-transparent disabled:border-transparent disabled:font-semibold disabled:text-slate-800 disabled:px-0 transition-all"
                     />
                   </div>
                 </div>
               </div>
-
-            </div>
-            
-          </form>
-        </div>
-      </div>
-
-      {showPasswordSection && (
-        <div className="mt-8 bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
-        <div className="p-8">
-          <h2 className="text-lg font-bold text-slate-800 mb-1">Ganti Password</h2>
-          <p className="text-slate-500 text-sm mb-6">Perbarui password Anda untuk menjaga keamanan akun.</p>
-
-          {passError && (
-            <div className="mb-6 bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 flex items-center">
-              {passError}
-            </div>
+            </form>
           )}
 
-          {passSuccess && (
-            <div className="mb-6 bg-teal-50 text-teal-600 p-4 rounded-xl border border-teal-100 flex items-center">
-              {passSuccess}
-            </div>
-          )}
-
-          <form onSubmit={handlePasswordSubmit} className="space-y-4 max-w-md">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Password Lama</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Key size={18} className="text-slate-400" />
+          {/* TAB 2: KEAMANAN (Password) */}
+          {activeTab === 'keamanan' && (
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-8 transition-all animate-in fade-in duration-300">
+              <div className="max-w-xl mx-auto">
+                <div className="text-center mb-8">
+                  <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400">
+                    <Key size={32} />
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-800 mb-2">Ganti Password</h3>
+                  <p className="text-slate-500 text-sm">Perbarui kata sandi Anda secara berkala untuk menjaga keamanan akun.</p>
                 </div>
-                <input 
-                  type={showOldPassword ? "text" : "password"} 
-                  name="old_password" 
-                  value={passwordData.old_password} 
-                  onChange={handlePasswordChange} 
-                  required
-                  className="pl-10 pr-12 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowOldPassword(!showOldPassword)}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-teal-600 transition-colors"
-                >
-                  {showOldPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-            </div>
 
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Password Baru</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock size={18} className="text-slate-400" />
-                </div>
-                <input 
-                  type={showNewPassword ? "text" : "password"} 
-                  name="new_password" 
-                  value={passwordData.new_password} 
-                  onChange={handlePasswordChange} 
-                  required
-                  minLength={6}
-                  className="pl-10 pr-12 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowNewPassword(!showNewPassword)}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-teal-600 transition-colors"
-                >
-                  {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Konfirmasi Password Baru</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock size={18} className="text-slate-400" />
-                </div>
-                <input 
-                  type={showConfirmPassword ? "text" : "password"} 
-                  name="new_password_confirmation" 
-                  value={passwordData.new_password_confirmation} 
-                  onChange={handlePasswordChange} 
-                  required
-                  minLength={6}
-                  className="pl-10 pr-12 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-2"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-teal-600 transition-colors"
-                >
-                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-            </div>
-
-            <div className="pt-4">
-              <button 
-                type="submit" 
-                disabled={passSaving}
-                className="bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 px-6 rounded-xl shadow-md transition-all flex items-center gap-2 disabled:opacity-70"
-              >
-                {passSaving ? (
-                  <RefreshCw size={18} className="animate-spin" />
-                ) : (
-                  <Save size={18} />
+                {passError && (
+                  <div className="mb-6 bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 flex items-center">
+                    {passError}
+                  </div>
                 )}
-                {passSaving ? 'Memproses...' : 'Ubah Password'}
-              </button>
+
+                {passSuccess && (
+                  <div className="mb-6 bg-teal-50 text-teal-600 p-4 rounded-xl border border-teal-100 flex items-center">
+                    {passSuccess}
+                  </div>
+                )}
+
+                <form onSubmit={handlePasswordSubmit} className="space-y-5">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Password Lama</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <Key size={18} className="text-slate-400" />
+                      </div>
+                      <input 
+                        type={showOldPassword ? "text" : "password"} 
+                        name="old_password" 
+                        value={passwordData.old_password} 
+                        onChange={handlePasswordChange} 
+                        required
+                        className="pl-12 pr-12 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-3"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowOldPassword(!showOldPassword)}
+                        className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-teal-600 transition-colors"
+                      >
+                        {showOldPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Password Baru</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <Lock size={18} className="text-slate-400" />
+                      </div>
+                      <input 
+                        type={showNewPassword ? "text" : "password"} 
+                        name="new_password" 
+                        value={passwordData.new_password} 
+                        onChange={handlePasswordChange} 
+                        required
+                        minLength={6}
+                        className="pl-12 pr-12 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-3"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowNewPassword(!showNewPassword)}
+                        className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-teal-600 transition-colors"
+                      >
+                        {showNewPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Konfirmasi Password Baru</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <Lock size={18} className="text-slate-400" />
+                      </div>
+                      <input 
+                        type={showConfirmPassword ? "text" : "password"} 
+                        name="new_password_confirmation" 
+                        value={passwordData.new_password_confirmation} 
+                        onChange={handlePasswordChange} 
+                        required
+                        minLength={6}
+                        className="pl-12 pr-12 w-full rounded-xl border-slate-200 bg-slate-50 border focus:border-teal-500 focus:ring-teal-500 px-4 py-3"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-teal-600 transition-colors"
+                      >
+                        {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="pt-6">
+                    <button 
+                      type="submit" 
+                      disabled={passSaving}
+                      className="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3.5 px-6 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-70"
+                    >
+                      {passSaving ? <RefreshCw size={20} className="animate-spin" /> : <Save size={20} />}
+                      {passSaving ? 'Memproses...' : 'Ubah Password'}
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
-          </form>
+          )}
+
         </div>
       </div>
+
+      {/* Floating Action Bar (Only visible when editing) */}
+      {isEditing && activeTab === 'profil' && (
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] z-50 flex justify-center animate-in slide-in-from-bottom-full duration-300">
+          <div className="w-full max-w-6xl flex justify-between sm:justify-end items-center gap-4 px-4 sm:px-8">
+            <span className="text-sm font-semibold text-slate-500 hidden sm:inline mr-auto">
+              Ada perubahan yang belum disimpan.
+            </span>
+            <button 
+              type="button" 
+              onClick={() => {
+                setIsEditing(false);
+                fetchProfile();
+              }}
+              className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-6 rounded-xl transition-all flex items-center gap-2 w-full sm:w-auto justify-center"
+            >
+              <X size={18} />
+              Batal
+            </button>
+            <button 
+              type="submit" 
+              form="profile-form"
+              disabled={saving}
+              className="bg-teal-500 hover:bg-teal-600 text-white font-bold py-2.5 px-8 rounded-xl shadow-md transition-all flex items-center gap-2 w-full sm:w-auto justify-center disabled:opacity-70"
+            >
+              {saving ? <RefreshCw size={18} className="animate-spin" /> : <Save size={18} />}
+              {saving ? 'Menyimpan...' : 'Simpan Perubahan'}
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
