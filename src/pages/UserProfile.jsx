@@ -160,7 +160,7 @@ export default function UserProfile() {
         
         {/* SIDEBAR (Left Column) */}
         <div className="lg:col-span-4">
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden sticky top-8">
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden lg:sticky lg:top-8 relative">
             <div className="h-32 bg-gradient-to-br from-teal-400 to-teal-600 relative">
               <button 
                 onClick={() => {
@@ -566,30 +566,32 @@ export default function UserProfile() {
       {/* Floating Action Bar (Only visible when editing) */}
       {isEditing && activeTab === 'profil' && (
         <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] z-50 flex justify-center animate-in slide-in-from-bottom-full duration-300">
-          <div className="w-full max-w-6xl flex justify-between sm:justify-end items-center gap-4 px-4 sm:px-8">
+          <div className="w-full max-w-6xl flex flex-col sm:flex-row justify-between sm:justify-end items-center gap-3 px-2 sm:px-8">
             <span className="text-sm font-semibold text-slate-500 hidden sm:inline mr-auto">
               Ada perubahan yang belum disimpan.
             </span>
-            <button 
-              type="button" 
-              onClick={() => {
-                setIsEditing(false);
-                fetchProfile();
-              }}
-              className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-6 rounded-xl transition-all flex items-center gap-2 w-full sm:w-auto justify-center"
-            >
-              <X size={18} />
-              Batal
-            </button>
-            <button 
-              type="submit" 
-              form="profile-form"
-              disabled={saving}
-              className="bg-teal-500 hover:bg-teal-600 text-white font-bold py-2.5 px-8 rounded-xl shadow-md transition-all flex items-center gap-2 w-full sm:w-auto justify-center disabled:opacity-70"
-            >
-              {saving ? <RefreshCw size={18} className="animate-spin" /> : <Save size={18} />}
-              {saving ? 'Menyimpan...' : 'Simpan Perubahan'}
-            </button>
+            <div className="flex w-full sm:w-auto gap-3">
+              <button 
+                type="button" 
+                onClick={() => {
+                  setIsEditing(false);
+                  fetchProfile();
+                }}
+                className="flex-1 sm:flex-none bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-6 rounded-xl transition-all flex items-center justify-center gap-2"
+              >
+                <X size={18} />
+                Batal
+              </button>
+              <button 
+                type="submit" 
+                form="profile-form"
+                disabled={saving}
+                className="flex-1 sm:flex-none bg-teal-500 hover:bg-teal-600 text-white font-bold py-2.5 px-6 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-70"
+              >
+                {saving ? <RefreshCw size={18} className="animate-spin" /> : <Save size={18} />}
+                {saving ? 'Menyimpan...' : 'Simpan'}
+              </button>
+            </div>
           </div>
         </div>
       )}
