@@ -12,6 +12,7 @@ import LandingPage from './pages/LandingPage';
 import ManageEventTypes from './pages/ManageEventTypes';
 import ReportByType from './pages/ReportByType';
 import UserQR from './pages/UserQR';
+import UserProfile from './pages/UserProfile';
 // PrivateRoute untuk menjaga keamanan rute
 const PrivateRoute = ({ children, allowedRole }) => {
   const token = localStorage.getItem('token');
@@ -56,6 +57,7 @@ function App() {
           {/* Rute Khusus User Biasa */}
           <Route path="/users" element={<PrivateRoute allowedRole="user"><UserDashboard /></PrivateRoute>} />
           <Route path="/users/qr" element={<PrivateRoute allowedRole="user"><UserQR /></PrivateRoute>} />
+          <Route path="/users/profile" element={<PrivateRoute allowedRole="user"><UserProfile /></PrivateRoute>} />
 
         </Route>
 

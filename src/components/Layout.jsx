@@ -12,7 +12,8 @@ import {
   X,
   ChevronRight,
   BookOpen,
-  QrCode
+  QrCode,
+  User
 } from 'lucide-react';
 
 export default function Layout() {
@@ -60,6 +61,7 @@ export default function Layout() {
     : [
         { name: 'Dashboard', path: '/users', icon: <LayoutDashboard size={18} strokeWidth={2} /> },
         { name: 'QR Absen', path: '/users/qr', icon: <QrCode size={18} strokeWidth={2} /> },
+        { name: 'Profil', path: '/users/profile', icon: <User size={18} strokeWidth={2} /> },
       ];
 
   const pageTitle = (() => {
