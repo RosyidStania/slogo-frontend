@@ -845,18 +845,18 @@ export default function ManageGenerus() {
             <div className="p-6 flex flex-col items-center gap-4">
               {/* ID Card */}
               <div ref={idCardRef}
-                className="bg-white w-64 rounded-2xl overflow-hidden border border-slate-200 shadow-lg"
-                style={{ fontFamily: 'system-ui, sans-serif' }}>
-                <div className="bg-teal-600 px-5 py-4 flex items-center gap-2 text-white">
-                  <Target size={16} strokeWidth={2.5} />
-                  <span className="font-black text-xs tracking-widest">DESA SLOGO</span>
+                className="bg-white rounded-xl overflow-hidden border border-slate-200 shadow-lg flex flex-col"
+                style={{ width: '52mm', height: '86mm', fontFamily: 'system-ui, sans-serif' }}>
+                <div className="bg-teal-600 px-3 py-2 flex items-center justify-center gap-1.5 text-white shrink-0">
+                  <Target size={12} strokeWidth={2.5} />
+                  <span className="font-black text-[10px] tracking-widest">DESA SLOGO</span>
                 </div>
-                <div className="px-5 py-4 text-center">
-                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Kartu Absensi Generus</p>
-                  <p className="font-black text-slate-800 text-base uppercase leading-tight mb-1">{selected.nama_lengkap}</p>
-                  <p className="text-xs font-semibold text-teal-600 mb-4">{selected.kelompok}</p>
-                  <div className="flex justify-center p-2 bg-slate-50 rounded-xl border border-slate-100">
-                    <QRCodeCanvas value={`SLOGO-GEN-${selected.id}`} size={120} level="H" includeMargin={false} />
+                <div className="px-3 py-3 text-center flex-1 flex flex-col items-center justify-center">
+                  <p className="text-[7px] font-bold text-slate-400 uppercase tracking-widest mb-1">Kartu Absensi Generus</p>
+                  <p className="font-black text-slate-800 text-sm uppercase leading-tight mb-0.5 max-w-full truncate px-1">{selected.nama_lengkap}</p>
+                  <p className="text-[9px] font-semibold text-teal-600 mb-3">{selected.kelompok}</p>
+                  <div className="flex justify-center p-1.5 bg-slate-50 rounded-lg border border-slate-100">
+                    <QRCodeCanvas value={`SLOGO-GEN-${selected.id}`} size={110} level="H" includeMargin={false} />
                   </div>
                 </div>
               </div>
