@@ -858,7 +858,6 @@ export default function ManageGenerus() {
                   <div className="flex justify-center p-2 bg-slate-50 rounded-xl border border-slate-100">
                     <QRCodeCanvas value={`SLOGO-GEN-${selected.id}`} size={120} level="H" includeMargin={false} />
                   </div>
-                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-3">{selected.jenjang || 'UMUM'}</p>
                 </div>
               </div>
 
