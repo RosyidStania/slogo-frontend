@@ -149,8 +149,42 @@ export default function ManageGenerus() {
 
   // Filters
   const [search, setSearch]               = useState('');
-  const [filterKelompok, setFilterKelompok] = useState('Semua');
-  const [filterJenjang, setFilterJenjang]   = useState('Semua');
+  const [filterKelompok, setFilterKelompok] = useState(['Semua']);
+  const [filterJenjang, setFilterJenjang]   = useState(['Semua']);
+
+  const handleToggleKelompok = (k) => {
+    if (k === 'Semua') {
+      setFilterKelompok(['Semua']);
+      return;
+    }
+    setFilterKelompok(prev => {
+      let newFilters = prev.filter(item => item !== 'Semua');
+      if (newFilters.includes(k)) {
+        newFilters = newFilters.filter(item => item !== k);
+      } else {
+        newFilters.push(k);
+      }
+      if (newFilters.length === 0) return ['Semua'];
+      return newFilters;
+    });
+  };
+
+  const handleToggleJenjang = (j) => {
+    if (j === 'Semua') {
+      setFilterJenjang(['Semua']);
+      return;
+    }
+    setFilterJenjang(prev => {
+      let newFilters = prev.filter(item => item !== 'Semua');
+      if (newFilters.includes(j)) {
+        newFilters = newFilters.filter(item => item !== j);
+      } else {
+        newFilters.push(j);
+      }
+      if (newFilters.length === 0) return ['Semua'];
+      return newFilters;
+    });
+  };
 
   // Modals
   const [showForm, setShowForm]           = useState(false);
@@ -331,10 +365,13 @@ export default function ManageGenerus() {
   // ─── Filtered / sorted data ────────────────────────────────────────────────
   const filtered = generusList.filter(g => {
     const q = search.toLowerCase();
+    const matchKelompok = filterKelompok.includes('Semua') || filterKelompok.some(k => g.kelompok?.toLowerCase() === k.toLowerCase());
+    const matchJenjang = filterJenjang.includes('Semua') || filterJenjang.some(j => g.jenjang?.toLowerCase() === j.toLowerCase());
+    
     return (
       g.nama_lengkap?.toLowerCase().includes(q) &&
-      (filterKelompok === 'Semua' || g.kelompok?.toLowerCase() === filterKelompok.toLowerCase()) &&
-      (filterJenjang  === 'Semua' || g.jenjang?.toLowerCase()  === filterJenjang.toLowerCase())
+      matchKelompok &&
+      matchJenjang
     );
   }).sort((a, b) => {
     const sw = s => s?.toLowerCase() === 'tidak aktif' ? 2 : 1;
@@ -349,8 +386,8 @@ export default function ManageGenerus() {
     setModalMode('add');
     setFormData({
       ...FORM_DEFAULT,
-      kelompok: filterKelompok === 'Semua' ? 'Slogo' : filterKelompok,
-      jenjang:  filterJenjang  === 'Semua' ? 'PAUD'  : filterJenjang,
+      kelompok: (filterKelompok.includes('Semua') || filterKelompok.length !== 1) ? 'Slogo' : filterKelompok[0],
+      jenjang:  (filterJenjang.includes('Semua') || filterJenjang.length !== 1) ? 'PAUD'  : filterJenjang[0],
     });
     setShowForm(true);
   };
@@ -440,7 +477,7 @@ export default function ManageGenerus() {
         {/* ── Stats cards — berubah sesuai kelompok aktif ──────────────────── */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
-            { label: filterKelompok === 'Semua' ? 'Total Peserta' : `Kelompok ${filterKelompok}`, value: totalKelompok, color: 'text-slate-700', bg: 'bg-white', border: 'border-slate-200', icon: <Users size={18} className="text-slate-400" /> },
+            { label: filterKelompok.includes('Semua') ? 'Total Peserta' : (filterKelompok.length === 1 ? `Kelompok ${filterKelompok[0]}` : 'Multi Kelompok'), value: totalKelompok, color: 'text-slate-700', bg: 'bg-white', border: 'border-slate-200', icon: <Users size={18} className="text-slate-400" /> },
             { label: 'Aktif', value: totalAktif, color: 'text-emerald-700', bg: 'bg-emerald-50', border: 'border-emerald-100', icon: <CheckCircle2 size={18} className="text-emerald-500" /> },
             { label: 'Pasif', value: totalPasif, color: 'text-amber-700', bg: 'bg-amber-50', border: 'border-amber-100', icon: <RefreshCw size={18} className="text-amber-500" /> },
             { label: 'Tidak Aktif', value: totalNonaktif, color: 'text-red-700', bg: 'bg-red-50', border: 'border-red-100', icon: <AlertTriangle size={18} className="text-red-500" /> },
@@ -479,11 +516,11 @@ export default function ManageGenerus() {
                 const count = k === 'Semua'
                   ? generusList.length
                   : generusList.filter(g => g.kelompok?.toLowerCase() === k.toLowerCase()).length;
-                const active = filterKelompok === k;
+                const active = filterKelompok.includes(k);
                 return (
                   <button
                     key={k}
-                    onClick={() => setFilterKelompok(k)}
+                    onClick={() => handleToggleKelompok(k)}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all duration-150 ${
                       active
                         ? 'bg-teal-600 text-white shadow-sm shadow-teal-200'
@@ -509,11 +546,11 @@ export default function ManageGenerus() {
             </p>
             <div className="flex flex-wrap gap-1.5">
               {JENJANG_LIST.map(j => {
-                const active = filterJenjang === j;
+                const active = filterJenjang.includes(j);
                 return (
                   <button
                     key={j}
-                    onClick={() => setFilterJenjang(j)}
+                    onClick={() => handleToggleJenjang(j)}
                     className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all duration-150 ${
                       active
                         ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-200'
@@ -536,8 +573,8 @@ export default function ManageGenerus() {
             <p className="text-sm text-slate-500">
               Menampilkan <span className="font-semibold text-slate-700">{filtered.length}</span> dari {generusList.length} peserta
             </p>
-            {(search || filterKelompok !== 'Semua' || filterJenjang !== 'Semua') && (
-              <button onClick={() => { setSearch(''); setFilterKelompok('Semua'); setFilterJenjang('Semua'); }}
+            {(search || !filterKelompok.includes('Semua') || !filterJenjang.includes('Semua')) && (
+              <button onClick={() => { setSearch(''); setFilterKelompok(['Semua']); setFilterJenjang(['Semua']); }}
                 className="text-xs font-semibold text-teal-600 hover:text-teal-700 transition-colors">
                 Reset filter
               </button>
@@ -553,7 +590,7 @@ export default function ManageGenerus() {
                   <th className="px-5 py-3 text-left hidden md:table-cell">Jenjang</th>
                   <th className="px-5 py-3 text-left hidden sm:table-cell">Umur</th>
                   <th className="px-5 py-3 text-left">Status</th>
-                  {filterKelompok === 'Semua' && <th className="px-5 py-3 text-left hidden lg:table-cell">Kelompok</th>}
+                  {(filterKelompok.includes('Semua') || filterKelompok.length > 1) && <th className="px-5 py-3 text-left hidden lg:table-cell">Kelompok</th>}
                   <th className="px-5 py-3 text-center">Aksi</th>
                 </tr>
               </thead>
@@ -598,7 +635,7 @@ export default function ManageGenerus() {
                     <td className="px-5 py-3.5">
                       <StatusBadge status={item.status} />
                     </td>
-                    {filterKelompok === 'Semua' && (
+                    {(filterKelompok.includes('Semua') || filterKelompok.length > 1) && (
                       <td className="px-5 py-3.5 hidden lg:table-cell">
                         <span className="text-xs font-medium text-slate-600 flex items-center gap-1">
                           <MapPin size={11} className="text-teal-500" /> {item.kelompok}
