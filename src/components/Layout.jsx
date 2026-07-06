@@ -246,7 +246,7 @@ export default function Layout() {
       {/* ============================= */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-slate-200/60 shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.1)] z-40">
         <div className="flex items-center justify-around h-20 px-2 overflow-x-auto hide-scrollbar">
-          {menuItems.map((menu) => {
+          {menuItems.filter(menu => menu.name !== 'Kategori Acara').map((menu) => {
             const isActive = location.pathname === menu.path || 
               (menu.path !== '/admin' && menu.path !== '/users' && location.pathname.startsWith(menu.path));
             

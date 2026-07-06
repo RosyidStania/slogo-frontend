@@ -456,13 +456,13 @@ export default function ManageGenerus() {
 
             <button onClick={handleExport} disabled={exporting}
               className="flex items-center gap-2 px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50">
-              {exporting ? <Loader2 size={16} className="animate-spin" /> : <FileDown size={16} className="text-teal-500" />}
+              {exporting ? <Loader2 size={16} className="animate-spin" /> : <FileUp size={16} className="text-teal-500" />}
               <span className="hidden sm:inline">Export</span>
             </button>
 
             <button onClick={() => fileInputRef.current?.click()} disabled={importing}
               className="flex items-center gap-2 px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50">
-              {importing ? <Loader2 size={16} className="animate-spin" /> : <FileUp size={16} className="text-emerald-500" />}
+              {importing ? <Loader2 size={16} className="animate-spin" /> : <FileDown size={16} className="text-emerald-500" />}
               <span className="hidden sm:inline">Import</span>
             </button>
 

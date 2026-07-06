@@ -215,13 +215,22 @@ export default function ManageEvents() {
             <h1 className="text-xl font-bold text-slate-900">Jadwal Acara</h1>
             <p className="text-xs text-slate-400 mt-0.5">Kelola agenda dan jadwal kegiatan bulanan.</p>
           </div>
-          <button
-            onClick={() => openModal('add')}
-            className="flex items-center gap-1.5 px-4 py-2.5 bg-teal-500 hover:bg-teal-600 active:scale-95 text-white rounded-xl font-semibold text-sm shadow-sm shadow-teal-200 transition-all whitespace-nowrap shrink-0"
-          >
-            <Plus size={16} strokeWidth={2.5} />
-            Buat Jadwal Baru
-          </button>
+          <div className="flex flex-col sm:flex-row gap-2 shrink-0 w-full sm:w-auto mt-3 sm:mt-0">
+            <button
+              onClick={() => openModal('add')}
+              className="flex items-center justify-center gap-1.5 px-4 py-2.5 bg-teal-500 hover:bg-teal-600 active:scale-95 text-white rounded-xl font-semibold text-sm shadow-sm shadow-teal-200 transition-all whitespace-nowrap"
+            >
+              <Plus size={16} strokeWidth={2.5} />
+              Buat Jadwal Baru
+            </button>
+            <button
+              onClick={() => navigate('/admin/event-types')}
+              className="flex items-center justify-center gap-1.5 px-4 py-2.5 bg-white hover:bg-slate-50 border border-slate-200 active:scale-95 text-slate-700 rounded-xl font-semibold text-sm shadow-sm transition-all whitespace-nowrap"
+            >
+              <Layers size={16} strokeWidth={2.5} />
+              Buat Kategori Baru
+            </button>
+          </div>
         </div>
 
         {/* ── Filters ─────────────────────────────────────────────────────── */}
