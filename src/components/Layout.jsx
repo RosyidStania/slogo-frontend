@@ -78,8 +78,8 @@ export default function Layout() {
       {/* SIDEBAR – Navy Dark           */}
       {/* ============================= */}
       <aside 
-        className={`fixed lg:static inset-y-0 left-0 z-50 shrink-0 transition-all duration-300 ease-in-out flex flex-col
-          ${isSidebarOpen ? 'translate-x-0 w-64' : '-translate-x-full lg:translate-x-0 w-[72px]'}
+        className={`hidden lg:flex inset-y-0 left-0 z-50 shrink-0 transition-all duration-300 ease-in-out flex-col
+          ${isSidebarOpen ? 'w-64' : 'w-[72px]'}
         `}
         style={{ background: 'linear-gradient(180deg, #0f172a 0%, #1e293b 100%)' }}
       >
@@ -97,7 +97,7 @@ export default function Layout() {
           </div>
           <button 
             onClick={() => setIsSidebarOpen(false)} 
-            className={`lg:hidden text-white/40 hover:text-white transition-colors shrink-0 ${!isSidebarOpen && 'hidden'}`}
+            className={`text-white/40 hover:text-white transition-colors shrink-0 ${!isSidebarOpen && 'hidden'}`}
           >
             <X size={18} strokeWidth={2.5}/>
           </button>
@@ -181,13 +181,7 @@ export default function Layout() {
         </div>
       </aside>
 
-      {/* OVERLAY MOBILE */}
-      {isSidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-slate-900/60 z-40 lg:hidden backdrop-blur-sm"
-          onClick={() => setIsSidebarOpen(false)}
-        ></div>
-      )}
+      {/* OVERLAY MOBILE (Dihapus karena diganti Bottom Nav) */}
 
       {/* ============================= */}
       {/* MAIN CONTENT                  */}
@@ -200,7 +194,7 @@ export default function Layout() {
           <div className="flex items-center gap-4">
             <button 
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="p-2 rounded-xl bg-white text-slate-500 hover:text-teal-600 hover:bg-teal-50 shadow-sm border border-slate-200/80 transition-all"
+              className="hidden lg:block p-2 rounded-xl bg-white text-slate-500 hover:text-teal-600 hover:bg-teal-50 shadow-sm border border-slate-200/80 transition-all"
             >
               <Menu size={18} strokeWidth={2.5} />
             </button>
@@ -225,7 +219,7 @@ export default function Layout() {
         </header>
 
         {/* PAGE CONTENT */}
-        <div className="flex-1 px-6 lg:px-8 pb-6 overflow-y-auto hide-scrollbar">
+        <div className="flex-1 px-4 lg:px-8 pb-24 lg:pb-6 overflow-y-auto hide-scrollbar">
           <Outlet />
         </div>
       </main>
@@ -246,7 +240,45 @@ export default function Layout() {
             </div>
           </div>
         </div>
-      )}
+      {/* ============================= */}
+      {/* BOTTOM NAVIGATION (MOBILE)    */}
+      {/* ============================= */}
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-slate-200/60 shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.1)] z-40">
+        <div className="flex items-center justify-around h-20 px-2 overflow-x-auto hide-scrollbar">
+          {menuItems.map((menu) => {
+            const isActive = location.pathname === menu.path || 
+              (menu.path !== '/admin' && menu.path !== '/users' && location.pathname.startsWith(menu.path));
+            
+            // Shorten name for mobile if necessary
+            let shortName = menu.name;
+            if (menu.name === 'Kategori Acara') shortName = 'Kategori';
+            if (menu.name === 'Rekapan Absensi') shortName = 'Rekapan';
+            if (menu.name === 'QR Absen') shortName = 'QR';
+
+            return (
+              <Link
+                key={menu.name}
+                to={menu.path}
+                className={`flex flex-col items-center justify-center w-16 h-16 rounded-2xl transition-all duration-300 relative shrink-0 ${
+                  isActive ? 'text-teal-600' : 'text-slate-400 hover:text-slate-600'
+                }`}
+              >
+                {isActive && (
+                  <div className="absolute inset-0 bg-teal-50 rounded-2xl -z-10"></div>
+                )}
+                <div className={`transition-transform duration-300 ${isActive ? '-translate-y-2' : ''}`}>
+                  {React.cloneElement(menu.icon, { size: 22 })}
+                </div>
+                <span className={`text-[10px] font-bold tracking-tight transition-all duration-300 absolute bottom-2 ${
+                  isActive ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
+                }`}>
+                  {shortName}
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
     </div>
   );
 }
