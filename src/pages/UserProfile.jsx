@@ -167,22 +167,22 @@ export default function UserProfile() {
     }
 
     return (
-      <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4">
-        <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">{label}</label>
+      <div className="bg-white border border-slate-200/70 rounded-2xl p-4 shadow-sm hover:border-teal-300 hover:shadow-md transition-all duration-300 group">
+        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2 group-focus-within:text-teal-600 transition-colors">{label}</label>
         {type === 'select' ? (
           <select 
             name={name} 
             value={formData[name]} 
             onChange={handleChange} 
             required={required}
-            className="w-full rounded-xl border-slate-200 bg-white border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 transition-all shadow-sm text-sm"
+            className="w-full rounded-xl border-slate-200 bg-slate-50 border-0 ring-1 ring-slate-200 focus:ring-2 focus:ring-teal-500 px-4 py-2.5 transition-all text-sm font-medium text-slate-700"
           >
             {options.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
           </select>
         ) : (
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <Icon size={18} className="text-slate-400" />
+              <Icon size={18} className="text-slate-400 group-focus-within:text-teal-500 transition-colors" />
             </div>
             <input 
               type={type} 
@@ -191,7 +191,7 @@ export default function UserProfile() {
               onChange={handleChange} 
               required={required}
               placeholder={placeholder || `Masukkan ${label.toLowerCase()}`}
-              className="pl-11 w-full rounded-xl border-slate-200 bg-white border focus:border-teal-500 focus:ring-teal-500 px-4 py-2.5 transition-all shadow-sm text-sm"
+              className="pl-11 w-full rounded-xl border-slate-200 bg-slate-50 border-0 ring-1 ring-slate-200 focus:ring-2 focus:ring-teal-500 px-4 py-2.5 transition-all text-sm font-medium text-slate-700"
             />
           </div>
         )}
@@ -219,16 +219,17 @@ export default function UserProfile() {
         
         {/* SIDEBAR (Left Column) */}
         <div className="lg:col-span-4">
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden lg:sticky lg:top-8 relative">
-            <div className="h-32 bg-gradient-to-br from-teal-400 to-teal-600 relative">
+          <div className="bg-white rounded-3xl shadow-xl shadow-teal-500/5 border border-slate-100 overflow-hidden lg:sticky lg:top-8 relative group">
+            <div className="h-36 bg-gradient-to-br from-teal-400 via-teal-500 to-emerald-600 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-40 h-40 bg-white/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
               <button 
                 onClick={() => {
                   if (activeTab !== 'profil') setActiveTab('profil');
                   setIsEditing(!isEditing);
                   if (isEditing) fetchProfile(); // cancel edit
                 }}
-                className={`absolute top-4 right-4 p-2.5 rounded-full shadow-md transition-colors ${
-                  isEditing ? 'bg-red-500 text-white hover:bg-red-600' : 'bg-white text-slate-600 hover:text-teal-600'
+                className={`absolute top-4 right-4 p-2.5 rounded-full shadow-md transition-all duration-300 hover:scale-110 z-10 ${
+                  isEditing ? 'bg-red-500 text-white hover:bg-red-600 hover:shadow-red-500/30' : 'bg-white/20 backdrop-blur-md text-white border border-white/30 hover:bg-white/30'
                 }`}
                 title={isEditing ? 'Batal Edit' : 'Edit Profil'}
               >
@@ -237,22 +238,26 @@ export default function UserProfile() {
             </div>
             
             <div className="px-8 pb-8 flex flex-col items-center -mt-16">
-              <div className="w-32 h-32 bg-white rounded-full p-1.5 shadow-lg relative mb-4">
-                <div className="w-full h-full rounded-full bg-slate-100 flex items-center justify-center text-5xl font-bold text-teal-600">
+              <div className="w-32 h-32 bg-white rounded-full p-2 shadow-xl shadow-teal-500/20 relative mb-5 group-hover:scale-105 transition-transform duration-500">
+                <div className="w-full h-full rounded-full bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center text-5xl font-black text-teal-600 border border-slate-100">
                   {formData.name ? formData.name.charAt(0).toUpperCase() : '?'}
                 </div>
               </div>
-              <h2 className="text-xl font-bold text-slate-800 text-center">{formData.name || 'Nama Lengkap'}</h2>
-              <p className="text-slate-500 text-sm mb-6">@{formData.username}</p>
+              <h2 className="text-2xl font-bold text-slate-800 text-center tracking-tight">{formData.name || 'Nama Lengkap'}</h2>
+              <p className="text-teal-600 font-bold text-[11px] uppercase tracking-wider mb-6 bg-teal-50 px-4 py-1.5 rounded-full mt-3 border border-teal-100/50">@{formData.username}</p>
 
-              <div className="w-full space-y-4">
-                <div className="flex items-center gap-3 text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100">
-                  <Phone size={18} className="text-teal-500" />
-                  <span className="text-sm font-medium">{formData.no_hp || '-'}</span>
+              <div className="w-full space-y-3">
+                <div className="flex items-center gap-4 text-slate-600 bg-white hover:bg-slate-50 p-4 rounded-2xl border border-slate-100 transition-colors shadow-sm">
+                  <div className="w-10 h-10 bg-teal-50 rounded-xl flex items-center justify-center shrink-0">
+                    <Phone size={18} className="text-teal-500" />
+                  </div>
+                  <span className="text-sm font-semibold text-slate-700">{formData.no_hp || 'Belum ditambahkan'}</span>
                 </div>
-                <div className="flex items-center gap-3 text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100">
-                  <Activity size={18} className="text-teal-500" />
-                  <span className="text-sm font-medium">{formData.keterangan || 'Pelajar/Karyawan'}</span>
+                <div className="flex items-center gap-4 text-slate-600 bg-white hover:bg-slate-50 p-4 rounded-2xl border border-slate-100 transition-colors shadow-sm">
+                  <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center shrink-0">
+                    <Activity size={18} className="text-emerald-500" />
+                  </div>
+                  <span className="text-sm font-semibold text-slate-700">{formData.keterangan || 'Pelajar/Karyawan'}</span>
                 </div>
               </div>
             </div>
@@ -263,13 +268,13 @@ export default function UserProfile() {
         <div className="lg:col-span-8 space-y-6">
           
           {/* Tabs Navigation */}
-          <div className="flex gap-2 p-1 bg-white rounded-xl shadow-sm border border-slate-200/60 mb-6">
+          <div className="flex gap-2 p-1.5 bg-slate-100/70 backdrop-blur-md rounded-2xl shadow-inner mb-8">
             <button
               onClick={() => setActiveTab('profil')}
-              className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 ${
+              className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all duration-300 flex items-center justify-center gap-2.5 ${
                 activeTab === 'profil' 
-                  ? 'bg-slate-800 text-white shadow' 
-                  : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
+                  ? 'bg-white text-teal-600 shadow-sm border border-slate-200/50' 
+                  : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'
               }`}
             >
               <User size={18} />
@@ -278,12 +283,12 @@ export default function UserProfile() {
             <button
               onClick={() => {
                 setActiveTab('keamanan');
-                setIsEditing(false); // Disable profile edit if switching to security
+                setIsEditing(false);
               }}
-              className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 ${
+              className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all duration-300 flex items-center justify-center gap-2.5 ${
                 activeTab === 'keamanan' 
-                  ? 'bg-slate-800 text-white shadow' 
-                  : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
+                  ? 'bg-white text-teal-600 shadow-sm border border-slate-200/50' 
+                  : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'
               }`}
             >
               <Shield size={18} />

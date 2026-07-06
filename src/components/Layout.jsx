@@ -81,12 +81,12 @@ export default function Layout() {
         className={`fixed lg:static inset-y-0 left-0 z-50 shrink-0 transition-all duration-300 ease-in-out flex flex-col
           ${isSidebarOpen ? 'translate-x-0 w-64' : '-translate-x-full lg:translate-x-0 w-[72px]'}
         `}
-        style={{ background: 'linear-gradient(160deg, #1e2d45 0%, #162032 100%)' }}
+        style={{ background: 'linear-gradient(180deg, #0f172a 0%, #1e293b 100%)' }}
       >
         {/* Logo */}
         <div className={`h-20 flex items-center shrink-0 overflow-hidden transition-all duration-300 ${isSidebarOpen ? 'px-6 justify-between' : 'justify-center px-0'}`}>
           <div className="flex items-center gap-2.5 overflow-hidden">
-            <div className="w-8 h-8 bg-teal-400 rounded-[10px] flex items-center justify-center shrink-0 shadow-[0_4px_10px_rgba(45,212,191,0.4)]">
+            <div className="w-8 h-8 bg-gradient-to-br from-teal-400 to-teal-500 rounded-xl flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(45,212,191,0.5)]">
               <span className="text-white font-black text-sm tracking-tight">DS</span>
             </div>
             {isSidebarOpen && (
@@ -122,18 +122,18 @@ export default function Layout() {
                 to={menu.path}
                 title={!isSidebarOpen ? menu.name : ""}
                 onClick={() => { if(window.innerWidth < 1024) setIsSidebarOpen(false) }}
-                className={`flex items-center rounded-xl transition-all duration-200 group relative overflow-hidden
+                className={`flex items-center rounded-xl transition-all duration-300 group relative overflow-hidden
                   ${isSidebarOpen ? 'gap-3 px-3 py-3 w-full' : 'justify-center w-11 h-11'}
                   ${isActive 
-                    ? 'bg-teal-400/15 text-teal-300' 
-                    : 'text-white/50 hover:bg-white/8 hover:text-white/90'
+                    ? 'bg-gradient-to-r from-teal-500/20 to-transparent text-teal-300' 
+                    : 'text-slate-400 hover:bg-white/5 hover:text-slate-100 hover:translate-x-1'
                   }
                 `}
               >
                 {isActive && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-teal-400 rounded-r-full"></div>
+                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-teal-400 shadow-[0_0_10px_rgba(45,212,191,0.8)]"></div>
                 )}
-                <div className={`shrink-0 ${isActive ? 'text-teal-400' : ''}`}>
+                <div className={`shrink-0 transition-transform duration-300 ${isActive ? 'text-teal-400 scale-110' : 'group-hover:scale-110'}`}>
                   {menu.icon}
                 </div>
                 {isSidebarOpen && (
@@ -192,10 +192,10 @@ export default function Layout() {
       {/* ============================= */}
       {/* MAIN CONTENT                  */}
       {/* ============================= */}
-      <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <main className="flex-1 flex flex-col min-w-0 overflow-hidden bg-slate-50">
         
         {/* TOP NAVBAR */}
-        <header className="h-16 px-6 lg:px-8 flex items-center justify-between shrink-0 bg-[#f5f5f7]/80 backdrop-blur-xl border-b border-slate-200/50 z-10">
+        <header className="h-16 px-6 lg:px-8 flex items-center justify-between shrink-0 bg-white/70 backdrop-blur-2xl border-b border-slate-200/60 shadow-sm z-10">
           
           <div className="flex items-center gap-4">
             <button 
