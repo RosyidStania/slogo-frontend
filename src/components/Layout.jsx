@@ -240,6 +240,7 @@ export default function Layout() {
             </div>
           </div>
         </div>
+      )}
       {/* ============================= */}
       {/* BOTTOM NAVIGATION (MOBILE)    */}
       {/* ============================= */}
