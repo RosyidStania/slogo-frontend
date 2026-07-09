@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
+import CustomSelect from '../components/CustomSelect';
 import {
   Plus, Edit, Trash2, X, Calendar, Clock, Users,
   BookOpen, Layers, ChevronDown, CopyPlus, AlertTriangle,
@@ -249,42 +250,35 @@ export default function ManageEvents() {
           
           {/* Month & Year Filter */}
           <div className="flex gap-3">
-            <div className="relative">
-              <select
-                value={filterMonth}
-                onChange={e => setFilterMonth(e.target.value)}
-                className="appearance-none pl-4 pr-10 py-3 text-sm bg-white rounded-2xl border border-slate-200 text-slate-600 font-semibold focus:outline-none focus:ring-2 focus:ring-teal-400 hover:border-teal-400 hover:text-teal-700 shadow-sm cursor-pointer transition-colors min-w-[140px]"
-              >
-                <option value="">Semua Bulan</option>
-                <option value="01">Januari</option>
-                <option value="02">Februari</option>
-                <option value="03">Maret</option>
-                <option value="04">April</option>
-                <option value="05">Mei</option>
-                <option value="06">Juni</option>
-                <option value="07">Juli</option>
-                <option value="08">Agustus</option>
-                <option value="09">September</option>
-                <option value="10">Oktober</option>
-                <option value="11">November</option>
-                <option value="12">Desember</option>
-              </select>
-              <ChevronDown size={15} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-            </div>
-
-            <div className="relative">
-              <select
-                value={filterYear}
-                onChange={e => setFilterYear(e.target.value)}
-                className="appearance-none pl-4 pr-10 py-3 text-sm bg-white rounded-2xl border border-slate-200 text-slate-600 font-semibold focus:outline-none focus:ring-2 focus:ring-teal-400 hover:border-teal-400 hover:text-teal-700 shadow-sm cursor-pointer transition-colors min-w-[130px]"
-              >
-                <option value="">Semua Tahun</option>
-                {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 2 + i).map(y => (
-                  <option key={y} value={y}>{y}</option>
-                ))}
-              </select>
-              <ChevronDown size={15} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-            </div>
+            <CustomSelect
+              value={filterMonth}
+              onChange={e => setFilterMonth(e.target.value)}
+              className="min-w-[140px]"
+              options={[
+                { value: '', label: 'Semua Bulan' },
+                { value: '01', label: 'Januari' },
+                { value: '02', label: 'Februari' },
+                { value: '03', label: 'Maret' },
+                { value: '04', label: 'April' },
+                { value: '05', label: 'Mei' },
+                { value: '06', label: 'Juni' },
+                { value: '07', label: 'Juli' },
+                { value: '08', label: 'Agustus' },
+                { value: '09', label: 'September' },
+                { value: '10', label: 'Oktober' },
+                { value: '11', label: 'November' },
+                { value: '12', label: 'Desember' }
+              ]}
+            />
+            <CustomSelect
+              value={filterYear}
+              onChange={e => setFilterYear(e.target.value)}
+              className="min-w-[130px]"
+              options={[
+                { value: '', label: 'Semua Tahun' },
+                ...Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 2 + i).map(y => ({ value: y, label: y }))
+              ]}
+            />
           </div>
         </div>
 

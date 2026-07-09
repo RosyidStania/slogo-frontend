@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import api from '../api/axios';
+import CustomSelect from '../components/CustomSelect';
 import {
   Plus, Edit, Trash2, X, MapPin, Eye, User, CalendarDays,
   Users, ShieldAlert, ChevronDown, Phone, Info, FileUp, FileDown,
@@ -83,20 +84,6 @@ function TextInput({ name, value, onChange, placeholder = '', type = 'text', req
       placeholder={placeholder} required={required}
       className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-teal-400 transition-all"
     />
-  );
-}
-
-function SelectInput({ name, value, onChange, options }) {
-  return (
-    <div className="relative">
-      <select
-        name={name} value={value} onChange={onChange}
-        className="w-full pl-3.5 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-teal-400 transition-all appearance-none cursor-pointer"
-      >
-        {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-      </select>
-      <ChevronDown size={16} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-    </div>
   );
 }
 
@@ -687,19 +674,19 @@ export default function ManageGenerus() {
           {/* Row 1 */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Field label="Jenis Kelamin">
-              <SelectInput name="jenis_kelamin" value={formData.jenis_kelamin} onChange={inp}
+              <CustomSelect name="jenis_kelamin" value={formData.jenis_kelamin} onChange={inp}
                 options={[{ value: 'L', label: 'Laki-laki' }, { value: 'P', label: 'Perempuan' }]} />
             </Field>
             <Field label="Kelompok">
-              <SelectInput name="kelompok" value={formData.kelompok} onChange={inp}
+              <CustomSelect name="kelompok" value={formData.kelompok} onChange={inp}
                 options={KELOMPOK_LIST.filter(k => k !== 'Semua').map(k => ({ value: k, label: k }))} />
             </Field>
             <Field label="Jenjang">
-              <SelectInput name="jenjang" value={formData.jenjang} onChange={inp}
+              <CustomSelect name="jenjang" value={formData.jenjang} onChange={inp}
                 options={JENJANG_LIST.filter(j => j !== 'Semua').map(j => ({ value: j, label: j }))} />
             </Field>
             <Field label="Status">
-              <SelectInput name="status" value={formData.status} onChange={inp}
+              <CustomSelect name="status" value={formData.status} onChange={inp}
                 options={[
                   { value: 'aktif', label: '🟢 Aktif' },
                   { value: 'pasif', label: '🟡 Pasif' },

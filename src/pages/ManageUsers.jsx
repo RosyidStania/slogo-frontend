@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api/axios';
+import CustomSelect from '../components/CustomSelect';
 import { User as UserIcon, ShieldCheck, UserCircle, Plus, Edit, Trash2, X, HelpCircle, Users, Shield, AlertTriangle, ChevronDown, Eye, EyeOff, Search } from 'lucide-react';
 
 function Modal({ open, onClose, children, maxWidth = 'max-w-md' }) {
@@ -209,17 +210,14 @@ export default function ManageUsers() {
             </div>
             <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
               <div className="relative">
-                <select
+                <CustomSelect
                   value={selectedKelompok}
                   onChange={(e) => setSelectedKelompok(e.target.value)}
-                  className="w-full sm:w-40 pl-4 pr-10 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 text-slate-800 appearance-none shadow-sm"
-                >
-                  <option value="">Semua Kelompok</option>
-                  {kelompokOptions.map(k => (
-                    <option key={k} value={k}>{k}</option>
-                  ))}
-                </select>
-                <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                  options={[
+                    { value: '', label: 'Semua Kelompok' },
+                    ...kelompokOptions.map(k => ({ value: k, label: k }))
+                  ]}
+                />
               </div>
               <div className="relative w-full sm:w-64 shrink-0">
                 <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -357,7 +355,7 @@ export default function ManageUsers() {
                 />
               ) : (
                 <div className="relative">
-                  <select
+                  <CustomSelect
                     name="generus_id"
                     value={formData.generus_id}
                     onChange={(e) => {
@@ -369,19 +367,18 @@ export default function ManageUsers() {
                       });
                     }}
                     required
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 text-slate-800 appearance-none pr-10"
-                  >
-                    <option value="" disabled>-- Pilih Data Generus --</option>
-                    {generusList.map(g => {
-                      const isAssignedToOther = g.user_id && g.user_id !== formData.id;
-                      return (
-                        <option key={g.id} value={g.id} disabled={isAssignedToOther}>
-                          {g.nama_lengkap} {isAssignedToOther ? '(Sudah punya akun)' : ''}
-                        </option>
-                      );
-                    })}
-                  </select>
-                  <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
+                    options={[
+                      { value: '', label: '-- Pilih Data Generus --', disabled: true },
+                      ...generusList.map(g => {
+                        const isAssignedToOther = g.user_id && g.user_id !== formData.id;
+                        return {
+                          value: g.id,
+                          label: `${g.nama_lengkap} ${isAssignedToOther ? '(Sudah punya akun)' : ''}`,
+                          disabled: !!isAssignedToOther
+                        };
+                      })
+                    ]}
+                  />
                 </div>
               )}
             </div>
@@ -403,16 +400,16 @@ export default function ManageUsers() {
                 Role
               </label>
               <div className="relative">
-                <select
+                <CustomSelect
                   name="role"
                   value={formData.role}
                   onChange={handleInputChange}
-                  className="w-full pl-4 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 text-slate-800 appearance-none cursor-pointer"
-                >
-                  <option value="user">User</option>
-                  <option value="admin">Admin</option>
-                </select>
-                <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                  options={[
+                    { value: 'user', label: 'User' },
+                    { value: 'admin', label: 'Admin' },
+                    { value: 'mt', label: 'MT' }
+                  ]}
+                />
               </div>
             </div>
             <div>

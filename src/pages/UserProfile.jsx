@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { User, Mail, Phone, MapPin, Calendar, Activity, Hash, Camera, Save, RefreshCw, Smartphone, Lock, Key, Edit2, X, Eye, EyeOff, Shield, Users, BookOpen } from 'lucide-react';
 import api from '../api/axios';
-
+import CustomSelect from '../components/CustomSelect';
 export default function UserProfile() {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -170,15 +170,13 @@ export default function UserProfile() {
       <div className="bg-white border border-slate-200/70 rounded-2xl p-4 shadow-sm hover:border-teal-300 hover:shadow-md transition-all duration-300 group">
         <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2 group-focus-within:text-teal-600 transition-colors">{label}</label>
         {type === 'select' ? (
-          <select 
+          <CustomSelect 
             name={name} 
             value={formData[name]} 
             onChange={handleChange} 
             required={required}
-            className="w-full rounded-xl border-slate-200 bg-slate-50 border-0 ring-1 ring-slate-200 focus:ring-2 focus:ring-teal-500 px-4 py-2.5 transition-all text-sm font-medium text-slate-700"
-          >
-            {options.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-          </select>
+            options={options}
+          />
         ) : (
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
