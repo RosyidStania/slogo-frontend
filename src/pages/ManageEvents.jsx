@@ -14,7 +14,7 @@ const kategoriList = [
   '1 SD', '2 SD', '3 SD', '4 SD', '5 SD', '6 SD',
   '1 SMP', '2 SMP', '3 SMP',
   '1 SMA/SMK', '2 SMA/SMK', '3 SMA/SMK',
-  'USMAN'
+  'USMAN', 'MT'
 ];
 
 const kategoriGroups = [
@@ -22,7 +22,7 @@ const kategoriGroups = [
   { label: 'SD',        items: ['1 SD', '2 SD', '3 SD', '4 SD', '5 SD', '6 SD'] },
   { label: 'SMP',       items: ['1 SMP', '2 SMP', '3 SMP'] },
   { label: 'SMA/SMK',   items: ['1 SMA/SMK', '2 SMA/SMK', '3 SMA/SMK'] },
-  { label: 'Lainnya',   items: ['USMAN'] },
+  { label: 'Lainnya',   items: ['USMAN', 'MT'] },
 ];
 
 const TOTAL_STEPS = 3;
