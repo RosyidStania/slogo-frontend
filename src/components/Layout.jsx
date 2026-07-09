@@ -243,7 +243,7 @@ export default function Layout() {
       {/* ============================= */}
       {/* BOTTOM NAVIGATION (MOBILE)    */}
       {/* ============================= */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-slate-200/60 shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.1)] z-40">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-gradient-to-r from-teal-900 to-teal-950 border-t border-teal-800/50 shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.5)] z-40">
         <div className="flex items-center justify-around h-20 px-2 overflow-x-auto hide-scrollbar">
           {menuItems.filter(menu => menu.name !== 'Kategori Acara').map((menu) => {
             const isActive = location.pathname === menu.path || 
@@ -260,11 +260,11 @@ export default function Layout() {
                 key={menu.name}
                 to={menu.path}
                 className={`flex flex-col items-center justify-center w-16 h-16 rounded-2xl transition-all duration-300 relative shrink-0 ${
-                  isActive ? 'text-teal-600' : 'text-slate-400 hover:text-slate-600'
+                  isActive ? 'text-white' : 'text-teal-100/60 hover:text-white'
                 }`}
               >
                 {isActive && (
-                  <div className="absolute inset-0 bg-teal-50 rounded-2xl -z-10"></div>
+                  <div className="absolute inset-0 bg-teal-800/50 shadow-inner border border-teal-700/50 rounded-2xl -z-10"></div>
                 )}
                 <div className={`transition-transform duration-300 ${isActive ? '-translate-y-2' : ''}`}>
                   {React.cloneElement(menu.icon, { size: 22 })}
