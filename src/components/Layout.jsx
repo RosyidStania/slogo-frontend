@@ -75,13 +75,12 @@ export default function Layout() {
     <div className="flex h-screen w-full bg-[#f5f5f7] text-slate-800 overflow-hidden">
       
       {/* ============================= */}
-      {/* SIDEBAR – Navy Dark           */}
+      {/* SIDEBAR – Tema Hijau Tua      */}
       {/* ============================= */}
       <aside 
-        className={`hidden lg:flex inset-y-0 left-0 z-50 shrink-0 transition-all duration-300 ease-in-out flex-col
+        className={`hidden lg:flex inset-y-0 left-0 z-50 shrink-0 transition-all duration-300 ease-in-out flex-col bg-gradient-to-b from-teal-900 to-teal-950 shadow-2xl shadow-teal-900/20 border-r border-teal-800/50
           ${isSidebarOpen ? 'w-64' : 'w-[72px]'}
         `}
-        style={{ background: 'linear-gradient(180deg, #0f172a 0%, #1e293b 100%)' }}
       >
         {/* Logo */}
         <div className={`h-20 flex items-center shrink-0 overflow-hidden transition-all duration-300 ${isSidebarOpen ? 'px-6 justify-between' : 'justify-center px-0'}`}>
@@ -97,18 +96,18 @@ export default function Layout() {
           </div>
           <button 
             onClick={() => setIsSidebarOpen(false)} 
-            className={`text-white/40 hover:text-white transition-colors shrink-0 ${!isSidebarOpen && 'hidden'}`}
+            className={`text-teal-200/50 hover:text-teal-100 transition-colors shrink-0 ${!isSidebarOpen && 'hidden'}`}
           >
             <X size={18} strokeWidth={2.5}/>
           </button>
         </div>
 
         {/* Divider */}
-        <div className="mx-4 h-px bg-white/10 shrink-0 mb-3"></div>
+        <div className="mx-4 h-px bg-teal-800/60 shrink-0 mb-3"></div>
 
         {/* Nav label */}
         {isSidebarOpen && (
-          <p className="text-[9px] font-bold text-white/30 uppercase tracking-widest px-6 mb-2 shrink-0">Menu Utama</p>
+          <p className="text-[10px] font-semibold text-teal-200/50 uppercase tracking-widest px-6 mb-2 shrink-0">Menu Utama</p>
         )}
 
         {/* Navigation */}
@@ -125,14 +124,12 @@ export default function Layout() {
                 className={`flex items-center rounded-xl transition-all duration-300 group relative overflow-hidden
                   ${isSidebarOpen ? 'gap-3 px-3 py-3 w-full' : 'justify-center w-11 h-11'}
                   ${isActive 
-                    ? 'bg-gradient-to-r from-teal-500/20 to-transparent text-teal-300' 
-                    : 'text-slate-400 hover:bg-white/5 hover:text-slate-100 hover:translate-x-1'
+                    ? 'bg-teal-800/50 text-teal-300 shadow-inner border border-teal-700/50' 
+                    : 'text-teal-100/60 hover:bg-teal-800/30 hover:text-white hover:translate-x-1'
                   }
                 `}
               >
-                {isActive && (
-                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-teal-400 shadow-[0_0_10px_rgba(45,212,191,0.8)]"></div>
-                )}
+
                 <div className={`shrink-0 transition-transform duration-300 ${isActive ? 'text-teal-400 scale-110' : 'group-hover:scale-110'}`}>
                   {menu.icon}
                 </div>
@@ -151,17 +148,19 @@ export default function Layout() {
 
         {/* Spacer + Logout */}
         <div className="shrink-0 mt-auto">
-          <div className="mx-4 h-px bg-white/10 mb-3"></div>
+          <div className="mx-4 h-px bg-teal-800/60 mb-3"></div>
           
           {/* User info */}
           {isSidebarOpen && (
-            <div className="mx-3 mb-2 p-3 rounded-xl bg-white/5 flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-teal-400 flex items-center justify-center text-white font-bold text-sm shrink-0">
+            <div className="mx-3 mb-2 p-3 rounded-xl bg-teal-800/30 border border-teal-700/30 flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-teal-500/20 border border-teal-400/30 flex items-center justify-center text-teal-300 font-bold text-sm shrink-0">
                 {role?.charAt(0).toUpperCase()}
               </div>
               <div className="min-w-0">
-                <p className="text-white text-xs font-bold capitalize truncate">{role}</p>
-                <p className="text-white/40 text-[10px]">Online</p>
+                <p className="text-teal-50 text-xs font-bold capitalize truncate">{role}</p>
+                <p className="text-teal-200/60 text-[10px] flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-teal-400"></span> Online
+                </p>
               </div>
             </div>
           )}
@@ -170,7 +169,7 @@ export default function Layout() {
             <button 
               onClick={() => setShowLogoutModal(true)}
               title={!isSidebarOpen ? "Logout" : ""}
-              className={`flex items-center rounded-xl text-white/40 hover:bg-red-500/15 hover:text-red-400 transition-all duration-200 font-semibold text-sm
+              className={`flex items-center rounded-xl text-teal-200/60 hover:bg-red-500/10 hover:text-red-400 transition-all duration-200 font-medium text-sm
                 ${isSidebarOpen ? 'gap-3 px-3 py-3 w-full' : 'justify-center w-11 h-11'}
               `}
             >
