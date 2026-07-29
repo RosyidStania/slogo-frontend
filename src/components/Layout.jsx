@@ -13,7 +13,9 @@ import {
   ChevronRight,
   BookOpen,
   QrCode,
-  User
+  User,
+  ClipboardList,
+  BarChart3
 } from 'lucide-react';
 
 export default function Layout() {
@@ -58,6 +60,15 @@ export default function Layout() {
         { name: 'Rekapan Absensi', path: '/admin/reports', icon: <BookOpen size={18} strokeWidth={2} /> },
         { name: 'Users', path: '/admin/users', icon: <Users size={18} strokeWidth={2} /> },
       ]
+    : role === 'mt'
+    ? [
+        { name: 'Dashboard', path: '/mt', icon: <LayoutDashboard size={18} strokeWidth={2} /> },
+        { name: 'Data Anggota', path: '/mt/members', icon: <Users size={18} strokeWidth={2} /> },
+        { name: 'Statistik', path: '/mt/statistics', icon: <BarChart3 size={18} strokeWidth={2} /> },
+        { name: 'Rekapan Absensi', path: '/mt/attendance', icon: <ClipboardList size={18} strokeWidth={2} /> },
+        { name: 'QR Absen', path: '/mt/qr', icon: <QrCode size={18} strokeWidth={2} /> },
+        { name: 'Profil', path: '/mt/profile', icon: <User size={18} strokeWidth={2} /> },
+      ]
     : [
         { name: 'Dashboard', path: '/users', icon: <LayoutDashboard size={18} strokeWidth={2} /> },
         { name: 'QR Absen', path: '/users/qr', icon: <QrCode size={18} strokeWidth={2} /> },
@@ -65,9 +76,9 @@ export default function Layout() {
       ];
 
   const pageTitle = (() => {
-    if (location.pathname.includes('/attendance')) return 'Live Absensi';
+    if (location.pathname.match(/\/admin\/attendance\//)) return 'Live Absensi';
     const seg = location.pathname.split('/').filter(Boolean).pop() || 'dashboard';
-    const map = { admin: 'Dashboard', events: 'Acara', generus: 'Data Generus', 'event-types': 'Kategori Acara', users: 'Users' };
+    const map = { admin: 'Dashboard', mt: 'Dashboard', events: 'Acara', generus: 'Data Generus', 'event-types': 'Kategori Acara', users: 'Users', members: 'Data Anggota', statistics: 'Statistik Kelompok', attendance: 'Rekapan Absensi' };
     return map[seg] || seg.replace(/-/g, ' ');
   })();
 
@@ -114,7 +125,7 @@ export default function Layout() {
         <nav className={`flex-1 overflow-y-auto thin-scrollbar space-y-1 flex flex-col ${isSidebarOpen ? 'px-3' : 'px-2.5 items-center'}`}>
           {menuItems.map((menu) => {
             const isActive = location.pathname === menu.path || 
-              (menu.path !== '/admin' && menu.path !== '/users' && location.pathname.startsWith(menu.path));
+              (menu.path !== '/admin' && menu.path !== '/users' && menu.path !== '/mt' && location.pathname.startsWith(menu.path));
             return (
               <Link
                 key={menu.name}
@@ -247,13 +258,15 @@ export default function Layout() {
         <div className="flex items-center justify-around h-20 px-2 overflow-x-auto hide-scrollbar">
           {menuItems.filter(menu => menu.name !== 'Kategori Acara').map((menu) => {
             const isActive = location.pathname === menu.path || 
-              (menu.path !== '/admin' && menu.path !== '/users' && location.pathname.startsWith(menu.path));
+              (menu.path !== '/admin' && menu.path !== '/users' && menu.path !== '/mt' && location.pathname.startsWith(menu.path));
             
             // Shorten name for mobile if necessary
             let shortName = menu.name;
             if (menu.name === 'Kategori Acara') shortName = 'Kategori';
             if (menu.name === 'Rekapan Absensi') shortName = 'Rekapan';
             if (menu.name === 'QR Absen') shortName = 'QR';
+            if (menu.name === 'Data Anggota') shortName = 'Anggota';
+            if (menu.name === 'Statistik') shortName = 'Statistik';
 
             return (
               <Link

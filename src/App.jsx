@@ -13,6 +13,9 @@ import ManageEventTypes from './pages/ManageEventTypes';
 import ReportByType from './pages/ReportByType';
 import UserQR from './pages/UserQR';
 import UserProfile from './pages/UserProfile';
+import MtMembers from './pages/MtMembers';
+import MtStatistics from './pages/MtStatistics';
+import MtAttendance from './pages/MtAttendance';
 // PrivateRoute untuk menjaga keamanan rute
 const PrivateRoute = ({ children, allowedRole }) => {
   const token = localStorage.getItem('token');
@@ -21,6 +24,7 @@ const PrivateRoute = ({ children, allowedRole }) => {
   if (!token) return <Navigate to="/login" replace />;
   
   if (allowedRole && role !== allowedRole) {
+    if (role === 'mt') return <Navigate to="/mt" replace />;
     return <Navigate to={role === 'admin' ? '/admin' : '/users'} replace />;
   }
 
@@ -58,6 +62,14 @@ function App() {
           <Route path="/users" element={<PrivateRoute allowedRole="user"><UserDashboard /></PrivateRoute>} />
           <Route path="/users/qr" element={<PrivateRoute allowedRole="user"><UserQR /></PrivateRoute>} />
           <Route path="/users/profile" element={<PrivateRoute allowedRole="user"><UserProfile /></PrivateRoute>} />
+
+          {/* Rute Khusus MT */}
+          <Route path="/mt" element={<PrivateRoute allowedRole="mt"><UserDashboard /></PrivateRoute>} />
+          <Route path="/mt/members" element={<PrivateRoute allowedRole="mt"><MtMembers /></PrivateRoute>} />
+          <Route path="/mt/statistics" element={<PrivateRoute allowedRole="mt"><MtStatistics /></PrivateRoute>} />
+          <Route path="/mt/attendance" element={<PrivateRoute allowedRole="mt"><MtAttendance /></PrivateRoute>} />
+          <Route path="/mt/qr" element={<PrivateRoute allowedRole="mt"><UserQR /></PrivateRoute>} />
+          <Route path="/mt/profile" element={<PrivateRoute allowedRole="mt"><UserProfile /></PrivateRoute>} />
 
         </Route>
 

@@ -407,7 +407,7 @@ export default function ManageUsers() {
                   options={[
                     { value: 'user', label: 'User' },
                     { value: 'admin', label: 'Admin' },
-                    { value: 'mt', label: 'MT' }
+                    { value: 'mt', label: 'MT (Pengajar)' }
                   ]}
                 />
               </div>

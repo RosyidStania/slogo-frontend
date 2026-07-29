@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../api/axios';
-import { Layers, Loader2, Download, Search, AlertCircle, MapPin, Filter, ChevronDown } from 'lucide-react';
+import { Layers, Loader2, Download, Search, AlertCircle, Filter, ChevronDown } from 'lucide-react';
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 
@@ -50,19 +50,20 @@ function CustomSelect({ options, value, onChange, placeholder }) {
   );
 }
 
-export default function ReportByType() {
-  const [eventTypes, setEventTypes] = useState([]);
+export default function MtAttendance() {
   const [loading, setLoading] = useState(false);
   
-  // Filters
+  const [eventTypes, setEventTypes] = useState([]);
   const [selectedType, setSelectedType] = useState('');
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
+  
   const [availableYears, setAvailableYears] = useState([new Date().getFullYear()]);
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
   
   const [reportData, setReportData] = useState([]);
   const [eventsList, setEventsList] = useState([]);
+  const [kelompok, setKelompok] = useState('');
+  
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterKelompok, setFilterKelompok] = useState([]);
   const [filterJenjang, setFilterJenjang] = useState([]);
 
   const formatDate = (dateString) => {
@@ -73,74 +74,63 @@ export default function ReportByType() {
   };
 
   useEffect(() => {
-    fetchEventTypes();
-    fetchAvailableYears();
-  }, []);
-
-  const fetchAvailableYears = async () => {
-    try {
-      const res = await api.get('/admin/reports/available-years');
-      if (res.data.success && res.data.years) {
-        setAvailableYears(res.data.years);
-        if (res.data.years.length > 0 && !res.data.years.includes(parseInt(selectedYear))) {
-          setSelectedYear(res.data.years[0].toString());
-        }
-      }
-    } catch (err) {
-      console.error("Gagal mengambil daftar tahun", err);
-    }
-  };
-
-  const fetchEventTypes = async () => {
-    try {
-      const res = await api.get('/admin/event-types');
-      setEventTypes(res.data.data || []);
-      // Auto-select first type if available
-      if (res.data.data?.length > 0) {
-        setSelectedType(res.data.data[0].id.toString());
-      }
-    } catch (err) {
-      console.error("Gagal mengambil kategori acara", err);
-    }
-  };
-
-  useEffect(() => {
     if (selectedType && selectedYear) {
       fetchReport();
+    } else {
+      // First load, let's fetch to get event types and years
+      fetchReportInit();
     }
   }, [selectedType, selectedYear]);
 
-  const fetchReport = async () => {
+  const fetchReportInit = async () => {
     setLoading(true);
     try {
-      const res = await api.get('/admin/reports/attendance-by-type', {
-        params: { event_type_id: selectedType, year: selectedYear }
-      });
-      setReportData(res.data.data || []);
-      setEventsList(res.data.events || []);
+      const res = await api.get('/mt/group-attendance');
+      if (res.data.success) {
+        setEventTypes(res.data.eventTypes || []);
+        if (res.data.eventTypes?.length > 0) setSelectedType(res.data.eventTypes[0].id.toString());
+        
+        setAvailableYears(res.data.availableYears || [new Date().getFullYear()]);
+        if (res.data.year) setSelectedYear(res.data.year.toString());
+        
+        setReportData(res.data.data || []);
+        setEventsList(res.data.events || []);
+        setKelompok(res.data.kelompok || '');
+      }
     } catch (err) {
-      console.error("Gagal mengambil data laporan", err);
+      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  // Extract unique options for filters
-  const uniqueKelompok = [...new Set(reportData.map(d => d.kelompok))].filter(Boolean).sort();
-  // For jenjang we might just want to use the unique values in the order they appear (already sorted by backend)
+  const fetchReport = async () => {
+    setLoading(true);
+    try {
+      const res = await api.get('/mt/group-attendance', {
+        params: { event_type_id: selectedType, year: selectedYear }
+      });
+      if (res.data.success) {
+        setEventTypes(res.data.eventTypes || []);
+        setAvailableYears(res.data.availableYears || [new Date().getFullYear()]);
+        setReportData(res.data.data || []);
+        setEventsList(res.data.events || []);
+        setKelompok(res.data.kelompok || '');
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const uniqueJenjang = [...new Set(reportData.map(d => d.jenjang))].filter(Boolean);
 
   const filteredData = reportData.filter(g => {
     const matchName = g.nama_lengkap.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchKelompok = filterKelompok.length === 0 ? true : filterKelompok.includes(g.kelompok);
     const matchJenjang = filterJenjang.length === 0 ? true : filterJenjang.includes(g.jenjang);
-    return matchName && matchKelompok && matchJenjang;
+    return matchName && matchJenjang;
   });
-
-  const toggleKelompok = (k) => {
-    if (k === '') setFilterKelompok([]);
-    else setFilterKelompok(prev => prev.includes(k) ? prev.filter(x => x !== k) : [...prev, k]);
-  };
 
   const toggleJenjang = (j) => {
     if (j === '') setFilterJenjang([]);
@@ -156,53 +146,35 @@ export default function ReportByType() {
     });
 
     const typeName = eventTypes.find(t => t.id.toString() === selectedType)?.name || 'Kategori';
-    const titleText = `Rekapan_${typeName.replace(/\s+/g, '_')}_Tahun_${selectedYear}.xlsx`;
+    const titleText = `Rekapan_${kelompok}_${typeName.replace(/\s+/g, '_')}_Tahun_${selectedYear}.xlsx`;
 
-    // Define Columns
     const columns = [
       { header: 'NO', key: 'no', width: 5 },
       { header: 'NAMA LENGKAP', key: 'nama', width: 30 },
       { header: 'JENJANG', key: 'jenjang', width: 15 },
-      { header: 'KELOMPOK', key: 'kelompok', width: 15 },
       { header: 'STATUS', key: 'status', width: 12 },
     ];
 
     eventsList.forEach(e => {
-      columns.push({
-        header: formatDate(e.event_date).toUpperCase(),
-        key: `event_${e.id}`,
-        width: 12
-      });
+      columns.push({ header: formatDate(e.event_date).toUpperCase(), key: `event_${e.id}`, width: 12 });
     });
 
     worksheet.columns = columns;
 
-    // Style Header Row
     const headerRow = worksheet.getRow(1);
     headerRow.eachCell((cell) => {
-      cell.font = { name: 'Poppins', bold: true, color: { argb: 'FF334155' } }; // Slate-700
-      cell.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: { argb: 'FFF1F5F9' } // Slate-100 (putih keabuan)
-      };
+      cell.font = { name: 'Poppins', bold: true, color: { argb: 'FF334155' } };
+      cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF1F5F9' } };
       cell.alignment = { vertical: 'middle', horizontal: 'center' };
-      cell.border = {
-        top: { style: 'thin', color: { argb: 'FFCBD5E1' } },
-        left: { style: 'thin', color: { argb: 'FFCBD5E1' } },
-        bottom: { style: 'thin', color: { argb: 'FFCBD5E1' } },
-        right: { style: 'thin', color: { argb: 'FFCBD5E1' } }
-      };
+      cell.border = { top: { style: 'thin', color: { argb: 'FFCBD5E1' } }, left: { style: 'thin', color: { argb: 'FFCBD5E1' } }, bottom: { style: 'thin', color: { argb: 'FFCBD5E1' } }, right: { style: 'thin', color: { argb: 'FFCBD5E1' } } };
     });
     headerRow.height = 30;
 
-    // Add Data
     filteredData.forEach((g, index) => {
       const rowData = {
         no: index + 1,
         nama: g.nama_lengkap,
         jenjang: g.jenjang,
-        kelompok: g.kelompok,
         status: g.status ? g.status.toUpperCase() : '',
       };
 
@@ -212,58 +184,32 @@ export default function ReportByType() {
 
       const row = worksheet.addRow(rowData);
       
-      // Styling Data Row
       row.eachCell((cell, colNumber) => {
         cell.font = { name: 'Poppins' };
-
-        // Default borders
-        cell.border = {
-          top: { style: 'thin', color: { argb: 'FFE2E8F0' } },
-          left: { style: 'thin', color: { argb: 'FFE2E8F0' } },
-          bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } },
-          right: { style: 'thin', color: { argb: 'FFE2E8F0' } }
-        };
+        cell.border = { top: { style: 'thin', color: { argb: 'FFE2E8F0' } }, left: { style: 'thin', color: { argb: 'FFE2E8F0' } }, bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } }, right: { style: 'thin', color: { argb: 'FFE2E8F0' } } };
         cell.alignment = { vertical: 'middle' };
 
-        if (colNumber === 1 || colNumber === 3 || colNumber === 4 || colNumber === 5) {
-          cell.alignment = { vertical: 'middle', horizontal: 'center' };
-        }
+        if (colNumber === 1 || colNumber === 3 || colNumber === 4) cell.alignment = { vertical: 'middle', horizontal: 'center' };
 
-        // Color Status
-        if (colNumber === 5 && cell.value) {
+        if (colNumber === 4 && cell.value) {
           const val = cell.value.toString().replace(/\s+/g, '');
           if (val === 'AKTIF') cell.font = { name: 'Poppins', color: { argb: 'FF10B981' }, bold: true };
           else if (val === 'NONAKTIF' || val === 'TIDAKAKTIF') cell.font = { name: 'Poppins', color: { argb: 'FFEF4444' }, bold: true };
         }
 
-        // Color Attendance
-        if (colNumber > 5 && cell.value) {
+        if (colNumber > 4 && cell.value) {
           cell.alignment = { vertical: 'middle', horizontal: 'center' };
           cell.font = { name: 'Poppins', bold: true };
-          if (cell.value === 'H') {
-            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF10B981' } }; // Emerald-500
-            cell.font.color = { argb: 'FFFFFFFF' };
-          } else if (cell.value === 'A') {
-            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEF4444' } }; // Red-500
-            cell.font.color = { argb: 'FFFFFFFF' };
-          } else if (cell.value === 'I') {
-            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF59E0B' } }; // Amber-500
-            cell.font.color = { argb: 'FFFFFFFF' };
-          } else if (cell.value === 'S') {
-            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF3B82F6' } }; // Blue-500
-            cell.font.color = { argb: 'FFFFFFFF' };
-          }
+          if (cell.value === 'H') { cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF10B981' } }; cell.font.color = { argb: 'FFFFFFFF' }; }
+          else if (cell.value === 'A') { cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEF4444' } }; cell.font.color = { argb: 'FFFFFFFF' }; }
+          else if (cell.value === 'I') { cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF59E0B' } }; cell.font.color = { argb: 'FFFFFFFF' }; }
+          else if (cell.value === 'S') { cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF3B82F6' } }; cell.font.color = { argb: 'FFFFFFFF' }; }
         }
       });
     });
 
-    // Auto-filter
-    worksheet.autoFilter = {
-      from: { row: 1, column: 1 },
-      to: { row: 1, column: columns.length }
-    };
+    worksheet.autoFilter = { from: { row: 1, column: 1 }, to: { row: 1, column: columns.length } };
 
-    // Save
     const buffer = await workbook.xlsx.writeBuffer();
     const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     saveAs(blob, titleText);
@@ -283,15 +229,13 @@ export default function ReportByType() {
     <div className="min-h-screen bg-transparent">
       <div className="max-w-7xl mx-auto space-y-6">
         
-        {/* Header & Controls */}
         <div className="relative z-20 bg-white/70 backdrop-blur-xl border border-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[20px] p-6 flex flex-col md:flex-row gap-4 items-center justify-between">
           <div className="flex-1 w-full">
-            <h1 className="text-xl font-bold text-slate-800 tracking-tight">Rekapan Kehadiran per Kategori</h1>
+            <h1 className="text-xl font-bold text-slate-800 tracking-tight">Rekapan Absensi Kelompok {kelompok}</h1>
             <p className="text-sm text-slate-500 mt-1">Pantau absensi bulanan berdasarkan jenis kegiatan.</p>
           </div>
           
           <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-            {/* Filter Year */}
             <CustomSelect 
               options={availableYears.map(y => ({ value: y.toString(), label: y.toString() }))}
               value={selectedYear}
@@ -299,7 +243,6 @@ export default function ReportByType() {
               placeholder="Tahun"
             />
 
-            {/* Filter Kategori */}
             <CustomSelect 
               options={eventTypes.map(t => ({ value: t.id.toString(), label: t.name }))}
               value={selectedType ? selectedType.toString() : ''}
@@ -307,7 +250,6 @@ export default function ReportByType() {
               placeholder="Pilih Kategori Acara"
             />
 
-            {/* Export Button */}
             <button 
               onClick={exportToExcel}
               disabled={!filteredData.length}
@@ -318,10 +260,8 @@ export default function ReportByType() {
           </div>
         </div>
 
-        {/* Tabel Data */}
         <div className="bg-white/80 backdrop-blur-xl border border-white shadow-[0_8px_30px_rgb(0,0,0,0.06)] rounded-[20px] overflow-hidden flex flex-col h-[calc(100vh-180px)]">
           
-          {/* Toolbar Table */}
           <div className="bg-slate-50/50 p-4 border-b border-slate-100 shrink-0 flex flex-col gap-4">
             <div className="flex items-center justify-between gap-4">
               <div className="relative w-full sm:max-w-md">
@@ -340,34 +280,6 @@ export default function ReportByType() {
             </div>
             
             <div className="flex flex-col xl:flex-row gap-4">
-              {/* Pill filter: Kelompok */}
-              <div className="bg-white border border-slate-200 rounded-xl px-4 py-3 shadow-sm flex-1">
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2.5 px-1 flex items-center gap-1.5">
-                  <MapPin size={11} className="text-teal-500" /> Kelompok
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {['', ...uniqueKelompok].map(k => {
-                    const label = k === '' ? 'Semua' : k;
-                    const cnt = k === '' 
-                      ? reportData.length 
-                      : reportData.filter(g => g.kelompok === k).length;
-                    const active = k === '' ? filterKelompok.length === 0 : filterKelompok.includes(k);
-                    return (
-                      <button key={label} onClick={() => toggleKelompok(k)}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-                          active ? 'bg-teal-600 text-white shadow-sm' : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200'
-                        }`}>
-                        {label}
-                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${active ? 'bg-teal-500/50 text-white' : 'bg-slate-200 text-slate-500'}`}>
-                          {cnt}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Pill filter: Jenjang */}
               <div className="bg-white border border-slate-200 rounded-xl px-4 py-3 shadow-sm flex-1">
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2.5 px-1 flex items-center gap-1.5">
                   <Filter size={11} className="text-emerald-500" /> Jenjang
@@ -390,7 +302,6 @@ export default function ReportByType() {
             </div>
           </div>
 
-          {/* Table Container */}
           <div className="flex-1 overflow-auto thin-scrollbar">
             {loading ? (
               <div className="h-full flex flex-col items-center justify-center space-y-3">
@@ -415,10 +326,8 @@ export default function ReportByType() {
                     <th className="px-2 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 text-center bg-slate-100 md:sticky md:left-0 z-30 w-[50px] min-w-[50px] md:shadow-[1px_0_0_#e2e8f0]">#</th>
                     <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 bg-slate-100 md:sticky md:left-[50px] z-30 w-[220px] min-w-[220px] md:shadow-[1px_0_0_#e2e8f0]">Nama</th>
                     <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 text-center bg-slate-100 md:sticky md:left-[270px] z-30 w-[100px] min-w-[100px] md:shadow-[1px_0_0_#e2e8f0]">Jenjang</th>
-                    <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 text-center bg-slate-100 md:sticky md:left-[370px] z-30 w-[120px] min-w-[120px] md:shadow-[1px_0_0_#e2e8f0]">Kelompok</th>
-                    <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 text-center bg-slate-100 md:sticky md:left-[490px] z-30 w-[100px] min-w-[100px] md:shadow-[2px_0_5px_-2px_rgba(0,0,0,0.2)]">Status</th>
+                    <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 text-center bg-slate-100 md:sticky md:left-[370px] z-30 w-[100px] min-w-[100px] md:shadow-[2px_0_5px_-2px_rgba(0,0,0,0.2)]">Status</th>
                     
-                    {/* Kolom Acara Dinamis */}
                     {eventsList.map(e => (
                       <th key={e.id} className="px-2 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 text-center bg-slate-50 min-w-[70px] w-[70px]">
                         <div className="flex flex-col items-center gap-1">
@@ -446,8 +355,7 @@ export default function ReportByType() {
                       <td className="px-2 py-2 text-center border border-slate-200 bg-white md:sticky md:left-[270px] z-20 md:shadow-[1px_0_0_#e2e8f0]">
                         <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded-md uppercase">{g.jenjang}</span>
                       </td>
-                      <td className="px-2 py-2 text-center text-xs text-slate-500 font-medium border border-slate-200 bg-white md:sticky md:left-[370px] z-20 md:shadow-[1px_0_0_#e2e8f0]">{g.kelompok}</td>
-                      <td className="px-2 py-2 text-center border border-slate-200 bg-white md:sticky md:left-[490px] z-20 md:shadow-[2px_0_5px_-2px_rgba(0,0,0,0.2)]">
+                      <td className="px-2 py-2 text-center border border-slate-200 bg-white md:sticky md:left-[370px] z-20 md:shadow-[2px_0_5px_-2px_rgba(0,0,0,0.2)]">
                         <span className={`text-[10px] font-bold px-2 py-1 rounded-md uppercase ${
                           g.status?.toLowerCase() === 'aktif' ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'
                         }`}>
@@ -455,7 +363,6 @@ export default function ReportByType() {
                         </span>
                       </td>
                       
-                      {/* Sel Acara Dinamis */}
                       {eventsList.map(e => {
                         const mStatus = g.events_attendance[e.id];
                         const cellClass = mStatus && mStatus !== '-' ? getStatusCellClass(mStatus) : 'bg-white text-slate-200';

@@ -25,9 +25,11 @@ export default function Login() {
         
         const role = response.data.role;
             if (role === 'admin') {
-            navigate('/admin');
+              navigate('/admin');
+            } else if (role === 'mt') {
+              navigate('/mt');
             } else {
-            navigate('/users'); // Ubah dari '/user' menjadi '/users'
+              navigate('/users');
             }
       }
     } catch (err) {
