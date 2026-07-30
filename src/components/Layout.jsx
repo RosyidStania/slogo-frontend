@@ -96,10 +96,9 @@ export default function Layout() {
       >
         {/* Logo */}
         <div className={`h-20 flex items-center shrink-0 overflow-hidden transition-all duration-300 ${isSidebarOpen ? 'px-6 justify-between' : 'justify-center px-0'}`}>
-          <div className="flex items-center gap-2.5 overflow-hidden">
-            <img src={logoImg} alt="DesaSlogo Logo" className="w-14 h-14 object-contain shrink-0 drop-shadow-lg" />
+          <div className="flex items-center overflow-hidden">
             {isSidebarOpen && (
-              <span className="font-extrabold text-white tracking-tight text-lg whitespace-nowrap animate-in fade-in duration-200">
+              <span className="font-extrabold text-white tracking-tight text-xl whitespace-nowrap animate-in fade-in duration-200">
                 DesaSlogo
               </span>
             )}
@@ -221,9 +220,7 @@ export default function Layout() {
               <div className="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></div>
               <span className="text-xs font-bold text-slate-500 capitalize">{role}</span>
             </div>
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-teal-500/20">
-              {role?.charAt(0).toUpperCase()}
-            </div>
+            <img src={logoImg} alt="DesaSlogo Logo" className="h-10 w-auto object-contain drop-shadow-sm" />
           </div>
         </header>
 
