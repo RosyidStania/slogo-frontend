@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
+import logoImg from '../assets/logo.png';
 import { 
   Users, 
   Database, 
@@ -96,9 +97,7 @@ export default function Layout() {
         {/* Logo */}
         <div className={`h-20 flex items-center shrink-0 overflow-hidden transition-all duration-300 ${isSidebarOpen ? 'px-6 justify-between' : 'justify-center px-0'}`}>
           <div className="flex items-center gap-2.5 overflow-hidden">
-            <div className="w-8 h-8 bg-gradient-to-br from-teal-400 to-teal-500 rounded-xl flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(45,212,191,0.5)]">
-              <span className="text-white font-black text-sm tracking-tight">DS</span>
-            </div>
+            <img src={logoImg} alt="DesaSlogo Logo" className="w-10 h-10 object-contain shrink-0" />
             {isSidebarOpen && (
               <span className="font-extrabold text-white tracking-tight text-base whitespace-nowrap animate-in fade-in duration-200">
                 DesaSlogo
