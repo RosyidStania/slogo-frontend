@@ -95,18 +95,18 @@ export default function Layout() {
         `}
       >
         {/* Logo */}
-        <div className={`h-20 flex items-center shrink-0 overflow-hidden transition-all duration-300 bg-white shadow-md border-b border-teal-800/20 ${isSidebarOpen ? 'px-6 justify-between' : 'justify-center px-0'}`}>
+        <div className={`h-20 flex items-center shrink-0 overflow-hidden transition-all duration-300 ${isSidebarOpen ? 'px-6 justify-between' : 'justify-center px-0'}`}>
           <div className="flex items-center gap-2.5 overflow-hidden">
-            <img src={logoImg} alt="DesaSlogo Logo" className="w-10 h-10 object-contain shrink-0" />
+            <img src={logoImg} alt="DesaSlogo Logo" className="w-14 h-14 object-contain shrink-0 drop-shadow-lg" />
             {isSidebarOpen && (
-              <span className="font-extrabold text-teal-700 tracking-tight text-base whitespace-nowrap animate-in fade-in duration-200">
+              <span className="font-extrabold text-white tracking-tight text-lg whitespace-nowrap animate-in fade-in duration-200">
                 DesaSlogo
               </span>
             )}
           </div>
           <button 
             onClick={() => setIsSidebarOpen(false)} 
-            className={`text-slate-400 hover:text-teal-700 transition-colors shrink-0 ${!isSidebarOpen && 'hidden'}`}
+            className={`text-teal-200/50 hover:text-teal-100 transition-colors shrink-0 ${!isSidebarOpen && 'hidden'}`}
           >
             <X size={18} strokeWidth={2.5}/>
           </button>
