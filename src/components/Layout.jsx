@@ -216,10 +216,6 @@ export default function Layout() {
           </div>
           
           <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-2 bg-white rounded-xl px-4 py-2.5 border border-slate-200/80 shadow-sm">
-              <div className="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></div>
-              <span className="text-xs font-bold text-slate-500 capitalize">{role}</span>
-            </div>
             <img src={logoImg} alt="DesaSlogo Logo" className="h-10 w-auto object-contain drop-shadow-sm" />
           </div>
         </header>
