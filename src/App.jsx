@@ -56,7 +56,7 @@ function App() {
           <Route path="/admin/attendance/:eventId" element={<PrivateRoute allowedRole="admin"><ManageAttendance /></PrivateRoute>} />
           <Route path="/admin/events/:eventId/summary" element={<PrivateRoute allowedRole="admin"><EventSummary /></PrivateRoute>} />
           {/* TAMBAHKAN BARIS INI: */}
-          <Route path="admin/event-types" element={<PrivateRoute allowedRole="admin"><ManageEventTypes /></PrivateRoute>} />
+          <Route path="/admin/event-types" element={<PrivateRoute allowedRole="admin"><ManageEventTypes /></PrivateRoute>} />
           <Route path="/admin/reports" element={<PrivateRoute allowedRole="admin"><ReportByType /></PrivateRoute>} />
           {/* Rute Khusus User Biasa */}
           <Route path="/users" element={<PrivateRoute allowedRole="user"><UserDashboard /></PrivateRoute>} />
