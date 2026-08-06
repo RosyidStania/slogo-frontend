@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../api/axios';
-import { Layers, Loader2, Download, Search, AlertCircle, MapPin, Filter, ChevronDown } from 'lucide-react';
+import { Layers, Loader2, Download, Search, AlertCircle, MapPin, Filter, ChevronDown, Upload } from 'lucide-react';
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
+import { read, utils } from 'xlsx';
 
 function CustomSelect({ options, value, onChange, placeholder }) {
   const [open, setOpen] = useState(false);
@@ -64,6 +65,8 @@ export default function ReportByType() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterKelompok, setFilterKelompok] = useState([]);
   const [filterJenjang, setFilterJenjang] = useState([]);
+  
+  const fileInputRef = useRef(null);
 
   const formatDate = (dateString) => {
     const d = new Date(dateString);
@@ -162,6 +165,7 @@ export default function ReportByType() {
     const columns = [
       { header: 'NO', key: 'no', width: 5 },
       { header: 'NAMA LENGKAP', key: 'nama', width: 30 },
+      { header: 'KODE UNIK', key: 'kode_unik', width: 20 },
       { header: 'JENJANG', key: 'jenjang', width: 15 },
       { header: 'KELOMPOK', key: 'kelompok', width: 15 },
       { header: 'STATUS', key: 'status', width: 12 },
@@ -169,9 +173,9 @@ export default function ReportByType() {
 
     eventsList.forEach(e => {
       columns.push({
-        header: formatDate(e.event_date).toUpperCase(),
+        header: `${formatDate(e.event_date).toUpperCase()} [ID: ${e.id}]`,
         key: `event_${e.id}`,
-        width: 12
+        width: 15
       });
     });
 
@@ -201,6 +205,7 @@ export default function ReportByType() {
       const rowData = {
         no: index + 1,
         nama: g.nama_lengkap,
+        kode_unik: g.kode_unik || '',
         jenjang: g.jenjang,
         kelompok: g.kelompok,
         status: g.status ? g.status.toUpperCase() : '',
@@ -225,19 +230,19 @@ export default function ReportByType() {
         };
         cell.alignment = { vertical: 'middle' };
 
-        if (colNumber === 1 || colNumber === 3 || colNumber === 4 || colNumber === 5) {
+        if (colNumber === 1 || colNumber === 4 || colNumber === 5 || colNumber === 6) {
           cell.alignment = { vertical: 'middle', horizontal: 'center' };
         }
 
         // Color Status
-        if (colNumber === 5 && cell.value) {
+        if (colNumber === 6 && cell.value) {
           const val = cell.value.toString().replace(/\s+/g, '');
           if (val === 'AKTIF') cell.font = { name: 'Poppins', color: { argb: 'FF10B981' }, bold: true };
           else if (val === 'NONAKTIF' || val === 'TIDAKAKTIF') cell.font = { name: 'Poppins', color: { argb: 'FFEF4444' }, bold: true };
         }
 
         // Color Attendance
-        if (colNumber > 5 && cell.value) {
+        if (colNumber > 6 && cell.value) {
           cell.alignment = { vertical: 'middle', horizontal: 'center' };
           cell.font = { name: 'Poppins', bold: true };
           if (cell.value === 'H') {
@@ -279,6 +284,108 @@ export default function ReportByType() {
     }
   };
 
+  const handleImport = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      setLoading(true);
+      const reader = new FileReader();
+      reader.onload = async (evt) => {
+        const bstr = evt.target.result;
+        const wb = read(bstr, { type: 'binary' });
+        const wsname = wb.SheetNames[0];
+        const ws = wb.Sheets[wsname];
+        
+        // Read as array of arrays so we can easily find headers
+        const data = utils.sheet_to_json(ws, { header: 1 });
+        if (data.length < 2) {
+            alert('File kosong atau format salah.');
+            setLoading(false);
+            return;
+        }
+
+        const headers = data[0];
+        const kodeUnikIdx = headers.findIndex(h => h && h.toString().toUpperCase() === 'KODE UNIK');
+        
+        if (kodeUnikIdx === -1) {
+            alert('Tidak ditemukan kolom "KODE UNIK". Pastikan file ini adalah hasil export dari sistem terbaru.');
+            setLoading(false);
+            return;
+        }
+
+        // Find all event columns that match "[ID: xxx]"
+        const eventCols = [];
+        headers.forEach((h, idx) => {
+            if (h && typeof h === 'string') {
+                const match = h.match(/\[ID:\s*(\d+)\]/i);
+                if (match) {
+                    eventCols.push({ index: idx, eventId: parseInt(match[1]) });
+                }
+            }
+        });
+
+        if (eventCols.length === 0) {
+            alert('Tidak ditemukan kolom acara dengan format "[ID: xxx]". Pastikan menggunakan format export terbaru.');
+            setLoading(false);
+            return;
+        }
+
+        const bulkData = [];
+        
+        // Process rows starting from index 1
+        for (let i = 1; i < data.length; i++) {
+            const row = data[i];
+            const kodeUnik = row[kodeUnikIdx];
+            if (!kodeUnik) continue; // Skip if no kode unik
+
+            eventCols.forEach(col => {
+                const rawStatus = row[col.index];
+                if (rawStatus && typeof rawStatus === 'string' && rawStatus.trim() !== '' && rawStatus.trim() !== '-') {
+                    const s = rawStatus.trim().toUpperCase();
+                    let mappedStatus = 'hadir';
+                    if (s === 'H') mappedStatus = 'hadir';
+                    else if (s === 'I') mappedStatus = 'izin';
+                    else if (s === 'S') mappedStatus = 'sakit';
+                    else if (s === 'A') mappedStatus = 'alpa';
+                    else mappedStatus = s.toLowerCase(); // fallback
+
+                    bulkData.push({
+                        event_id: col.eventId,
+                        kode_unik: kodeUnik,
+                        status: mappedStatus,
+                        time_arrived: null,
+                        is_late: 0
+                    });
+                }
+            });
+        }
+
+        if (bulkData.length === 0) {
+            alert('Tidak ada data absensi valid untuk diimpor.');
+            setLoading(false);
+            return;
+        }
+
+        try {
+            await api.post('/admin/attendance/bulk', { attendances: bulkData });
+            alert(`Berhasil mengimpor ${bulkData.length} rekapan absensi.`);
+            if (fileInputRef.current) fileInputRef.current.value = '';
+            fetchReport(); // reload data
+        } catch (err) {
+            alert('Gagal menyimpan data absensi ke server');
+            console.error(err);
+            setLoading(false);
+        }
+      };
+      reader.readAsBinaryString(file);
+    } catch (error) {
+      console.error('Gagal import:', error);
+      alert('Gagal membaca file excel/csv');
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-transparent">
       <div className="max-w-7xl mx-auto space-y-6">
@@ -315,6 +422,13 @@ export default function ReportByType() {
             >
               <Download size={16} /> Export XLSX
             </button>
+            <button 
+              onClick={() => fileInputRef.current?.click()}
+              className="flex items-center gap-2 px-4 py-2.5 bg-slate-800 hover:bg-slate-900 text-white rounded-xl font-bold text-sm transition-all shadow-sm active:scale-95"
+            >
+              <Upload size={16} /> Import
+            </button>
+            <input type="file" ref={fileInputRef} accept=".xlsx, .xls, .csv" className="hidden" onChange={handleImport} />
           </div>
         </div>
 
