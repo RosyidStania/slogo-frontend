@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
-import { ArrowLeft, Users, CheckCircle, XCircle, AlertCircle, Clock, Filter, ChevronDown, Download, MapPin } from 'lucide-react';
+import { ArrowLeft, Users, CheckCircle, XCircle, AlertCircle, Clock, Filter, ChevronDown, Download, MapPin, Upload } from 'lucide-react';
+import { read, utils } from 'xlsx';
 
 export default function EventSummary() {
   const { eventId } = useParams();
@@ -34,6 +35,80 @@ export default function EventSummary() {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const fileInputRef = useRef(null);
+
+  const handleExport = async () => {
+    try {
+      const response = await api.get(`/admin/attendance/export/${eventId}`, { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `rekapan_absensi_event_${eventId}.csv`);
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.error('Gagal export:', error);
+      alert('Gagal mengekspor data');
+    }
+  };
+
+  const handleImport = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      setLoading(true);
+      const reader = new FileReader();
+      reader.onload = async (evt) => {
+        const bstr = evt.target.result;
+        const wb = read(bstr, { type: 'binary' });
+        const wsname = wb.SheetNames[0];
+        const ws = wb.Sheets[wsname];
+        
+        const data = utils.sheet_to_json(ws);
+        
+        const mappedAttendances = data.map(row => {
+            const eventIdRow = row['ID Acara'] || row.event_id || eventId;
+            const kodeUnik = row['Kode Unik Peserta'] || row.kode_unik;
+            const generusId = row['ID Peserta'] || row.generus_id || row['ID Peserta (Abaikan saat import)'];
+            const status = row['Status Kehadiran'] || row.status || 'hadir';
+            const timeArrived = row['Waktu Datang'] || row.time_arrived || null;
+            const isLate = row['Terlambat'] === 'Ya' || row.is_late === 1 || row.is_late === 'true' ? 1 : 0;
+            
+            return {
+                event_id: eventIdRow,
+                kode_unik: kodeUnik,
+                generus_id: generusId,
+                status: status.toLowerCase(),
+                time_arrived: timeArrived,
+                is_late: isLate
+            };
+        }).filter(a => a.kode_unik || a.generus_id);
+
+        if (mappedAttendances.length === 0) {
+            alert('Data kosong atau format tidak sesuai. Pastikan kolom Kode Unik Peserta tersedia.');
+            setLoading(false);
+            return;
+        }
+
+        try {
+            await api.post('/admin/attendance/bulk', { attendances: mappedAttendances });
+            alert('Berhasil mengimpor data absensi');
+            fetchSummaryData(); // refresh data
+        } catch (err) {
+            alert('Gagal menyimpan data absensi ke server');
+            console.error(err);
+            setLoading(false);
+        }
+      };
+      reader.readAsBinaryString(file);
+    } catch (error) {
+      console.error('Gagal import:', error);
+      alert('Gagal membaca file excel/csv');
+      setLoading(false);
+    }
+  };
 
   useEffect(() => { fetchSummaryData(); }, [eventId]);
 
@@ -102,6 +177,15 @@ export default function EventSummary() {
             <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Rekapan Absensi</h1>
             <p className="text-slate-400 text-sm mt-0.5">{event.name} • {new Date(event.event_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
           </div>
+        </div>
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <button onClick={handleExport} className="flex-1 md:flex-none flex items-center justify-center gap-2 px-5 py-3 bg-white border border-slate-200 text-slate-700 font-bold text-sm rounded-xl hover:bg-slate-50 transition-all shadow-sm">
+            <Download size={18} /> Export
+          </button>
+          <button onClick={() => fileInputRef.current?.click()} className="flex-1 md:flex-none flex items-center justify-center gap-2 px-5 py-3 bg-teal-600 border border-teal-500 text-white font-bold text-sm rounded-xl hover:bg-teal-700 transition-all shadow-sm">
+            <Upload size={18} /> Import
+          </button>
+          <input type="file" ref={fileInputRef} accept=".xlsx, .xls, .csv" className="hidden" onChange={handleImport} />
         </div>
       </div>
 

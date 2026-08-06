@@ -209,26 +209,47 @@ export default function ManageAttendance() {
   const handleScan = useCallback((result) => {
     if (!result?.[0]) return;
     const raw = result[0].rawValue;
-    if (!raw.startsWith('SLOGO-GEN-')) return;
-    const id = parseInt(raw.replace('SLOGO-GEN-', ''));
-    if (isNaN(id)) return;
+    if (!raw.startsWith('SLOGO-')) return;
+    
+    const payload = raw.replace('SLOGO-', ''); // e.g. GEN-123 (legacy) or GEN-XXXXXXXX (new)
 
-    if (attendedRef.current.some(a => a.id === id)) {
+    let target = null;
+    
+    // Support legacy QR codes (which are SLOGO-GEN-123)
+    if (payload.startsWith('GEN-') && !isNaN(payload.replace('GEN-', ''))) {
+       const id = parseInt(payload.replace('GEN-', ''));
+       target = generusRef.current.find(g => g.id === id) || allGenerusRef.current.find(g => g.id === id);
+    } 
+    
+    // Support new UUID QR codes
+    if (!target) {
+       target = generusRef.current.find(g => g.kode_unik === payload) || allGenerusRef.current.find(g => g.kode_unik === payload);
+    }
+
+    if (!target) {
+      setScanStatus('error');
+      setScanMessage('QR tidak dikenali');
+      setTimeout(() => setScanStatus(null), 1500);
+      return;
+    }
+
+    if (attendedRef.current.some(a => a.id === target.id)) {
       setScanStatus('already'); setScanMessage('Sudah diabsen!');
       setTimeout(() => setScanStatus(null), 1200);
       return;
     }
-    const target = generusRef.current.find(g => g.id === id);
-    if (target) {
-      handleAbsen(target, 'hadir');
-      setScanStatus('success'); setScanMessage(target.nama_lengkap);
-      setTimeout(() => setScanStatus(null), 1200);
-    } else {
-      const known = allGenerusRef.current.find(g => g.id === id);
+
+    // Periksa apakah dia target acara ini
+    if (!generusRef.current.some(g => g.id === target.id)) {
       setScanStatus('error');
-      setScanMessage(known ? `${known.nama_lengkap} bukan target acara ini` : 'QR tidak dikenali');
+      setScanMessage(`${target.nama_lengkap} bukan target acara`);
       setTimeout(() => setScanStatus(null), 1500);
+      return;
     }
+
+    handleAbsen(target, 'hadir');
+    setScanStatus('success'); setScanMessage(target.nama_lengkap);
+    setTimeout(() => setScanStatus(null), 1200);
   }, [event]);
 
   // ─── Derived data ─────────────────────────────────────────────────────────

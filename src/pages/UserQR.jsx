@@ -48,8 +48,8 @@ export default function UserQR() {
   }
 
   const { generus } = report;
-  // Harus sama persis dengan yang ada di ManageGenerus agar bisa di-scan oleh Admin
-  const qrValue = `SLOGO-GEN-${generus.id}`;
+  // QR Code sekarang menggunakan kode_unik yang permanen
+  const qrValue = `SLOGO-${generus.kode_unik}`;
 
   const handleDownloadQR = () => {
     const svg = document.getElementById("qr-code-svg");
@@ -117,7 +117,7 @@ export default function UserQR() {
               <div className="flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-400 mb-6">
                 <span>{generus.kelompok}</span>
                 <span className="w-1 h-1 bg-slate-300 rounded-full"></span>
-                <span className="text-teal-600">ID: {generus.id}</span>
+                <span className="text-teal-600">ID: {generus.kode_unik}</span>
               </div>
 
               <button 
