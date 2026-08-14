@@ -1008,5 +1008,3 @@ export default function ManageGenerus() {
     </div>
   );
 }
-
-export default ManageGenerus;
