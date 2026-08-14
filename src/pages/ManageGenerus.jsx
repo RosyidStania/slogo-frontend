@@ -11,6 +11,8 @@ import {
 import * as XLSX from 'xlsx';
 import { QRCodeCanvas } from 'qrcode.react';
 import { toPng } from 'html-to-image';
+import logoImg from '../assets/logo.png';
+
 
 // ─── Tiny helpers ────────────────────────────────────────────────────────────
 const KELOMPOK_LIST = ['Semua', 'Slogo', 'Gabugan', 'Jekani', 'Gawan', 'Pengkruk', 'Sidomulyo', 'Karangasem'];
@@ -835,7 +837,7 @@ export default function ManageGenerus() {
                 className="bg-white rounded-xl overflow-hidden border border-slate-200 shadow-lg flex flex-col"
                 style={{ width: '52mm', height: '86mm', fontFamily: 'system-ui, sans-serif' }}>
                 <div className="bg-teal-600 px-3 py-2 flex items-center justify-center gap-1.5 text-white shrink-0">
-                  <Target size={12} strokeWidth={2.5} />
+                  <img src={logoImg} alt="Logo" className="w-3.5 h-3.5 object-contain brightness-0 invert" />
                   <span className="font-black text-[10px] tracking-widest">DESA SLOGO</span>
                 </div>
                 <div className="px-3 py-3 text-center flex-1 flex flex-col items-center justify-center">
