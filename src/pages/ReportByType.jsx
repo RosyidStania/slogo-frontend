@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../api/axios';
-import { Layers, Loader2, Download, Search, AlertCircle, MapPin, Filter, ChevronDown, Upload } from 'lucide-react';
+import { Layers, Loader2, Download, Search, AlertCircle, MapPin, Filter, ChevronDown, Upload, FileUp, FileDown } from 'lucide-react';
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 import { read, utils } from 'xlsx';
@@ -418,15 +418,15 @@ export default function ReportByType() {
             <button 
               onClick={exportToExcel}
               disabled={!filteredData.length}
-              className="flex items-center gap-2 px-4 py-2.5 bg-teal-500 hover:bg-teal-600 disabled:bg-slate-300 text-white rounded-xl font-bold text-sm transition-all shadow-sm shadow-teal-500/20 active:scale-95"
+              className="flex items-center gap-2 px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50"
             >
-              <Download size={16} /> Export XLSX
+              <FileUp size={16} className="text-teal-500" /> Export
             </button>
             <button 
               onClick={() => fileInputRef.current?.click()}
-              className="flex items-center gap-2 px-4 py-2.5 bg-slate-800 hover:bg-slate-900 text-white rounded-xl font-bold text-sm transition-all shadow-sm active:scale-95"
+              className="flex items-center gap-2 px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
             >
-              <Upload size={16} /> Import
+              <FileDown size={16} className="text-emerald-500" /> Import
             </button>
             <input type="file" ref={fileInputRef} accept=".xlsx, .xls, .csv" className="hidden" onChange={handleImport} />
           </div>
