@@ -135,6 +135,7 @@ export default function ManageGenerus() {
   const [importing, setImporting]         = useState(false);
   const [exporting, setExporting]         = useState(false);
   const [processing, setProcessing]       = useState(false);
+  const [downloadingQrZip, setDownloadingQrZip] = useState(false);
 
   // Filters
   const [search, setSearch]               = useState('');
@@ -351,6 +352,29 @@ export default function ManageGenerus() {
     } catch (e) { console.error(e); }
   };
 
+  const handleDownloadQrZip = async () => {
+    setDownloadingQrZip(true);
+    try {
+      const response = await api.get('/admin/generus/download-qr', {
+        responseType: 'blob',
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `QR_Generus_Aktif_${new Date().getTime()}.zip`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+    } catch (err) {
+      alert('Gagal mengunduh QR Code. Pastikan ada peserta yang aktif.');
+    } finally {
+      setDownloadingQrZip(false);
+      setShowSettings(false);
+    }
+  };
+
+
+
   // ─── Filtered / sorted data ────────────────────────────────────────────────
   const filtered = generusList.filter(g => {
     const q = search.toLowerCase();
@@ -431,6 +455,12 @@ export default function ManageGenerus() {
                   <button onClick={() => { setShowSettings(false); setShowDemote(true); }}
                     className="w-full text-left px-4 py-2.5 text-sm font-semibold text-amber-700 hover:bg-amber-50 transition-colors flex items-center gap-3">
                     <TrendingDown size={15} /> Turun Kelas Massal
+                  </button>
+                  <div className="my-1 border-t border-slate-100" />
+                  <button onClick={handleDownloadQrZip} disabled={downloadingQrZip}
+                    className="w-full text-left px-4 py-2.5 text-sm font-semibold text-blue-600 hover:bg-blue-50 transition-colors flex items-center gap-3">
+                    {downloadingQrZip ? <Loader2 size={15} className="animate-spin" /> : <Download size={15} />}
+                    {downloadingQrZip ? 'Menyiapkan ZIP...' : 'Download QR (ZIP)'}
                   </button>
                   <div className="my-1 border-t border-slate-100" />
                   <button onClick={() => { setShowSettings(false); setShowDeleteAll(true); }}
