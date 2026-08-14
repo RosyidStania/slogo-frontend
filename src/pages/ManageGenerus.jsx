@@ -11,6 +11,8 @@ import {
 import * as XLSX from 'xlsx';
 import { QRCodeCanvas } from 'qrcode.react';
 import { toPng } from 'html-to-image';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 import logoImg from '../assets/logo.png';
 
 
@@ -49,9 +51,6 @@ function Modal({ open, onClose, children, maxWidth = 'max-w-lg' }) {
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-      <div className={`relative bg-white rounded-2xl shadow-2xl w-full ${maxWidth} animate-in fade-in zoom-in-95 duration-150 max-h-[92vh] overflow-y-auto`}>
-        {children}
-      </div>
     </div>
   );
 }
@@ -353,23 +352,40 @@ export default function ManageGenerus() {
   };
 
   const handleDownloadQrZip = async () => {
+    const activeGenerus = generusList.filter(g => g.status === 'aktif');
+    if (activeGenerus.length === 0) {
+      alert('Tidak ada peserta yang aktif.');
+      return;
+    }
+    
     setDownloadingQrZip(true);
+    setShowSettings(false);
+    
     try {
-      const response = await api.get('/admin/generus/download-qr', {
-        responseType: 'blob',
-      });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `QR_Generus_Aktif_${new Date().getTime()}.zip`);
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode.removeChild(link);
+      const zip = new JSZip();
+      
+      for (let i = 0; i < activeGenerus.length; i++) {
+        const g = activeGenerus[i];
+        const node = document.getElementById(`bulk-idcard-${g.id}`);
+        if (node) {
+          // Generate high quality PNG
+          const dataUrl = await toPng(node, { cacheBust: true, pixelRatio: 4 });
+          const base64Data = dataUrl.split(',')[1];
+          
+          const kelompokName = (g.kelompok || 'Umum').replace(/[^A-Za-z0-9\- ]/g, '_').trim();
+          const fileName = `${g.nama_lengkap.replace(/[^A-Za-z0-9\- ]/g, '_').trim()}_${kelompokName}.png`;
+          
+          zip.folder(kelompokName).file(fileName, base64Data, { base64: true });
+        }
+      }
+      
+      const content = await zip.generateAsync({ type: 'blob' });
+      saveAs(content, `IDCard_Generus_Aktif_${new Date().getTime()}.zip`);
     } catch (err) {
-      alert('Gagal mengunduh QR Code. Pastikan ada peserta yang aktif.');
+      console.error(err);
+      alert('Gagal membuat file ZIP ID Card.');
     } finally {
       setDownloadingQrZip(false);
-      setShowSettings(false);
     }
   };
 
@@ -968,6 +984,29 @@ export default function ManageGenerus() {
           </div>
         </div>
       </Modal>
+      {/* ══ HIDDEN CONTAINER FOR BULK ID CARD GENERATION ══════════════════════ */}
+      <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
+        {generusList.filter(g => g.status === 'aktif').map(g => (
+          <div key={g.id} id={`bulk-idcard-${g.id}`}
+            className="bg-white rounded-xl overflow-hidden border border-slate-200 shadow-lg flex flex-col"
+            style={{ width: '52mm', height: '86mm', fontFamily: 'system-ui, sans-serif' }}>
+            <div className="bg-teal-600 px-3 py-2 flex items-center justify-center gap-1.5 text-white shrink-0">
+              <img src={logoImg} alt="Logo" className="w-3.5 h-3.5 object-contain brightness-0 invert" />
+              <span className="font-black text-[10px] tracking-widest">DESA SLOGO</span>
+            </div>
+            <div className="px-3 py-3 text-center flex-1 flex flex-col items-center justify-center">
+              <p className="text-[7px] font-bold text-slate-400 uppercase tracking-widest mb-1">Kartu Absensi Generus</p>
+              <p className="font-black text-slate-800 text-sm uppercase leading-tight mb-0.5 max-w-full truncate px-1">{g.nama_lengkap}</p>
+              <p className="text-[9px] font-semibold text-teal-600 mb-3">{g.kelompok}</p>
+              <div className="flex justify-center p-1.5 bg-slate-50 rounded-lg border border-slate-100">
+                <QRCodeCanvas value={`SLOGO-GEN-${g.id}`} size={110} level="H" includeMargin={false} />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
+
+export default ManageGenerus;
