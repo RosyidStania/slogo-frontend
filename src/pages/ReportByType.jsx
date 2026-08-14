@@ -163,6 +163,7 @@ export default function ReportByType() {
 
     // Define Columns
     const columns = [
+      { header: 'ID GENERUS', key: 'id', width: 10, hidden: true },
       { header: 'NO', key: 'no', width: 5 },
       { header: 'NAMA LENGKAP', key: 'nama', width: 30 },
       { header: 'KODE UNIK', key: 'kode_unik', width: 20 },
@@ -203,6 +204,7 @@ export default function ReportByType() {
     // Add Data
     filteredData.forEach((g, index) => {
       const rowData = {
+        id: g.id,
         no: index + 1,
         nama: g.nama_lengkap,
         kode_unik: g.kode_unik || '',
@@ -230,19 +232,19 @@ export default function ReportByType() {
         };
         cell.alignment = { vertical: 'middle' };
 
-        if (colNumber === 1 || colNumber === 4 || colNumber === 5 || colNumber === 6) {
+        if (colNumber === 1 || colNumber === 2 || colNumber === 5 || colNumber === 6 || colNumber === 7) {
           cell.alignment = { vertical: 'middle', horizontal: 'center' };
         }
 
         // Color Status
-        if (colNumber === 6 && cell.value) {
+        if (colNumber === 7 && cell.value) {
           const val = cell.value.toString().replace(/\s+/g, '');
           if (val === 'AKTIF') cell.font = { name: 'Poppins', color: { argb: 'FF10B981' }, bold: true };
           else if (val === 'NONAKTIF' || val === 'TIDAKAKTIF') cell.font = { name: 'Poppins', color: { argb: 'FFEF4444' }, bold: true };
         }
 
         // Color Attendance
-        if (colNumber > 6 && cell.value) {
+        if (colNumber > 7 && cell.value) {
           cell.alignment = { vertical: 'middle', horizontal: 'center' };
           cell.font = { name: 'Poppins', bold: true };
           if (cell.value === 'H') {
@@ -307,9 +309,10 @@ export default function ReportByType() {
 
         const headers = data[0];
         const kodeUnikIdx = headers.findIndex(h => h && h.toString().toUpperCase() === 'KODE UNIK');
+        const idGenerusIdx = headers.findIndex(h => h && h.toString().toUpperCase() === 'ID GENERUS');
         
-        if (kodeUnikIdx === -1) {
-            alert('Tidak ditemukan kolom "KODE UNIK". Pastikan file ini adalah hasil export dari sistem terbaru.');
+        if (kodeUnikIdx === -1 && idGenerusIdx === -1) {
+            alert('Tidak ditemukan kolom "KODE UNIK" atau "ID GENERUS". Pastikan file ini adalah hasil export dari sistem terbaru.');
             setLoading(false);
             return;
         }
@@ -336,13 +339,14 @@ export default function ReportByType() {
         // Process rows starting from index 1
         for (let i = 1; i < data.length; i++) {
             const row = data[i];
-            const kodeUnik = row[kodeUnikIdx];
-            if (!kodeUnik) continue; // Skip if no kode unik
+            const kodeUnik = kodeUnikIdx !== -1 ? row[kodeUnikIdx] : null;
+            const generusId = idGenerusIdx !== -1 ? row[idGenerusIdx] : null;
+            if (!kodeUnik && !generusId) continue; // Skip if no identifiers
 
             eventCols.forEach(col => {
                 const rawStatus = row[col.index];
-                if (rawStatus && typeof rawStatus === 'string' && rawStatus.trim() !== '' && rawStatus.trim() !== '-') {
-                    const s = rawStatus.trim().toUpperCase();
+                if (rawStatus != null && String(rawStatus).trim() !== '' && String(rawStatus).trim() !== '-') {
+                    const s = String(rawStatus).trim().toUpperCase();
                     let mappedStatus = 'hadir';
                     if (s === 'H') mappedStatus = 'hadir';
                     else if (s === 'I') mappedStatus = 'izin';
@@ -352,7 +356,8 @@ export default function ReportByType() {
 
                     bulkData.push({
                         event_id: col.eventId,
-                        kode_unik: kodeUnik,
+                        kode_unik: kodeUnik || null,
+                        generus_id: generusId || null,
                         status: mappedStatus,
                         time_arrived: null,
                         is_late: 0
