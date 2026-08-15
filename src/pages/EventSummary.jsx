@@ -190,28 +190,28 @@ export default function EventSummary() {
       </div>
 
       {/* STAT CARDS */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col items-center text-center">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 mb-8">
+        <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col items-center text-center">
           <div className="w-10 h-10 bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center mb-2"><Users size={20} /></div>
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total</p>
           <h3 className="text-2xl font-black text-slate-800">{globalStats.total}</h3>
         </div>
-        <div className="bg-white p-5 rounded-2xl border border-emerald-100 shadow-sm flex flex-col items-center text-center">
+        <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-emerald-100 shadow-sm flex flex-col items-center text-center">
           <div className="w-10 h-10 bg-emerald-50 text-emerald-500 rounded-xl flex items-center justify-center mb-2"><CheckCircle size={20} /></div>
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Hadir</p>
           <h3 className="text-2xl font-black text-emerald-600">{globalStats.hadir}</h3>
         </div>
-        <div className="bg-white p-5 rounded-2xl border border-red-100 shadow-sm flex flex-col items-center text-center">
+        <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-red-100 shadow-sm flex flex-col items-center text-center">
           <div className="w-10 h-10 bg-red-50 text-red-500 rounded-xl flex items-center justify-center mb-2"><Clock size={20} /></div>
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Terlambat</p>
           <h3 className="text-2xl font-black text-red-600">{globalStats.terlambat}</h3>
         </div>
-        <div className="bg-white p-5 rounded-2xl border border-amber-100 shadow-sm flex flex-col items-center text-center">
+        <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-amber-100 shadow-sm flex flex-col items-center text-center">
           <div className="w-10 h-10 bg-amber-50 text-amber-500 rounded-xl flex items-center justify-center mb-2"><AlertCircle size={20} /></div>
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Izin/Sakit</p>
           <h3 className="text-2xl font-black text-amber-600">{globalStats.izin}</h3>
         </div>
-        <div className="bg-white p-5 rounded-2xl border border-rose-100 shadow-sm flex flex-col items-center text-center">
+        <div className="col-span-2 sm:col-span-1 bg-white p-3.5 sm:p-5 rounded-2xl border border-rose-100 shadow-sm flex flex-col items-center text-center">
           <div className="w-10 h-10 bg-rose-50 text-rose-500 rounded-xl flex items-center justify-center mb-2"><XCircle size={20} /></div>
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Alpa</p>
           <h3 className="text-2xl font-black text-rose-600">{globalStats.alpa}</h3>
@@ -293,10 +293,10 @@ export default function EventSummary() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50 text-slate-500 border-b border-slate-100">
-                <th className="px-6 py-3.5 text-xs font-bold uppercase tracking-wider text-center w-12">No</th>
-                <th className="px-6 py-3.5 text-xs font-bold uppercase tracking-wider">Biodata Peserta</th>
-                <th className="px-6 py-3.5 text-xs font-bold uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3.5 text-xs font-bold uppercase tracking-wider">Waktu</th>
+                <th className="px-3 py-2.5 sm:px-6 sm:py-3.5 text-xs font-bold uppercase tracking-wider text-center w-12">No</th>
+                <th className="px-3 py-2.5 sm:px-6 sm:py-3.5 text-xs font-bold uppercase tracking-wider">Biodata Peserta</th>
+                <th className="px-3 py-2.5 sm:px-6 sm:py-3.5 text-xs font-bold uppercase tracking-wider">Status</th>
+                <th className="px-3 py-2.5 sm:px-6 sm:py-3.5 text-xs font-bold uppercase tracking-wider">Waktu</th>
               </tr>
             </thead>
             <tbody>
@@ -305,12 +305,12 @@ export default function EventSummary() {
               ) : (
                 filteredData.map((item, index) => (
                   <tr key={item.id} className="hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-0">
-                    <td className="px-6 py-3 text-center font-medium text-slate-500 text-sm">{index + 1}</td>
-                    <td className="px-6 py-3">
+                    <td className="px-3 py-2.5 sm:px-6 sm:py-3.5 text-center font-medium text-slate-500 text-sm">{index + 1}</td>
+                    <td className="px-3 py-2.5 sm:px-6 sm:py-3.5">
                       <p className="font-bold text-slate-800 text-sm">{item.generus.nama_lengkap}</p>
                       <p className="text-[10px] font-bold text-slate-400 uppercase mt-0.5">{item.generus.kelompok} • {item.generus.kategori}</p>
                     </td>
-                    <td className="px-6 py-3">
+                    <td className="px-3 py-2.5 sm:px-6 sm:py-3.5">
                       <span className={`text-[11px] font-bold uppercase px-3 py-1.5 rounded-lg border flex w-fit items-center gap-1.5 ${
                         item.status === 'hadir' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
                         item.status === 'izin' || item.status === 'sakit' ? 'bg-amber-50 text-amber-600 border-amber-100' :
@@ -322,7 +322,7 @@ export default function EventSummary() {
                         {item.status}
                       </span>
                     </td>
-                    <td className="px-6 py-3">
+                    <td className="px-3 py-2.5 sm:px-6 sm:py-3.5">
                       {item.status === 'hadir' ? (
                         <div className="flex flex-col">
                           <span className="text-sm font-bold text-slate-700">{item.time_arrived?.substring(0,5)} WIB</span>

@@ -220,16 +220,16 @@ export default function ManageEventTypes() {
                           </div>
                         </td>
                         <td className="px-5 py-3">
-                          <div className="flex justify-end gap-1.5 opacity-40 group-hover:opacity-100 transition-opacity">
+                          <div className="flex justify-end gap-1.5 opacity-100 lg:opacity-40 lg:group-hover:opacity-100 transition-opacity">
                             <button
                               onClick={() => openEditModal(item)}
-                              className="p-1.5 text-slate-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
+                              className="p-2 sm:p-1.5 text-slate-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
                             >
                               <Edit size={15} />
                             </button>
                             <button
                               onClick={() => setConfirmDialog({ isOpen: true, id: item.id, name: item.name })}
-                              className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                              className="p-2 sm:p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                             >
                               <Trash2 size={15} />
                             </button>
@@ -261,7 +261,7 @@ export default function ManageEventTypes() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
                   Kode Singkat

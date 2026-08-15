@@ -73,7 +73,7 @@ export default function UserQR() {
   };
 
   return (
-    <div className="max-w-md mx-auto px-4 py-12 flex justify-center animate-in fade-in slide-in-from-bottom-8 duration-500">
+    <div className="max-w-md mx-auto px-4 py-6 sm:py-12 flex justify-center animate-in fade-in slide-in-from-bottom-8 duration-500">
       <div className="w-full relative group">
         {/* Glow behind the card */}
         <div className="absolute inset-0 bg-gradient-to-r from-teal-400 to-emerald-500 rounded-3xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-500"></div>
@@ -94,12 +94,12 @@ export default function UserQR() {
           </div>
 
           {/* QR Code Area */}
-          <div className="w-full bg-slate-50 relative pt-10 pb-8 px-8 flex flex-col items-center">
+          <div className="w-full bg-slate-50 relative pt-10 pb-8 px-4 sm:px-8 flex flex-col items-center">
             {/* Cutout circles for ticket effect */}
             <div className="absolute -top-3 -left-3 w-6 h-6 bg-slate-50 rounded-full shadow-inner"></div>
             <div className="absolute -top-3 -right-3 w-6 h-6 bg-slate-50 rounded-full shadow-inner"></div>
             
-            <div className="bg-white p-5 rounded-2xl shadow-lg border border-slate-200/60 mb-6 group-hover:scale-105 transition-transform duration-500 relative">
+            <div className="bg-white p-3 sm:p-5 rounded-2xl shadow-lg border border-slate-200/60 mb-6 group-hover:scale-105 transition-transform duration-500 relative">
               {/* Scan animation line */}
               <div className="absolute top-0 left-0 right-0 h-0.5 bg-teal-400 opacity-0 group-hover:opacity-100 group-hover:animate-[scan_2s_ease-in-out_infinite] shadow-[0_0_8px_rgba(45,212,191,0.8)] z-10"></div>
               <QRCodeSVG 

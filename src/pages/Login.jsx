@@ -96,11 +96,11 @@ export default function Login() {
             <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg shadow-teal-500/10 border border-slate-100 p-1.5">
               <img src={logoImg} alt="Logo Desa Slogo" className="w-full h-full object-contain" />
             </div>
-            <span className="text-3xl font-bold tracking-tight">Desa Slogo</span>
+            <span className="text-2xl sm:text-3xl font-bold tracking-tight">Desa Slogo</span>
           </div>
 
           <div className="mb-10 lg:text-left text-center">
-            <h2 className="text-3xl font-bold text-slate-800 tracking-tight mb-3">
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-800 tracking-tight mb-3">
               Selamat Datang
             </h2>
             <p className="text-slate-500 font-medium">

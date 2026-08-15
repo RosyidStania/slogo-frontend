@@ -110,7 +110,7 @@ export default function MtStatistics() {
                       tick={{ fontSize: 10, fill: '#94a3b8', fontWeight: 600 }} dy={6} angle={-45} textAnchor="end" height={40} />
                     <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94a3b8' }} />
                     <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(20,184,166,0.06)', radius: 6 }} />
-                    <Bar dataKey="total_hadir" name="Hadir" fill="#14b8a6" radius={[6, 6, 0, 0]} barSize={28} />
+                    <Bar dataKey="total_hadir" name="Hadir" fill="#14b8a6" radius={[6, 6, 0, 0]} maxBarSize={28} />
                   </BarChart>
                 </ResponsiveContainer>
               )}
@@ -154,7 +154,7 @@ export default function MtStatistics() {
               <SectionTitle accent="bg-amber-400">Kehadiran per Kategori Acara</SectionTitle>
             </div>
             <div className="overflow-x-auto">
-              <table className="w-full text-sm border-collapse">
+              <table className="w-full min-w-[500px] text-sm border-collapse">
                 <thead>
                   <tr className="bg-slate-50 text-slate-500 text-xs font-semibold uppercase tracking-wide border-b border-slate-100">
                     <th className="px-4 py-2 text-left">Kategori</th>
@@ -186,7 +186,7 @@ export default function MtStatistics() {
               <SectionTitle accent="bg-emerald-400">Statistik Kehadiran Anggota Lengkap</SectionTitle>
             </div>
             <div className="overflow-auto flex-1 thin-scrollbar">
-              <table className="w-full text-sm border-collapse">
+              <table className="w-full min-w-[500px] text-sm border-collapse">
                 <thead className="sticky top-0 bg-slate-50 shadow-sm z-10">
                   <tr className="text-slate-500 text-xs font-semibold uppercase tracking-wide border-b border-slate-100">
                     <th className="px-4 py-2 text-left">Nama</th>

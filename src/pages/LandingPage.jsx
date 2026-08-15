@@ -171,7 +171,7 @@ export default function LandingPage() {
       </nav>
 
       {/* HERO SECTION */}
-      <section className="relative h-screen flex items-center justify-center">
+      <section className="relative min-h-[100dvh] flex items-center justify-center">
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: `url(${bgImage})` }}
@@ -182,7 +182,7 @@ export default function LandingPage() {
           <span className="inline-block py-1 px-3 rounded-full bg-teal-500/20 border border-teal-400/30 text-teal-300 text-sm font-bold tracking-widest uppercase mb-6 backdrop-blur-sm">
             Platform Manajemen Generus
           </span>
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white tracking-tight leading-tight mb-6">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-extrabold text-white tracking-tight leading-tight mb-6">
             Membangun Generasi <br className="hidden md:block"/> Berkarakter Luhur
           </h1>
           <p className="text-lg md:text-xl text-slate-300 font-medium max-w-2xl mx-auto mb-10 leading-relaxed">
@@ -196,13 +196,13 @@ export default function LandingPage() {
           </Link>
         </div>
 
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce">
+        <div className="absolute bottom-6 sm:bottom-10 left-1/2 -translate-x-1/2 animate-bounce">
             <ChevronDownIcon className="text-white/50 w-8 h-8" />
         </div>
       </section>
 
       {/* ABOUT / 29 KARAKTER LUHUR SECTION */}
-      <section className="py-24 px-6 md:px-12 bg-slate-50">
+      <section className="py-12 sm:py-16 md:py-24 px-6 md:px-12 bg-slate-50">
         <div className="max-w-7xl mx-auto">
 
           <div className="text-center mb-4 max-w-3xl mx-auto">
@@ -338,7 +338,7 @@ export default function LandingPage() {
           </div>
 
           {/* SECTION PENERAPAN */}
-          <div className="bg-teal-600 rounded-[3rem] p-10 md:p-16 text-white relative overflow-hidden shadow-2xl shadow-teal-600/20">
+          <div className="bg-teal-600 rounded-2xl sm:rounded-3xl md:rounded-[3rem] p-6 sm:p-10 md:p-16 text-white relative overflow-hidden shadow-2xl shadow-teal-600/20">
             <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-teal-400/20 rounded-full blur-2xl translate-y-1/3 -translate-x-1/4 pointer-events-none"></div>
 

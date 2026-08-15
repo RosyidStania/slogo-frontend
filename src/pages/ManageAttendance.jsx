@@ -322,14 +322,14 @@ export default function ManageAttendance() {
 
           <div className="bg-white border border-slate-200 rounded-2xl px-4 py-3">
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Jam Sekarang</p>
-            <p className="text-xl font-black font-mono text-slate-800 tabular-nums leading-none">
+            <p className="text-lg sm:text-xl font-black font-mono text-slate-800 tabular-nums leading-none">
               {currentTime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
             </p>
           </div>
 
           <div className={`rounded-2xl px-4 py-3 border ${currentlyLate ? 'bg-red-50 border-red-200' : 'bg-emerald-50 border-emerald-200'}`}>
             <p className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${currentlyLate ? 'text-red-400' : 'text-emerald-500'}`}>Batas Hadir</p>
-            <p className={`text-xl font-black font-mono leading-none flex items-center gap-1.5 ${currentlyLate ? 'text-red-600' : 'text-emerald-700'}`}>
+            <p className={`text-lg sm:text-xl font-black font-mono leading-none flex items-center gap-1.5 ${currentlyLate ? 'text-red-600' : 'text-emerald-700'}`}>
               <Clock size={16} strokeWidth={2.5} />
               {event.start_time?.substring(0, 5)}
               {currentlyLate && <span className="text-[10px] font-bold normal-case ml-1">(Sudah lewat)</span>}
@@ -482,7 +482,7 @@ export default function ManageAttendance() {
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1.5 ml-3 shrink-0 opacity-40 group-hover:opacity-100 transition-opacity">
+                    <div className="flex items-center gap-1.5 ml-3 shrink-0 opacity-100 lg:opacity-40 lg:group-hover:opacity-100 transition-opacity">
                       <button onClick={() => handleAbsen(g, 'hadir')}
                         className="px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-500 text-emerald-700 hover:text-white border border-emerald-200 hover:border-emerald-500 text-xs font-bold transition-all">
                         Hadir
@@ -504,7 +504,7 @@ export default function ManageAttendance() {
 
           {/* ── RIGHT: Riwayat (2/5) ────────────────────────────────────── */}
           <div className="lg:col-span-2">
-            <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm sticky top-4">
+            <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm lg:sticky lg:top-4">
               <div className="px-4 py-3 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
                 <h3 className="font-bold text-slate-800 text-sm">Riwayat Absensi</h3>
                 <span className="text-xs font-bold px-2 py-0.5 rounded-lg bg-slate-200 text-slate-600">
@@ -538,7 +538,7 @@ export default function ManageAttendance() {
                       </div>
                       <button
                         onClick={() => setConfirm({ open: true, title: 'Hapus Absensi?', message: `Hapus absensi ${item.nama_lengkap}? Dia kembali ke daftar panggilan.`, type: 'danger', action: () => execHapus(item) })}
-                        className="p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100">
+                        className="p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors opacity-100 lg:opacity-0 lg:group-hover:opacity-100">
                         <Trash2 size={14} />
                       </button>
                     </div>

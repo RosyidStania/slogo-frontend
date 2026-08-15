@@ -249,11 +249,11 @@ export default function ManageEvents() {
           </div>
           
           {/* Month & Year Filter */}
-          <div className="flex gap-3">
+          <div className="grid grid-cols-2 sm:flex gap-3">
             <CustomSelect
               value={filterMonth}
               onChange={e => setFilterMonth(e.target.value)}
-              className="min-w-[140px]"
+              className="min-w-0 w-full sm:min-w-[140px] sm:w-auto"
               options={[
                 { value: '', label: 'Semua Bulan' },
                 { value: '01', label: 'Januari' },
@@ -273,7 +273,7 @@ export default function ManageEvents() {
             <CustomSelect
               value={filterYear}
               onChange={e => setFilterYear(e.target.value)}
-              className="min-w-[130px]"
+              className="min-w-0 w-full sm:min-w-[130px] sm:w-auto"
               options={[
                 { value: '', label: 'Semua Tahun' },
                 ...Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 2 + i).map(y => ({ value: y, label: y }))
@@ -378,7 +378,7 @@ export default function ManageEvents() {
                     </div>
 
                     {/* Right: actions */}
-                    <div className="flex items-center gap-2 shrink-0 flex-wrap lg:justify-end">
+                    <div className="flex flex-wrap items-center gap-2 shrink-0 lg:justify-end">
                       <button
                         onClick={() => navigate(`/admin/attendance/${event.id}`)}
                         className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-500 text-emerald-700 hover:text-white border border-emerald-200 hover:border-emerald-500 text-sm font-bold transition-all shadow-sm"
@@ -490,7 +490,7 @@ export default function ManageEvents() {
         </div>
 
         {/* Body */}
-        <div className="px-6 py-5 space-y-4 overflow-y-auto max-h-[58vh]">
+        <div className="px-6 py-5 space-y-4">
 
           {/* ─── Step 0: Template ─── */}
           {modalStep === 0 && (

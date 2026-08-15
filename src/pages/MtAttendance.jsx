@@ -229,7 +229,7 @@ export default function MtAttendance() {
     <div className="min-h-screen bg-transparent">
       <div className="max-w-7xl mx-auto space-y-6">
         
-        <div className="relative z-20 bg-white/70 backdrop-blur-xl border border-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[20px] p-6 flex flex-col md:flex-row gap-4 items-center justify-between">
+        <div className="relative z-20 bg-white/70 backdrop-blur-xl border border-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[20px] p-4 sm:p-6 flex flex-col md:flex-row gap-4 items-center justify-between">
           <div className="flex-1 w-full">
             <h1 className="text-xl font-bold text-slate-800 tracking-tight">Rekapan Absensi Kelompok {kelompok}</h1>
             <p className="text-sm text-slate-500 mt-1">Pantau absensi bulanan berdasarkan jenis kegiatan.</p>
@@ -253,17 +253,17 @@ export default function MtAttendance() {
             <button 
               onClick={exportToExcel}
               disabled={!filteredData.length}
-              className="flex items-center gap-2 px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50"
+              className="w-full md:w-auto justify-center flex items-center gap-2 px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50"
             >
               <FileUp size={16} className="text-teal-500" /> Export
             </button>
           </div>
         </div>
 
-        <div className="bg-white/80 backdrop-blur-xl border border-white shadow-[0_8px_30px_rgb(0,0,0,0.06)] rounded-[20px] overflow-hidden flex flex-col h-[calc(100vh-180px)]">
+        <div className="bg-white/80 backdrop-blur-xl border border-white shadow-[0_8px_30px_rgb(0,0,0,0.06)] rounded-[20px] overflow-hidden flex flex-col h-[calc(100dvh-280px)] md:h-[calc(100vh-180px)]">
           
           <div className="bg-slate-50/50 p-4 border-b border-slate-100 shrink-0 flex flex-col gap-4">
-            <div className="flex items-center justify-between gap-4">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-4">
               <div className="relative w-full sm:max-w-md">
                 <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                 <input
@@ -290,7 +290,7 @@ export default function MtAttendance() {
                     const active = j === '' ? filterJenjang.length === 0 : filterJenjang.includes(j);
                     return (
                       <button key={label} onClick={() => toggleJenjang(j)}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                        className={`px-3 py-2 sm:py-1.5 rounded-xl text-xs font-semibold transition-all ${
                           active ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200'
                         }`}>
                         {label}

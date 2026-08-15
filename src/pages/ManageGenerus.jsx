@@ -51,6 +51,9 @@ function Modal({ open, onClose, children, maxWidth = 'max-w-lg' }) {
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+      <div className={`relative bg-white rounded-2xl shadow-xl w-full ${maxWidth} max-h-[90vh] overflow-y-auto`}>
+        {children}
+      </div>
     </div>
   );
 }
@@ -528,7 +531,7 @@ export default function ManageGenerus() {
         </div>
 
         {/* ── Filters ──────────────────────────────────────────────────────── */}
-        <div className="space-y-2 sticky top-0 z-20 bg-slate-50 pt-2 pb-4 -mt-2">
+        <div className="space-y-2 z-20 bg-slate-50 pt-2 pb-4 -mt-2 lg:sticky lg:top-0">
           {/* Search bar */}
           <div className="relative">
             <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
@@ -678,22 +681,22 @@ export default function ManageGenerus() {
                       </td>
                     )}
                     <td className="px-5 py-3.5">
-                      <div className="flex items-center justify-center gap-1">
+                      <div className="flex items-center justify-center gap-1 opacity-100 lg:opacity-40 lg:group-hover:opacity-100 transition-opacity">
                         <button onClick={() => openQr(item)}
-                          className="p-1.5 text-slate-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors" title="QR Code">
-                          <QrCode size={15} />
+                          className="p-2 sm:p-1.5 text-slate-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors" title="QR Code">
+                          <QrCode size={16} />
                         </button>
                         <button onClick={() => openDetail(item)}
-                          className="p-1.5 text-slate-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors" title="Lihat detail">
-                          <Eye size={15} />
+                          className="p-2 sm:p-1.5 text-slate-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors" title="Lihat detail">
+                          <Eye size={16} />
                         </button>
                         <button onClick={() => openEdit(item)}
-                          className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Edit">
-                          <Edit size={15} />
+                          className="p-2 sm:p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Edit">
+                          <Edit size={16} />
                         </button>
                         <button onClick={() => openDel(item)}
-                          className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Hapus">
-                          <Trash2 size={15} />
+                          className="p-2 sm:p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Hapus">
+                          <Trash2 size={16} />
                         </button>
                       </div>
                     </td>
@@ -720,7 +723,7 @@ export default function ManageGenerus() {
           </Field>
 
           {/* Row 1 */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             <Field label="Jenis Kelamin">
               <CustomSelect name="jenis_kelamin" value={formData.jenis_kelamin} onChange={inp}
                 options={[{ value: 'L', label: 'Laki-laki' }, { value: 'P', label: 'Perempuan' }]} />
@@ -824,7 +827,7 @@ export default function ManageGenerus() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {[
                   { label: 'Jenis Kelamin', value: selected.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan' },
                   { label: 'Umur', value: calcAge(selected.tanggal_lahir, selected.umur) ? `${calcAge(selected.tanggal_lahir, selected.umur)} tahun` : '—' },
@@ -845,7 +848,7 @@ export default function ManageGenerus() {
 
               <div className="bg-slate-50 rounded-xl p-3">
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Data Orang Tua</p>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <div>
                     <p className="text-[10px] text-slate-400 mb-0.5">Ayah</p>
                     <p className="text-sm font-semibold text-slate-700">{selected.nama_ayah || '—'}</p>
@@ -880,7 +883,7 @@ export default function ManageGenerus() {
             <div className="p-6 flex flex-col items-center gap-4">
               {/* ID Card */}
               <div ref={idCardRef}
-                className="bg-white rounded-xl overflow-hidden border border-slate-200 shadow-lg flex flex-col"
+                className="bg-white rounded-xl overflow-hidden border border-slate-200 shadow-lg flex flex-col max-w-full"
                 style={{ width: '52mm', height: '86mm', fontFamily: 'system-ui, sans-serif' }}>
                 <div className="bg-teal-600 px-3 py-2 flex items-center justify-center gap-1.5 text-white shrink-0">
                   <img src={logoImg} alt="Logo" className="w-3.5 h-3.5 object-contain brightness-0 invert" />
@@ -988,7 +991,7 @@ export default function ManageGenerus() {
       <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
         {generusList.filter(g => g.status === 'aktif').map(g => (
           <div key={g.id} id={`bulk-idcard-${g.id}`}
-            className="bg-white rounded-xl overflow-hidden border border-slate-200 shadow-lg flex flex-col"
+            className="bg-white rounded-xl overflow-hidden border border-slate-200 shadow-lg flex flex-col max-w-full"
             style={{ width: '52mm', height: '86mm', fontFamily: 'system-ui, sans-serif' }}>
             <div className="bg-teal-600 px-3 py-2 flex items-center justify-center gap-1.5 text-white shrink-0">
               <img src={logoImg} alt="Logo" className="w-3.5 h-3.5 object-contain brightness-0 invert" />

@@ -51,7 +51,7 @@ export default function UserDashboard() {
   return (
     <div className="max-w-5xl mx-auto px-4 py-8 space-y-8">
       {/* Header Profile */}
-      <div className="relative rounded-3xl p-8 shadow-xl shadow-teal-500/10 overflow-hidden flex flex-col md:flex-row items-center md:items-start gap-6 border border-white/50 bg-gradient-to-br from-teal-500 via-teal-600 to-teal-700 text-white group">
+      <div className="relative rounded-2xl sm:rounded-3xl p-5 sm:p-8 shadow-xl shadow-teal-500/10 overflow-hidden flex flex-col md:flex-row items-center md:items-start gap-6 border border-white/50 bg-gradient-to-br from-teal-500 via-teal-600 to-teal-700 text-white group">
         {/* Abstract Background Shapes */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-teal-300/20 rounded-full blur-2xl translate-y-1/3 -translate-x-1/4"></div>
@@ -77,20 +77,20 @@ export default function UserDashboard() {
       {/* Statistik Keseluruhan */}
       <div>
         <h2 className="text-xl font-bold text-slate-800 mb-4 px-1">Rapor Kehadiran Global</h2>
-        <div className="grid grid-cols-3 gap-4">
-          <div className="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center group">
-            <div className="w-12 h-12 bg-teal-50 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300"><CheckCircle size={24} className="text-teal-500" /></div>
-            <p className="text-3xl font-black text-slate-800 mb-1">{summary.hadir}</p>
+        <div className="grid grid-cols-3 gap-2 sm:gap-4">
+          <div className="bg-white border border-slate-100 p-3 sm:p-6 rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center group">
+            <div className="w-8 h-8 sm:w-12 sm:h-12 bg-teal-50 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300"><CheckCircle size={24} className="text-teal-500" /></div>
+            <p className="text-xl sm:text-3xl font-black text-slate-800 mb-1">{summary.hadir}</p>
             <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Hadir</p>
           </div>
-          <div className="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center group">
-            <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300"><XCircle size={24} className="text-red-500" /></div>
-            <p className="text-3xl font-black text-slate-800 mb-1">{summary.alfa}</p>
+          <div className="bg-white border border-slate-100 p-3 sm:p-6 rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center group">
+            <div className="w-8 h-8 sm:w-12 sm:h-12 bg-red-50 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300"><XCircle size={24} className="text-red-500" /></div>
+            <p className="text-xl sm:text-3xl font-black text-slate-800 mb-1">{summary.alfa}</p>
             <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Alfa</p>
           </div>
-          <div className="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center group">
-            <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300"><Clock size={24} className="text-blue-500" /></div>
-            <p className="text-3xl font-black text-slate-800 mb-1">{summary.izin}</p>
+          <div className="bg-white border border-slate-100 p-3 sm:p-6 rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col items-center justify-center text-center group">
+            <div className="w-8 h-8 sm:w-12 sm:h-12 bg-blue-50 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300"><Clock size={24} className="text-blue-500" /></div>
+            <p className="text-xl sm:text-3xl font-black text-slate-800 mb-1">{summary.izin}</p>
             <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Izin</p>
           </div>
         </div>
@@ -150,16 +150,16 @@ export default function UserDashboard() {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-slate-50 text-slate-500 border-b border-slate-100">
-                    <th className="px-5 py-3 text-[10px] font-bold uppercase tracking-wider">Tanggal</th>
-                    <th className="px-5 py-3 text-[10px] font-bold uppercase tracking-wider">Kegiatan</th>
-                    <th className="px-5 py-3 text-[10px] font-bold uppercase tracking-wider text-center">Status</th>
-                    <th className="px-5 py-3 text-[10px] font-bold uppercase tracking-wider">Waktu Kehadiran</th>
+                    <th className="px-3 py-2.5 sm:px-5 sm:py-3 text-[10px] font-bold uppercase tracking-wider">Tanggal</th>
+                    <th className="px-3 py-2.5 sm:px-5 sm:py-3 text-[10px] font-bold uppercase tracking-wider">Kegiatan</th>
+                    <th className="px-3 py-2.5 sm:px-5 sm:py-3 text-[10px] font-bold uppercase tracking-wider text-center">Status</th>
+                    <th className="px-3 py-2.5 sm:px-5 sm:py-3 text-[10px] font-bold uppercase tracking-wider">Waktu Kehadiran</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
                   {history.map(item => (
                     <tr key={item.id} className="hover:bg-slate-50 transition-colors">
-                      <td className="px-5 py-3 text-sm font-medium text-slate-700 whitespace-nowrap">
+                      <td className="px-3 py-2.5 sm:px-5 sm:py-3 text-sm font-medium text-slate-700 whitespace-nowrap">
                         {new Date(item.date).toLocaleDateString('id-ID', {
                           weekday: 'long', 
                           year: 'numeric', 
@@ -167,11 +167,11 @@ export default function UserDashboard() {
                           day: 'numeric'
                         })}
                       </td>
-                      <td className="px-5 py-3">
+                      <td className="px-3 py-2.5 sm:px-5 sm:py-3">
                         <p className="text-sm font-semibold text-slate-800">{item.event_name}</p>
                         <p className="text-xs text-slate-400">{item.event_type}</p>
                       </td>
-                      <td className="px-5 py-3 text-center">
+                      <td className="px-3 py-2.5 sm:px-5 sm:py-3 text-center">
                         <span className={`inline-flex px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider border ${
                           item.status === 'hadir' ? 'bg-teal-50 text-teal-700 border-teal-100' :
                           item.status === 'alpa' ? 'bg-red-50 text-red-700 border-red-100' :
@@ -181,7 +181,7 @@ export default function UserDashboard() {
                           {item.status}
                         </span>
                       </td>
-                      <td className="px-5 py-3 text-sm text-slate-500 italic">
+                      <td className="px-3 py-2.5 sm:px-5 sm:py-3 text-sm text-slate-500 italic">
                         {item.status === 'hadir' && item.time_arrived && item.time_arrived !== '-' ? (
                           <span className={item.is_late ? 'text-amber-600 font-medium' : 'text-slate-500'}>
                             {item.is_late ? `Terlambat (Tiba ${item.time_arrived})` : `Tiba jam ${item.time_arrived}`}

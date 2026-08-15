@@ -288,7 +288,7 @@ export default function ReportByType() {
       <div className="max-w-7xl mx-auto space-y-6">
         
         {/* Header & Controls */}
-        <div className="relative z-20 bg-white/70 backdrop-blur-xl border border-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[20px] p-6 flex flex-col md:flex-row gap-4 items-center justify-between">
+        <div className="relative z-20 bg-white/70 backdrop-blur-xl border border-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[20px] p-4 sm:p-6 flex flex-col md:flex-row gap-4 items-center justify-between">
           <div className="flex-1 w-full">
             <h1 className="text-xl font-bold text-slate-800 tracking-tight">Rekapan Kehadiran per Kategori</h1>
             <p className="text-sm text-slate-500 mt-1">Pantau absensi bulanan berdasarkan jenis kegiatan.</p>
@@ -315,7 +315,7 @@ export default function ReportByType() {
             <button 
               onClick={exportToExcel}
               disabled={!filteredData.length}
-              className="flex items-center gap-2 px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50"
+              className="w-full md:w-auto justify-center flex items-center gap-2 px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50"
             >
               <FileUp size={16} className="text-teal-500" /> Export
             </button>
@@ -323,11 +323,11 @@ export default function ReportByType() {
         </div>
 
         {/* Tabel Data */}
-        <div className="bg-white/80 backdrop-blur-xl border border-white shadow-[0_8px_30px_rgb(0,0,0,0.06)] rounded-[20px] overflow-hidden flex flex-col h-[calc(100vh-180px)]">
+        <div className="bg-white/80 backdrop-blur-xl border border-white shadow-[0_8px_30px_rgb(0,0,0,0.06)] rounded-[20px] overflow-hidden flex flex-col h-[calc(100dvh-280px)] md:h-[calc(100vh-180px)]">
           
           {/* Toolbar Table */}
           <div className="bg-slate-50/50 p-4 border-b border-slate-100 shrink-0 flex flex-col gap-4">
-            <div className="flex items-center justify-between gap-4">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-4">
               <div className="relative w-full sm:max-w-md">
                 <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                 <input
@@ -358,7 +358,7 @@ export default function ReportByType() {
                     const active = k === '' ? filterKelompok.length === 0 : filterKelompok.includes(k);
                     return (
                       <button key={label} onClick={() => toggleKelompok(k)}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                        className={`flex items-center gap-1.5 px-3 py-2 sm:py-1.5 rounded-xl text-xs font-semibold transition-all ${
                           active ? 'bg-teal-600 text-white shadow-sm' : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200'
                         }`}>
                         {label}
@@ -382,7 +382,7 @@ export default function ReportByType() {
                     const active = j === '' ? filterJenjang.length === 0 : filterJenjang.includes(j);
                     return (
                       <button key={label} onClick={() => toggleJenjang(j)}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                        className={`px-3 py-2 sm:py-1.5 rounded-xl text-xs font-semibold transition-all ${
                           active ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200'
                         }`}>
                         {label}
@@ -414,13 +414,13 @@ export default function ReportByType() {
             ) : (
               <div className="w-max min-w-full pb-4">
               <table className="text-left border-collapse">
-                <thead className="md:sticky top-0 z-40 shadow-sm">
+                <thead className="lg:sticky top-0 z-40 shadow-sm">
                   <tr>
-                    <th className="px-2 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 text-center bg-slate-100 md:sticky md:left-0 z-30 w-[50px] min-w-[50px] md:shadow-[1px_0_0_#e2e8f0]">#</th>
-                    <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 bg-slate-100 md:sticky md:left-[50px] z-30 w-[220px] min-w-[220px] md:shadow-[1px_0_0_#e2e8f0]">Nama</th>
-                    <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 text-center bg-slate-100 md:sticky md:left-[270px] z-30 w-[100px] min-w-[100px] md:shadow-[1px_0_0_#e2e8f0]">Jenjang</th>
-                    <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 text-center bg-slate-100 md:sticky md:left-[370px] z-30 w-[120px] min-w-[120px] md:shadow-[1px_0_0_#e2e8f0]">Kelompok</th>
-                    <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 text-center bg-slate-100 md:sticky md:left-[490px] z-30 w-[100px] min-w-[100px] md:shadow-[2px_0_5px_-2px_rgba(0,0,0,0.2)]">Status</th>
+                    <th className="px-2 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 text-center bg-slate-100 lg:sticky lg:left-0 z-30 w-[50px] min-w-[50px] lg:shadow-[1px_0_0_#e2e8f0]">#</th>
+                    <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 bg-slate-100 lg:sticky lg:left-[50px] z-30 w-[220px] min-w-[220px] lg:shadow-[1px_0_0_#e2e8f0]">Nama</th>
+                    <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 text-center bg-slate-100 lg:sticky lg:left-[270px] z-30 w-[100px] min-w-[100px] lg:shadow-[1px_0_0_#e2e8f0]">Jenjang</th>
+                    <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 text-center bg-slate-100 lg:sticky lg:left-[370px] z-30 w-[120px] min-w-[120px] lg:shadow-[1px_0_0_#e2e8f0]">Kelompok</th>
+                    <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 text-center bg-slate-100 lg:sticky lg:left-[490px] z-30 w-[100px] min-w-[100px] lg:shadow-[2px_0_5px_-2px_rgba(0,0,0,0.2)]">Status</th>
                     
                     {/* Kolom Acara Dinamis */}
                     {eventsList.map(e => (
@@ -435,8 +435,8 @@ export default function ReportByType() {
                 <tbody>
                   {filteredData.map((g, idx) => (
                     <tr key={g.id} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="px-2 py-2 text-xs text-slate-400 font-semibold text-center border border-slate-200 bg-white md:sticky md:left-0 z-20 md:shadow-[1px_0_0_#e2e8f0]">{idx + 1}</td>
-                      <td className="px-4 py-2 border border-slate-200 bg-white md:sticky md:left-[50px] z-20 md:shadow-[1px_0_0_#e2e8f0]">
+                      <td className="px-2 py-2 text-xs text-slate-400 font-semibold text-center border border-slate-200 bg-white lg:sticky lg:left-0 z-20 lg:shadow-[1px_0_0_#e2e8f0]">{idx + 1}</td>
+                      <td className="px-4 py-2 border border-slate-200 bg-white lg:sticky lg:left-[50px] z-20 lg:shadow-[1px_0_0_#e2e8f0]">
                         <div className="flex items-center gap-3">
                           <div className={`w-7 h-7 rounded-lg font-bold text-xs flex items-center justify-center shrink-0 ${g.jenis_kelamin === 'L' ? 'bg-blue-100 text-blue-600' : 'bg-pink-100 text-pink-600'}`}>
                             {g.nama_lengkap.charAt(0).toUpperCase()}
@@ -447,11 +447,11 @@ export default function ReportByType() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-2 py-2 text-center border border-slate-200 bg-white md:sticky md:left-[270px] z-20 md:shadow-[1px_0_0_#e2e8f0]">
+                      <td className="px-2 py-2 text-center border border-slate-200 bg-white lg:sticky lg:left-[270px] z-20 lg:shadow-[1px_0_0_#e2e8f0]">
                         <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded-md uppercase">{g.jenjang}</span>
                       </td>
-                      <td className="px-2 py-2 text-center text-xs text-slate-500 font-medium border border-slate-200 bg-white md:sticky md:left-[370px] z-20 md:shadow-[1px_0_0_#e2e8f0]">{g.kelompok}</td>
-                      <td className="px-2 py-2 text-center border border-slate-200 bg-white md:sticky md:left-[490px] z-20 md:shadow-[2px_0_5px_-2px_rgba(0,0,0,0.2)]">
+                      <td className="px-2 py-2 text-center text-xs text-slate-500 font-medium border border-slate-200 bg-white lg:sticky lg:left-[370px] z-20 lg:shadow-[1px_0_0_#e2e8f0]">{g.kelompok}</td>
+                      <td className="px-2 py-2 text-center border border-slate-200 bg-white lg:sticky lg:left-[490px] z-20 lg:shadow-[2px_0_5px_-2px_rgba(0,0,0,0.2)]">
                         <span className={`text-[10px] font-bold px-2 py-1 rounded-md uppercase ${
                           g.status?.toLowerCase() === 'aktif' ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'
                         }`}>

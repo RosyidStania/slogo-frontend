@@ -112,7 +112,7 @@ export default function MtMembers() {
           ].map(s => (
             <div key={s.label} className={`${s.bg} border ${s.border} rounded-2xl px-4 py-4 flex items-center justify-between transition-all duration-300`}>
               <div>
-                <p className="text-xs text-slate-500 font-medium truncate max-w-[110px]">{s.label}</p>
+                <p className="text-xs text-slate-500 font-medium truncate max-w-[110px] sm:max-w-none">{s.label}</p>
                 <p className={`text-2xl font-bold mt-0.5 ${s.color} tabular-nums`}>{s.value}</p>
               </div>
               {s.icon}
@@ -138,7 +138,7 @@ export default function MtMembers() {
             </p>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm border-collapse">
+            <table className="w-full min-w-[600px] text-sm border-collapse">
               <thead>
                 <tr className="bg-slate-50 text-slate-500 text-xs font-semibold uppercase tracking-wide border-b border-slate-100">
                   <th className="px-5 py-3 text-left w-8">#</th>
@@ -182,7 +182,7 @@ export default function MtMembers() {
                     <td className="px-5 py-3.5 text-slate-600 font-mono text-xs">{item.no_hp || '—'}</td>
                     <td className="px-5 py-3.5">
                       <div className="flex items-center justify-center gap-1">
-                        <button onClick={() => openEdit(item)} className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Edit">
+                        <button onClick={() => openEdit(item)} className="p-2 sm:p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Edit">
                           <Edit size={15} />
                         </button>
                       </div>
@@ -199,7 +199,7 @@ export default function MtMembers() {
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowForm(false)} />
           <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl animate-in fade-in zoom-in-95 duration-150 max-h-[92vh] overflow-y-auto">
-            <div className="flex items-start justify-between p-6 border-b border-slate-100">
+            <div className="flex items-start justify-between p-4 sm:p-6 border-b border-slate-100">
               <div>
                 <h3 className="text-lg font-bold text-slate-800">Edit Data Peserta</h3>
                 <p className="text-sm text-slate-500 mt-0.5">Mengedit data {formData.nama_lengkap}</p>
@@ -208,11 +208,11 @@ export default function MtMembers() {
                 <X size={18} />
               </button>
             </div>
-            <form onSubmit={handleSubmit} className="p-6 space-y-5">
+            <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-5">
               <Field label="Nama Lengkap *">
                 <TextInput name="nama_lengkap" value={formData.nama_lengkap} onChange={inp} required placeholder="Masukkan nama lengkap" />
               </Field>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 <Field label="Jenis Kelamin">
                   <CustomSelect name="jenis_kelamin" value={formData.jenis_kelamin} onChange={inp} options={[{ value: 'L', label: 'Laki-laki' }, { value: 'P', label: 'Perempuan' }]} />
                 </Field>

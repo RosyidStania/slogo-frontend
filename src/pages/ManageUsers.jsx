@@ -300,16 +300,16 @@ export default function ManageUsers() {
                         </span>
                       </td>
                       <td className="px-5 py-3">
-                        <div className="flex justify-end gap-1.5 opacity-40 group-hover:opacity-100 transition-opacity">
+                        <div className="flex justify-end gap-1.5 opacity-100 lg:opacity-40 lg:group-hover:opacity-100 transition-opacity">
                           <button
                             onClick={() => openEditModal(user)}
-                            className="p-1.5 text-slate-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
+                            className="p-2 sm:p-1.5 text-slate-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
                           >
                             <Edit size={15} />
                           </button>
                           <button
                             onClick={() => openDeleteModal(user)}
-                            className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                            className="p-2 sm:p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                           >
                             <Trash2 size={15} />
                           </button>

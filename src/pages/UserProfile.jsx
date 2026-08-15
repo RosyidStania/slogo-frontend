@@ -266,10 +266,10 @@ export default function UserProfile() {
         <div className="lg:col-span-8 space-y-6">
           
           {/* Tabs Navigation */}
-          <div className="flex gap-2 p-1.5 bg-slate-100/70 backdrop-blur-md rounded-2xl shadow-inner mb-8">
+          <div className="flex overflow-x-auto gap-2 p-1.5 bg-slate-100/70 backdrop-blur-md rounded-2xl shadow-inner mb-8">
             <button
               onClick={() => setActiveTab('profil')}
-              className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all duration-300 flex items-center justify-center gap-2.5 ${
+              className={`flex-1 whitespace-nowrap py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 flex items-center justify-center gap-1.5 sm:gap-2.5 ${
                 activeTab === 'profil' 
                   ? 'bg-white text-teal-600 shadow-sm border border-slate-200/50' 
                   : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'
@@ -283,7 +283,7 @@ export default function UserProfile() {
                 setActiveTab('keamanan');
                 setIsEditing(false);
               }}
-              className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all duration-300 flex items-center justify-center gap-2.5 ${
+              className={`flex-1 whitespace-nowrap py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 flex items-center justify-center gap-1.5 sm:gap-2.5 ${
                 activeTab === 'keamanan' 
                   ? 'bg-white text-teal-600 shadow-sm border border-slate-200/50' 
                   : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'
@@ -299,7 +299,7 @@ export default function UserProfile() {
             <form id="profile-form" onSubmit={handleSubmit} className="space-y-6">
               
               {/* Card: Data Akun */}
-              <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 transition-all">
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-4 sm:p-6 transition-all">
                 <h3 className="text-lg font-bold text-slate-800 mb-6 border-b pb-4">Data Akun</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {renderField({ label: 'Nama Lengkap', name: 'name', icon: User, required: true })}
@@ -308,7 +308,7 @@ export default function UserProfile() {
               </div>
 
               {/* Card: Organisasi & Pendidikan */}
-              <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 transition-all">
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-4 sm:p-6 transition-all">
                 <h3 className="text-lg font-bold text-slate-800 mb-6 border-b pb-4">Kelompok & Jenjang</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {renderField({ label: 'Kelompok', name: 'kelompok', icon: Users, placeholder: 'Contoh: Slogo' })}
@@ -317,7 +317,7 @@ export default function UserProfile() {
               </div>
 
               {/* Card: Data Pribadi */}
-              <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 transition-all">
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-4 sm:p-6 transition-all">
                 <h3 className="text-lg font-bold text-slate-800 mb-6 border-b pb-4">Data Pribadi</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {renderField({ label: 'Tempat Lahir', name: 'tempat_lahir', icon: MapPin, placeholder: 'Kota Lahir' })}
@@ -333,7 +333,7 @@ export default function UserProfile() {
               </div>
 
               {/* Card: Keluarga */}
-              <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 transition-all">
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-4 sm:p-6 transition-all">
                 <h3 className="text-lg font-bold text-slate-800 mb-6 border-b pb-4">Keluarga</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {renderField({ label: 'Nama Ayah', name: 'nama_ayah', icon: User, placeholder: 'Nama Ayah' })}
@@ -342,7 +342,7 @@ export default function UserProfile() {
               </div>
 
               {/* Card: Kontak & Lainnya */}
-              <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 transition-all">
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-4 sm:p-6 transition-all">
                 <h3 className="text-lg font-bold text-slate-800 mb-6 border-b pb-4">Kontak & Informasi Tambahan</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {renderField({ label: 'No. HP / WA', name: 'no_hp', icon: Phone, placeholder: 'Contoh: 0812345678' })}
@@ -359,7 +359,7 @@ export default function UserProfile() {
 
           {/* TAB 2: KEAMANAN (Password) */}
           {activeTab === 'keamanan' && (
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-8 transition-all animate-in fade-in duration-300">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-4 sm:p-8 transition-all animate-in fade-in duration-300">
               <div className="max-w-xl mx-auto">
                 <div className="text-center mb-8">
                   <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400">

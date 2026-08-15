@@ -12,8 +12,10 @@ export default function CustomSelect({ name, value, onChange, options, required,
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
     };
   }, [wrapperRef]);
 
@@ -57,7 +59,7 @@ export default function CustomSelect({ name, value, onChange, options, required,
                   e.preventDefault();
                   if (!opt.disabled) handleSelect(opt.value);
                 }}
-                className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors ${String(value) === String(opt.value) ? 'bg-teal-50 text-teal-700' : (opt.disabled ? 'text-slate-400 cursor-not-allowed' : 'text-slate-700 hover:bg-slate-50 hover:text-teal-600')}`}
+                className={`w-full text-left px-4 py-3 text-sm font-medium transition-colors ${String(value) === String(opt.value) ? 'bg-teal-50 text-teal-700' : (opt.disabled ? 'text-slate-400 cursor-not-allowed' : 'text-slate-700 hover:bg-slate-50 hover:text-teal-600')}`}
               >
                 {opt.label}
               </button>

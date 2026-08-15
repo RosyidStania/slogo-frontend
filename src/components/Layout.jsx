@@ -84,7 +84,7 @@ export default function Layout() {
   })();
 
   return (
-    <div className="flex h-screen w-full bg-[#f5f5f7] text-slate-800 overflow-hidden">
+    <div className="flex h-[100dvh] w-full bg-[#f5f5f7] text-slate-800 overflow-hidden">
       
       {/* ============================= */}
       {/* SIDEBAR – Tema Hijau Tua      */}
@@ -199,7 +199,7 @@ export default function Layout() {
         {/* TOP NAVBAR */}
         <header className="h-16 px-6 lg:px-8 flex items-center justify-between shrink-0 bg-white/70 backdrop-blur-2xl border-b border-slate-200/60 shadow-sm z-10">
           
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 min-w-0">
             <button 
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
               className="hidden lg:block p-2 rounded-xl bg-white text-slate-500 hover:text-teal-600 hover:bg-teal-50 shadow-sm border border-slate-200/80 transition-all"
@@ -207,15 +207,21 @@ export default function Layout() {
               <Menu size={18} strokeWidth={2.5} />
             </button>
             
-            <div>
-              <h1 className="text-lg font-bold text-slate-800 tracking-tight capitalize">{pageTitle}</h1>
+            <div className="min-w-0">
+              <h1 className="text-lg font-bold text-slate-800 tracking-tight capitalize truncate">{pageTitle}</h1>
               <p className="text-[10px] text-slate-400 font-medium -mt-0.5 hidden sm:block">
                 {new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
               </p>
             </div>
           </div>
           
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 shrink-0">
+            <button 
+              onClick={() => setShowLogoutModal(true)}
+              className="lg:hidden p-2 rounded-xl bg-red-50 text-red-500 hover:bg-red-100 transition-colors mr-1"
+            >
+              <LogOut size={18} strokeWidth={2.5} />
+            </button>
             <img src={logoImg} alt="DesaSlogo Logo" className="h-10 w-auto object-contain drop-shadow-sm" />
           </div>
         </header>
@@ -246,9 +252,9 @@ export default function Layout() {
       {/* ============================= */}
       {/* BOTTOM NAVIGATION (MOBILE)    */}
       {/* ============================= */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-gradient-to-r from-teal-900 to-teal-950 border-t border-teal-800/50 shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.5)] z-40">
-        <div className="flex items-center justify-around h-20 px-2 overflow-x-auto hide-scrollbar">
-          {menuItems.filter(menu => menu.name !== 'Kategori Acara').map((menu) => {
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-gradient-to-r from-teal-900 to-teal-950 border-t border-teal-800/50 shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.5)] z-40 pb-[env(safe-area-inset-bottom)]">
+        <div className="flex items-center justify-evenly h-20 px-2 overflow-x-auto hide-scrollbar">
+          {menuItems.map((menu) => {
             const isActive = location.pathname === menu.path || 
               (menu.path !== '/admin' && menu.path !== '/users' && menu.path !== '/mt' && location.pathname.startsWith(menu.path));
             

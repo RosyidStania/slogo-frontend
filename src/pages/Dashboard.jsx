@@ -164,7 +164,7 @@ export default function Dashboard() {
                       tick={{ fontSize: 10, fill: '#94a3b8', fontWeight: 600 }} dy={6} />
                     <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94a3b8' }} />
                     <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(20,184,166,0.06)', radius: 6 }} />
-                    <Bar dataKey="jumlah" fill="#14b8a6" radius={[6, 6, 0, 0]} barSize={28} />
+                    <Bar dataKey="jumlah" fill="#14b8a6" radius={[6, 6, 0, 0]} maxBarSize={28} />
                   </BarChart>
                 </ResponsiveContainer>
               )}
@@ -245,7 +245,7 @@ export default function Dashboard() {
                     )}
                     <button
                       onClick={() => navigate(`/admin/attendance/${ev.id}`)}
-                      className="w-full bg-slate-50 hover:bg-teal-500 text-teal-600 hover:text-white border border-teal-100 hover:border-teal-500 transition-all py-1.5 rounded-lg text-[10px] font-bold flex items-center justify-center gap-1 group">
+                      className="w-full bg-slate-50 hover:bg-teal-500 text-teal-600 hover:text-white border border-teal-100 hover:border-teal-500 transition-all py-2 sm:py-1.5 rounded-lg text-xs sm:text-[10px] font-bold flex items-center justify-center gap-1 group">
                       Buka Absensi
                       <ChevronRight size={11} className="group-hover:translate-x-0.5 transition-transform" />
                     </button>
