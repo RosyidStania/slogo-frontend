@@ -357,7 +357,7 @@ export default function ManageGenerus() {
   };
 
   const handleDownloadQrZip = async () => {
-    const activeGenerus = generusList.filter(g => g.status === 'aktif');
+    const activeGenerus = generusList.filter(g => g.status?.toLowerCase() === 'aktif');
     if (activeGenerus.length === 0) {
       alert('Tidak ada peserta yang aktif.');
       return;
@@ -991,7 +991,7 @@ export default function ManageGenerus() {
       </Modal>
       {/* ══ HIDDEN CONTAINER FOR BULK ID CARD GENERATION ══════════════════════ */}
       <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
-        {generusList.filter(g => g.status === 'aktif').map(g => (
+        {generusList.filter(g => g.status?.toLowerCase() === 'aktif').map(g => (
           <div key={g.id} id={`bulk-idcard-${g.id}`}
             className="bg-white rounded-xl overflow-hidden border border-slate-200 shadow-lg flex flex-col max-w-full"
             style={{ width: '52mm', height: '86mm', fontFamily: 'system-ui, sans-serif' }}>
