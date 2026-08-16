@@ -180,6 +180,23 @@ export default function ManageGenerus() {
     });
   };
 
+  const handleToggleQrZipJenjang = (j) => {
+    if (j === 'Semua') {
+      setSelectedQrZipJenjang(['Semua']);
+      return;
+    }
+    setSelectedQrZipJenjang(prev => {
+      let newFilters = prev.filter(item => item !== 'Semua');
+      if (newFilters.includes(j)) {
+        newFilters = newFilters.filter(item => item !== j);
+      } else {
+        newFilters.push(j);
+      }
+      if (newFilters.length === 0) return ['Semua'];
+      return newFilters;
+    });
+  };
+
   // Modals
   const [showForm, setShowForm]           = useState(false);
   const [modalMode, setModalMode]         = useState('add');
@@ -194,7 +211,7 @@ export default function ManageGenerus() {
   const [showQr, setShowQr]               = useState(false);
   const [showSettings, setShowSettings]   = useState(false);
   const [showQrZipModal, setShowQrZipModal] = useState(false);
-  const [selectedQrZipJenjang, setSelectedQrZipJenjang] = useState('Semua');
+  const [selectedQrZipJenjang, setSelectedQrZipJenjang] = useState(['Semua']);
 
   const fileInputRef   = useRef(null);
   const idCardRef      = useRef(null);
@@ -360,15 +377,15 @@ export default function ManageGenerus() {
 
   const openQrZipModal = () => {
     setShowSettings(false);
-    setSelectedQrZipJenjang('Semua');
+    setSelectedQrZipJenjang(['Semua']);
     setShowQrZipModal(true);
   };
 
   const executeDownloadQrZip = async () => {
     let activeGenerus = generusList.filter(g => g.status?.toLowerCase() === 'aktif');
     
-    if (selectedQrZipJenjang !== 'Semua') {
-      activeGenerus = activeGenerus.filter(g => g.jenjang === selectedQrZipJenjang);
+    if (!selectedQrZipJenjang.includes('Semua')) {
+      activeGenerus = activeGenerus.filter(g => selectedQrZipJenjang.includes(g.jenjang));
     }
 
     if (activeGenerus.length === 0) {
@@ -398,7 +415,14 @@ export default function ManageGenerus() {
       }
       
       const content = await zip.generateAsync({ type: 'blob' });
-      const fileNameSuffix = selectedQrZipJenjang === 'Semua' ? 'Semua' : selectedQrZipJenjang.replace(/[^A-Za-z0-9]/g, '_');
+      let fileNameSuffix = 'Semua';
+      if (!selectedQrZipJenjang.includes('Semua')) {
+        if (selectedQrZipJenjang.length === 1) {
+          fileNameSuffix = selectedQrZipJenjang[0].replace(/[^A-Za-z0-9]/g, '_');
+        } else {
+          fileNameSuffix = 'Beberapa_Jenjang';
+        }
+      }
       saveAs(content, `IDCard_Generus_${fileNameSuffix}_${new Date().getTime()}.zip`);
     } catch (err) {
       console.error(err);
@@ -985,14 +1009,27 @@ export default function ManageGenerus() {
           </div>
           
           <div className="space-y-4 mb-6">
-            <Field label="Pilih Jenjang">
-              <CustomSelect 
-                name="jenjang_qr" 
-                value={selectedQrZipJenjang} 
-                onChange={(e) => setSelectedQrZipJenjang(e.target.value)}
-                options={JENJANG_LIST.map(j => ({ value: j, label: j === 'Semua' ? 'Semua Jenjang' : j }))} 
-              />
-            </Field>
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 px-1 flex items-center gap-1.5">
+              <Filter size={10} className="text-blue-500" /> Pilih Jenjang
+            </p>
+            <div className="flex flex-wrap gap-1.5 max-h-[35vh] overflow-y-auto pr-1 pb-1">
+              {JENJANG_LIST.map(j => {
+                const active = selectedQrZipJenjang.includes(j);
+                return (
+                  <button
+                    key={j}
+                    onClick={() => handleToggleQrZipJenjang(j)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all duration-150 ${
+                      active
+                        ? 'bg-blue-600 text-white shadow-sm shadow-blue-200'
+                        : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200'
+                    }`}
+                  >
+                    {j === 'Semua' ? 'Semua Jenjang' : j}
+                  </button>
+                );
+              })}
+            </div>
           </div>
           
           <div className="flex gap-3">
