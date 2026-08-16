@@ -886,7 +886,7 @@ export default function ManageGenerus() {
               {/* ID Card */}
               <div ref={idCardRef}
                 className="bg-white rounded-xl overflow-hidden border border-slate-200 shadow-lg flex flex-col max-w-full"
-                style={{ width: '52mm', height: '86mm', fontFamily: 'system-ui, sans-serif' }}>
+                style={{ width: '54mm', height: '86mm', fontFamily: 'system-ui, sans-serif' }}>
                 <div className="bg-teal-600 px-3 py-2 flex items-center justify-center gap-1.5 text-white shrink-0">
                   <img src={logoImg} alt="Logo" className="w-3.5 h-3.5 object-contain brightness-0 invert" />
                   <span className="font-black text-[10px] tracking-widest">DESA SLOGO</span>
@@ -994,7 +994,7 @@ export default function ManageGenerus() {
         {generusList.filter(g => g.status?.toLowerCase() === 'aktif').map(g => (
           <div key={g.id} id={`bulk-idcard-${g.id}`}
             className="bg-white rounded-xl overflow-hidden border border-slate-200 shadow-lg flex flex-col max-w-full"
-            style={{ width: '52mm', height: '86mm', fontFamily: 'system-ui, sans-serif' }}>
+            style={{ width: '54mm', height: '86mm', fontFamily: 'system-ui, sans-serif' }}>
             <div className="bg-teal-600 px-3 py-2 flex items-center justify-center gap-1.5 text-white shrink-0">
               <img src={logoImg} alt="Logo" className="w-3.5 h-3.5 object-contain brightness-0 invert" />
               <span className="font-black text-[10px] tracking-widest">DESA SLOGO</span>
