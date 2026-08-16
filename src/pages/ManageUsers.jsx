@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from 'react';
+import ReactDOM from 'react-dom';
 import api from '../api/axios';
 import CustomSelect from '../components/CustomSelect';
 import { User as UserIcon, ShieldCheck, UserCircle, Plus, Edit, Trash2, X, HelpCircle, Users, Shield, AlertTriangle, ChevronDown, Eye, EyeOff, Search } from 'lucide-react';
 
 function Modal({ open, onClose, children, maxWidth = 'max-w-md' }) {
   if (!open) return null;
-  return (
+  return ReactDOM.createPortal(
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
       <div className={`relative bg-white rounded-2xl shadow-2xl w-full ${maxWidth} animate-in fade-in zoom-in-95 duration-150 max-h-[92vh] overflow-y-auto`}>
         {children}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 

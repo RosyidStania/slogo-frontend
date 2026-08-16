@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
+import ReactDOM from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import {
@@ -38,13 +39,14 @@ function StatusChip({ status }) {
 
 function Modal({ open, onClose, children, maxWidth = 'max-w-sm' }) {
   if (!open) return null;
-  return (
+  return ReactDOM.createPortal(
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
       <div className={`relative bg-white rounded-2xl shadow-2xl w-full ${maxWidth} animate-in fade-in zoom-in-95 duration-150 max-h-[92vh] overflow-y-auto`}>
         {children}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 

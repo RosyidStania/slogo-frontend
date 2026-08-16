@@ -1,0 +1,635 @@
+﻿
+> frontend@0.0.0 lint
+> eslint .
+
+
+D:\ProjectGila\Slogo\frontend\src\components\CustomSelect.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+D:\ProjectGila\Slogo\frontend\src\pages\Dashboard.jsx
+   1:8   error  'React' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+   6:3   error  'MapPin' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     no-unused-vars
+   6:34  error  'CheckCircle2' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               no-unused-vars
+   6:48  error  'UserCheck' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  no-unused-vars
+   7:3   error  'ArrowUpRight' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               no-unused-vars
+   7:24  error  'AlertTriangle' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              no-unused-vars
+  69:21  error  Error: Cannot access variable before it is declared
+
+`fetchData` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  67 |   const [topGroups, setTopGroups]         = useState([]);
+  68 |
+> 69 |   useEffect(() => { fetchData(); }, []);
+     |                     ^^^^^^^^^ `fetchData` accessed before it is declared
+  70 |
+  71 |   const fetchData = async () => {
+  72 |     try {
+
+  69 |   useEffect(() => { fetchData(); }, []);
+  70 |
+> 71 |   const fetchData = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 72 |     try {
+     | ^^^^^^^^^
+> 73 |       const res = await api.get('/admin/dashboard-stats');
+     ΓÇª
+     | ^^^^^^^^^
+> 81 |     finally { setLoading(false); }
+     | ^^^^^^^^^
+> 82 |   };
+     | ^^^^^ `fetchData` is declared here
+  83 |
+  84 |   // ΓöÇΓöÇΓöÇ Guards (matches ManageAttendance loading/error states) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+  85 |   if (loading) return (  react-hooks/immutability
+
+D:\ProjectGila\Slogo\frontend\src\pages\EventSummary.jsx
+    1:8   error    'React' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              no-unused-vars
+   98:13  error    Error: Cannot access variable before it is declared
+
+`fetchSummaryData` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+   96 |             await api.post('/admin/attendance/bulk', { attendances: mappedAttendances });
+   97 |             alert('Berhasil mengimpor data absensi');
+>  98 |             fetchSummaryData(); // refresh data
+      |             ^^^^^^^^^^^^^^^^ `fetchSummaryData` accessed before it is declared
+   99 |         } catch (err) {
+  100 |             alert('Gagal menyimpan data absensi ke server');
+  101 |             console.error(err);
+
+  113 |   useEffect(() => { fetchSummaryData(); }, [eventId]);
+  114 |
+> 115 |   const fetchSummaryData = async () => {
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 116 |     try {
+      | ^^^^^^^^^
+> 117 |       const response = await api.get(`/admin/events/${eventId}/summary`);
+      ΓÇª
+      | ^^^^^^^^^
+> 124 |     }
+      | ^^^^^^^^^
+> 125 |   };
+      | ^^^^^ `fetchSummaryData` is declared here
+  126 |
+  127 |   const filteredData = attendances.filter(item => {
+  128 |     const matchKelompok = filterKelompok === 'Semua' || item.generus.kelompok.toLowerCase() === filterKelompok.toLowerCase();  react-hooks/immutability
+  113:44  warning  React Hook useEffect has a missing dependency: 'fetchSummaryData'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            react-hooks/exhaustive-deps
+
+D:\ProjectGila\Slogo\frontend\src\pages\ManageAttendance.jsx
+    1:8   error    'React' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  no-unused-vars
+    8:48  error    'RefreshCw' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              no-unused-vars
+   93:21  error    Error: Cannot access variable before it is declared
+
+`fetchData` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  91 |   }, []);
+  92 |
+> 93 |   useEffect(() => { fetchData(); }, [eventId]);
+     |                     ^^^^^^^^^ `fetchData` accessed before it is declared
+  94 |
+  95 |   const fetchData = async () => {
+  96 |     setLoading(true);
+
+   93 |   useEffect(() => { fetchData(); }, [eventId]);
+   94 |
+>  95 |   const fetchData = async () => {
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  96 |     setLoading(true);
+      | ^^^^^^^^^^^^^^^^^^^^^
+>  97 |     try {
+      ΓÇª
+      | ^^^^^^^^^^^^^^^^^^^^^
+> 135 |     finally { setLoading(false); }
+      | ^^^^^^^^^^^^^^^^^^^^^
+> 136 |   };
+      | ^^^^^ `fetchData` is declared here
+  137 |
+  138 |   const isLate = (batas) => {
+  139 |     if (!batas) return false;  react-hooks/immutability
+   93:37  warning  React Hook useEffect has a missing dependency: 'fetchData'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react-hooks/exhaustive-deps
+  203:15  error    'status_absen' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  no-unused-vars
+  203:29  error    'is_late' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       no-unused-vars
+  203:38  error    'time_arrived' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  no-unused-vars
+  255:6   warning  React Hook useCallback has a missing dependency: 'handleAbsen'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   react-hooks/exhaustive-deps
+
+D:\ProjectGila\Slogo\frontend\src\pages\ManageEventTypes.jsx
+   1:8   error  'React' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    no-unused-vars
+   4:40  error  'Users' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    no-unused-vars
+   4:67  error  'LayoutGrid' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               no-unused-vars
+  37:21  error  Error: Cannot access variable before it is declared
+
+`fetchTypes` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  35 |   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, id: '', name: '' });
+  36 |
+> 37 |   useEffect(() => { fetchTypes(); }, []);
+     |                     ^^^^^^^^^^ `fetchTypes` accessed before it is declared
+  38 |
+  39 |   const fetchTypes = async () => {
+  40 |     try {
+
+  37 |   useEffect(() => { fetchTypes(); }, []);
+  38 |
+> 39 |   const fetchTypes = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 40 |     try {
+     | ^^^^^^^^^
+> 41 |       const response = await api.get('/admin/event-types');
+     | ^^^^^^^^^
+> 42 |       setTypesList(response.data.data || []);
+     | ^^^^^^^^^
+> 43 |     } catch (error) {
+     | ^^^^^^^^^
+> 44 |       console.error('Gagal memuat jenis acara:', error);
+     | ^^^^^^^^^
+> 45 |     } finally {
+     | ^^^^^^^^^
+> 46 |       setLoading(false);
+     | ^^^^^^^^^
+> 47 |     }
+     | ^^^^^^^^^
+> 48 |   };
+     | ^^^^^ `fetchTypes` is declared here
+  49 |
+  50 |   const handleInputChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  51 |  react-hooks/immutability
+
+D:\ProjectGila\Slogo\frontend\src\pages\ManageEvents.jsx
+   1:8   error  'React' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               no-unused-vars
+   8:44  error  'AlertTriangle' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       no-unused-vars
+   9:32  error  'Filter' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              no-unused-vars
+  91:21  error  Error: Cannot access variable before it is declared
+
+`fetchData` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  89 |   }, []);
+  90 |
+> 91 |   useEffect(() => { fetchData(); }, []);
+     |                     ^^^^^^^^^ `fetchData` accessed before it is declared
+  92 |
+  93 |   const fetchData = async () => {
+  94 |     setLoading(true);
+
+   91 |   useEffect(() => { fetchData(); }, []);
+   92 |
+>  93 |   const fetchData = async () => {
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  94 |     setLoading(true);
+      | ^^^^^^^^^^^^^^^^^^^^^
+>  95 |     try {
+      ΓÇª
+      | ^^^^^^^^^^^^^^^^^^^^^
+> 106 |     }
+      | ^^^^^^^^^^^^^^^^^^^^^
+> 107 |   };
+      | ^^^^^ `fetchData` is declared here
+  108 |
+  109 |   // ΓöÇΓöÇΓöÇ Form helpers ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+  110 |   const handleInputChange = (e) =>  react-hooks/immutability
+
+D:\ProjectGila\Slogo\frontend\src\pages\ManageGenerus.jsx
+    1:8   error  'React' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+    6:39  error  'User' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       no-unused-vars
+    6:45  error  'CalendarDays' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               no-unused-vars
+    7:10  error  'ShieldAlert' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                no-unused-vars
+    7:23  error  'ChevronDown' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                no-unused-vars
+    7:36  error  'Phone' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+    7:43  error  'Info' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       no-unused-vars
+    9:21  error  'Target' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     no-unused-vars
+    9:58  error  'ChevronRight' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               no-unused-vars
+   10:3   error  'MoreVertical' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               no-unused-vars
+   10:17  error  'ArrowUpDown' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                no-unused-vars
+  201:21  error  Error: Cannot access variable before it is declared
+
+`fetchData` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  199 |   const settingsRef    = useRef(null);
+  200 |
+> 201 |   useEffect(() => { fetchData(); }, []);
+      |                     ^^^^^^^^^ `fetchData` accessed before it is declared
+  202 |   useEffect(() => {
+  203 |     const handler = (e) => {
+  204 |       if (settingsRef.current && !settingsRef.current.contains(e.target)) setShowSettings(false);
+
+  208 |   }, []);
+  209 |
+> 210 |   const fetchData = async () => {
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 211 |     const cached = sessionStorage.getItem('generusData_cache');
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 212 |     if (cached) { setGenerusList(JSON.parse(cached)); setLoading(false); }
+      ΓÇª
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 220 |     finally { setLoading(false); }
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 221 |   };
+      | ^^^^^ `fetchData` is declared here
+  222 |
+  223 |   const invalidateAndFetch = () => { sessionStorage.removeItem('generusData_cache'); fetchData(); };
+  224 |  react-hooks/immutability
+  255:14  error  'e' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          no-unused-vars
+  266:14  error  'e' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          no-unused-vars
+  277:14  error  'e' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          no-unused-vars
+  301:14  error  'e' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          no-unused-vars
+  342:16  error  'err' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        no-unused-vars
+
+D:\ProjectGila\Slogo\frontend\src\pages\ManageUsers.jsx
+   1:8    error  'React' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           no-unused-vars
+   5:118  error  'ChevronDown' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     no-unused-vars
+  40:5    error  Error: Cannot access variable before it is declared
+
+`fetchUsers` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  38 |
+  39 |   useEffect(() => { 
+> 40 |     fetchUsers(); 
+     |     ^^^^^^^^^^ `fetchUsers` accessed before it is declared
+  41 |     fetchGenerus();
+  42 |   }, []);
+  43 |
+
+  42 |   }, []);
+  43 |
+> 44 |   const fetchUsers = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 45 |     try {
+     | ^^^^^^^^^
+> 46 |       const response = await api.get('/admin/users');
+     | ^^^^^^^^^
+> 47 |       setUsers(response.data.data || []);
+     | ^^^^^^^^^
+> 48 |     } catch (error) {
+     | ^^^^^^^^^
+> 49 |       console.error('Gagal mengambil data user:', error);
+     | ^^^^^^^^^
+> 50 |     } finally {
+     | ^^^^^^^^^
+> 51 |       setLoading(false);
+     | ^^^^^^^^^
+> 52 |     }
+     | ^^^^^^^^^
+> 53 |   };
+     | ^^^^^ `fetchUsers` is declared here
+  54 |
+  55 |   const fetchGenerus = async () => {
+  56 |     try {                 react-hooks/immutability
+  41:5    error  Error: Cannot access variable before it is declared
+
+`fetchGenerus` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  39 |   useEffect(() => { 
+  40 |     fetchUsers(); 
+> 41 |     fetchGenerus();
+     |     ^^^^^^^^^^^^ `fetchGenerus` accessed before it is declared
+  42 |   }, []);
+  43 |
+  44 |   const fetchUsers = async () => {
+
+  53 |   };
+  54 |
+> 55 |   const fetchGenerus = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 56 |     try {
+     | ^^^^^^^^^
+> 57 |       const response = await api.get('/admin/generus');
+     | ^^^^^^^^^
+> 58 |       setGenerusList(response.data.data || []);
+     | ^^^^^^^^^
+> 59 |     } catch (error) {
+     | ^^^^^^^^^
+> 60 |       console.error('Gagal mengambil data generus:', error);
+     | ^^^^^^^^^
+> 61 |     }
+     | ^^^^^^^^^
+> 62 |   };
+     | ^^^^^ `fetchGenerus` is declared here
+  63 |
+  64 |   const handleInputChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  65 |  react-hooks/immutability
+
+D:\ProjectGila\Slogo\frontend\src\pages\MtAttendance.jsx
+   1:8   error    'React' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     no-unused-vars
+   3:27  error    'Download' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  no-unused-vars
+  78:7   error    Error: Cannot access variable before it is declared
+
+`fetchReport` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  76 |   useEffect(() => {
+  77 |     if (selectedType && selectedYear) {
+> 78 |       fetchReport();
+     |       ^^^^^^^^^^^ `fetchReport` accessed before it is declared
+  79 |     } else {
+  80 |       // First load, let's fetch to get event types and years
+  81 |       fetchReportInit();
+
+  105 |   };
+  106 |
+> 107 |   const fetchReport = async () => {
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 108 |     setLoading(true);
+      | ^^^^^^^^^^^^^^^^^^^^^
+> 109 |     try {
+      ΓÇª
+      | ^^^^^^^^^^^^^^^^^^^^^
+> 124 |     }
+      | ^^^^^^^^^^^^^^^^^^^^^
+> 125 |   };
+      | ^^^^^ `fetchReport` is declared here
+  126 |
+  127 |   const uniqueJenjang = [...new Set(reportData.map(d => d.jenjang))].filter(Boolean);
+  128 |  react-hooks/immutability
+  81:7   error    Error: Cannot access variable before it is declared
+
+`fetchReportInit` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  79 |     } else {
+  80 |       // First load, let's fetch to get event types and years
+> 81 |       fetchReportInit();
+     |       ^^^^^^^^^^^^^^^ `fetchReportInit` accessed before it is declared
+  82 |     }
+  83 |   }, [selectedType, selectedYear]);
+  84 |
+
+   83 |   }, [selectedType, selectedYear]);
+   84 |
+>  85 |   const fetchReportInit = async () => {
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  86 |     setLoading(true);
+      | ^^^^^^^^^^^^^^^^^^^^^
+>  87 |     try {
+      ΓÇª
+      | ^^^^^^^^^^^^^^^^^^^^^
+> 104 |     }
+      | ^^^^^^^^^^^^^^^^^^^^^
+> 105 |   };
+      | ^^^^^ `fetchReportInit` is declared here
+  106 |
+  107 |   const fetchReport = async () => {
+  108 |     setLoading(true);              react-hooks/immutability
+  83:6   warning  React Hook useEffect has a missing dependency: 'fetchReport'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        react-hooks/exhaustive-deps
+
+D:\ProjectGila\Slogo\frontend\src\pages\MtMembers.jsx
+   1:8   error  'React' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 no-unused-vars
+   3:43  error  'User' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  no-unused-vars
+  59:21  error  Error: Cannot access variable before it is declared
+
+`fetchData` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  57 |   const [formData, setFormData] = useState(null);
+  58 |
+> 59 |   useEffect(() => { fetchData(); }, []);
+     |                     ^^^^^^^^^ `fetchData` accessed before it is declared
+  60 |
+  61 |   const fetchData = async () => {
+  62 |     setLoading(true);
+
+  59 |   useEffect(() => { fetchData(); }, []);
+  60 |
+> 61 |   const fetchData = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 62 |     setLoading(true);
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 63 |     try {
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 64 |       const res = await api.get('/mt/group-members');
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 65 |       setMembers(res.data.data || []);
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 66 |     } catch (e) { console.error(e); }
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 67 |     finally { setLoading(false); }
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 68 |   };
+     | ^^^^^ `fetchData` is declared here
+  69 |
+  70 |   const filtered = members.filter(g => g.nama_lengkap?.toLowerCase().includes(search.toLowerCase()));
+  71 |     react-hooks/immutability
+
+D:\ProjectGila\Slogo\frontend\src\pages\MtStatistics.jsx
+   1:8   error  'React' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            no-unused-vars
+   3:29  error  'AlertCircle' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+   3:42  error  'MapPin' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           no-unused-vars
+   3:59  error  'BarChart3' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        no-unused-vars
+  46:5   error  Error: Cannot access variable before it is declared
+
+`fetchData` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  44 |
+  45 |   useEffect(() => {
+> 46 |     fetchData();
+     |     ^^^^^^^^^ `fetchData` accessed before it is declared
+  47 |   }, []);
+  48 |
+  49 |   const fetchData = async () => {
+
+  47 |   }, []);
+  48 |
+> 49 |   const fetchData = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 50 |     try {
+     | ^^^^^^^^^
+> 51 |       const res = await api.get('/mt/group-statistics');
+     ΓÇª
+     | ^^^^^^^^^
+> 59 |     }
+     | ^^^^^^^^^
+> 60 |   };
+     | ^^^^^ `fetchData` is declared here
+  61 |
+  62 |   if (loading) return (
+  63 |     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">  react-hooks/immutability
+
+D:\ProjectGila\Slogo\frontend\src\pages\ReportByType.jsx
+    1:8    error    'React' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  no-unused-vars
+    3:27   error    'Download' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               no-unused-vars
+    3:87   error    'Upload' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 no-unused-vars
+    3:103  error    'FileDown' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               no-unused-vars
+   76:5    error    Error: Cannot access variable before it is declared
+
+`fetchEventTypes` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  74 |
+  75 |   useEffect(() => {
+> 76 |     fetchEventTypes();
+     |     ^^^^^^^^^^^^^^^ `fetchEventTypes` accessed before it is declared
+  77 |     fetchAvailableYears();
+  78 |   }, []);
+  79 |
+
+   92 |   };
+   93 |
+>  94 |   const fetchEventTypes = async () => {
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  95 |     try {
+      | ^^^^^^^^^
+>  96 |       const res = await api.get('/admin/event-types');
+      ΓÇª
+      | ^^^^^^^^^
+> 104 |     }
+      | ^^^^^^^^^
+> 105 |   };
+      | ^^^^^ `fetchEventTypes` is declared here
+  106 |
+  107 |   useEffect(() => {
+  108 |     if (selectedType && selectedYear) {                                                                                                                                           react-hooks/immutability
+   77:5    error    Error: Cannot access variable before it is declared
+
+`fetchAvailableYears` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  75 |   useEffect(() => {
+  76 |     fetchEventTypes();
+> 77 |     fetchAvailableYears();
+     |     ^^^^^^^^^^^^^^^^^^^ `fetchAvailableYears` accessed before it is declared
+  78 |   }, []);
+  79 |
+  80 |   const fetchAvailableYears = async () => {
+
+  78 |   }, []);
+  79 |
+> 80 |   const fetchAvailableYears = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 81 |     try {
+     | ^^^^^^^^^
+> 82 |       const res = await api.get('/admin/reports/available-years');
+     ΓÇª
+     | ^^^^^^^^^
+> 91 |     }
+     | ^^^^^^^^^
+> 92 |   };
+     | ^^^^^ `fetchAvailableYears` is declared here
+  93 |
+  94 |   const fetchEventTypes = async () => {
+  95 |     try {                                                                                react-hooks/immutability
+   78:6    warning  React Hook useEffect has a missing dependency: 'fetchAvailableYears'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             react-hooks/exhaustive-deps
+  109:7    error    Error: Cannot access variable before it is declared
+
+`fetchReport` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  107 |   useEffect(() => {
+  108 |     if (selectedType && selectedYear) {
+> 109 |       fetchReport();
+      |       ^^^^^^^^^^^ `fetchReport` accessed before it is declared
+  110 |     }
+  111 |   }, [selectedType, selectedYear]);
+  112 |
+
+  111 |   }, [selectedType, selectedYear]);
+  112 |
+> 113 |   const fetchReport = async () => {
+      |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 114 |     setLoading(true);
+      | ^^^^^^^^^^^^^^^^^^^^^
+> 115 |     try {
+      ΓÇª
+      | ^^^^^^^^^^^^^^^^^^^^^
+> 125 |     }
+      | ^^^^^^^^^^^^^^^^^^^^^
+> 126 |   };
+      | ^^^^^ `fetchReport` is declared here
+  127 |
+  128 |   // Extract unique options for filters
+  129 |   const uniqueKelompok = [...new Set(reportData.map(d => d.kelompok))].filter(Boolean).sort();  react-hooks/immutability
+  111:6    warning  React Hook useEffect has a missing dependency: 'fetchReport'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     react-hooks/exhaustive-deps
+
+D:\ProjectGila\Slogo\frontend\src\pages\UserDashboard.jsx
+   1:8  error  'React' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              no-unused-vars
+  10:5  error  Error: Cannot access variable before it is declared
+
+`fetchReport` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+   8 |
+   9 |   useEffect(() => {
+> 10 |     fetchReport();
+     |     ^^^^^^^^^^^ `fetchReport` accessed before it is declared
+  11 |   }, []);
+  12 |
+  13 |   const fetchReport = async () => {
+
+  11 |   }, []);
+  12 |
+> 13 |   const fetchReport = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 14 |     try {
+     | ^^^^^^^^^
+> 15 |       setLoading(true);
+     ΓÇª
+     | ^^^^^^^^^
+> 22 |     }
+     | ^^^^^^^^^
+> 23 |   };
+     | ^^^^^ `fetchReport` is declared here
+  24 |
+  25 |   if (loading) {
+  26 |     return (  react-hooks/immutability
+
+D:\ProjectGila\Slogo\frontend\src\pages\UserProfile.jsx
+    1:8   error  'React' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            no-unused-vars
+    2:16  error  'Mail' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             no-unused-vars
+    2:63  error  'Camera' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           no-unused-vars
+    6:10  error  'profile' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 no-unused-vars
+   45:5   error  Error: Cannot access variable before it is declared
+
+`fetchProfile` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  43 |
+  44 |   useEffect(() => {
+> 45 |     fetchProfile();
+     |     ^^^^^^^^^^^^ `fetchProfile` accessed before it is declared
+  46 |   }, []);
+  47 |
+  48 |   const fetchProfile = async () => {
+
+  46 |   }, []);
+  47 |
+> 48 |   const fetchProfile = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 49 |     try {
+     | ^^^^^^^^^
+> 50 |       setLoading(true);
+     ΓÇª
+     | ^^^^^^^^^
+> 77 |     }
+     | ^^^^^^^^^
+> 78 |   };
+     | ^^^^^ `fetchProfile` is declared here
+  79 |
+  80 |   const handleChange = (e) => {
+  81 |     let { name, value } = e.target;  react-hooks/immutability
+  110:13  error  'res' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     no-unused-vars
+
+D:\ProjectGila\Slogo\frontend\src\pages\UserQR.jsx
+   1:8  error  'React' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              no-unused-vars
+  11:5  error  Error: Cannot access variable before it is declared
+
+`fetchReport` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+   9 |
+  10 |   useEffect(() => {
+> 11 |     fetchReport();
+     |     ^^^^^^^^^^^ `fetchReport` accessed before it is declared
+  12 |   }, []);
+  13 |
+  14 |   const fetchReport = async () => {
+
+  12 |   }, []);
+  13 |
+> 14 |   const fetchReport = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 15 |     try {
+     | ^^^^^^^^^
+> 16 |       setLoading(true);
+     ΓÇª
+     | ^^^^^^^^^
+> 23 |     }
+     | ^^^^^^^^^
+> 24 |   };
+     | ^^^^^ `fetchReport` is declared here
+  25 |
+  26 |   if (loading) {
+  27 |     return (  react-hooks/immutability
+
+D:\ProjectGila\Slogo\frontend\test.js
+  1:7   error  'React' is assigned a value but never used  no-unused-vars
+  1:15  error  'require' is not defined                    no-undef
+
+Γ£û 82 problems (76 errors, 6 warnings)
+
