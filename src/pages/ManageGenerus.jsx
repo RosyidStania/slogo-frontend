@@ -193,19 +193,12 @@ export default function ManageGenerus() {
   const [showDemote, setShowDemote]       = useState(false);
   const [showQr, setShowQr]               = useState(false);
   const [showSettings, setShowSettings]   = useState(false);
+  const [showQrZipModal, setShowQrZipModal] = useState(false);
+  const [selectedQrZipJenjang, setSelectedQrZipJenjang] = useState('Semua');
 
   const fileInputRef   = useRef(null);
   const idCardRef      = useRef(null);
   const settingsRef    = useRef(null);
-
-  useEffect(() => { fetchData(); }, []);
-  useEffect(() => {
-    const handler = (e) => {
-      if (settingsRef.current && !settingsRef.current.contains(e.target)) setShowSettings(false);
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
 
   const fetchData = async () => {
     const cached = sessionStorage.getItem('generusData_cache');
@@ -219,6 +212,15 @@ export default function ManageGenerus() {
     } catch (e) { console.error(e); }
     finally { setLoading(false); }
   };
+
+  useEffect(() => { fetchData(); }, []);
+  useEffect(() => {
+    const handler = (e) => {
+      if (settingsRef.current && !settingsRef.current.contains(e.target)) setShowSettings(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   const invalidateAndFetch = () => { sessionStorage.removeItem('generusData_cache'); fetchData(); };
 
@@ -356,15 +358,26 @@ export default function ManageGenerus() {
     } catch (e) { console.error(e); }
   };
 
-  const handleDownloadQrZip = async () => {
-    const activeGenerus = generusList.filter(g => g.status?.toLowerCase() === 'aktif');
+  const openQrZipModal = () => {
+    setShowSettings(false);
+    setSelectedQrZipJenjang('Semua');
+    setShowQrZipModal(true);
+  };
+
+  const executeDownloadQrZip = async () => {
+    let activeGenerus = generusList.filter(g => g.status?.toLowerCase() === 'aktif');
+    
+    if (selectedQrZipJenjang !== 'Semua') {
+      activeGenerus = activeGenerus.filter(g => g.jenjang === selectedQrZipJenjang);
+    }
+
     if (activeGenerus.length === 0) {
-      alert('Tidak ada peserta yang aktif.');
+      alert('Tidak ada peserta yang aktif pada jenjang ini.');
       return;
     }
     
     setDownloadingQrZip(true);
-    setShowSettings(false);
+    setShowQrZipModal(false);
     
     try {
       const zip = new JSZip();
@@ -385,7 +398,8 @@ export default function ManageGenerus() {
       }
       
       const content = await zip.generateAsync({ type: 'blob' });
-      saveAs(content, `IDCard_Generus_Aktif_${new Date().getTime()}.zip`);
+      const fileNameSuffix = selectedQrZipJenjang === 'Semua' ? 'Semua' : selectedQrZipJenjang.replace(/[^A-Za-z0-9]/g, '_');
+      saveAs(content, `IDCard_Generus_${fileNameSuffix}_${new Date().getTime()}.zip`);
     } catch (err) {
       console.error(err);
       alert('Gagal membuat file ZIP ID Card.');
@@ -478,7 +492,7 @@ export default function ManageGenerus() {
                     <TrendingDown size={15} /> Turun Kelas Massal
                   </button>
                   <div className="my-1 border-t border-slate-100" />
-                  <button onClick={handleDownloadQrZip} disabled={downloadingQrZip}
+                  <button onClick={openQrZipModal} disabled={downloadingQrZip}
                     className="w-full text-left px-4 py-2.5 text-sm font-semibold text-blue-600 hover:bg-blue-50 transition-colors flex items-center gap-3">
                     {downloadingQrZip ? <Loader2 size={15} className="animate-spin" /> : <Download size={15} />}
                     {downloadingQrZip ? 'Menyiapkan ZIP...' : 'Download QR (ZIP)'}
@@ -956,6 +970,44 @@ export default function ManageGenerus() {
         confirmLabel="Ya, Turunkan"
         confirmClass="bg-amber-500 hover:bg-amber-600"
       />
+
+      {/* ══ MODAL: Download QR ZIP ═══════════════════════════════════════════════ */}
+      <Modal open={showQrZipModal} onClose={() => setShowQrZipModal(false)} maxWidth="max-w-md">
+        <div className="p-6">
+          <div className="flex items-center gap-3 mb-5">
+            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center shrink-0">
+              <Download size={24} />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-slate-800">Download QR (ZIP)</h3>
+              <p className="text-sm text-slate-500">Pilih jenjang yang ingin diunduh</p>
+            </div>
+          </div>
+          
+          <div className="space-y-4 mb-6">
+            <Field label="Pilih Jenjang">
+              <CustomSelect 
+                name="jenjang_qr" 
+                value={selectedQrZipJenjang} 
+                onChange={(e) => setSelectedQrZipJenjang(e.target.value)}
+                options={JENJANG_LIST.map(j => ({ value: j, label: j === 'Semua' ? 'Semua Jenjang' : j }))} 
+              />
+            </Field>
+          </div>
+          
+          <div className="flex gap-3">
+            <button onClick={() => setShowQrZipModal(false)} disabled={downloadingQrZip}
+              className="flex-1 py-3 rounded-xl bg-slate-100 text-slate-700 font-semibold text-sm hover:bg-slate-200 transition-colors">
+              Batal
+            </button>
+            <button onClick={executeDownloadQrZip} disabled={downloadingQrZip}
+              className="flex-1 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition-all disabled:opacity-40 flex items-center justify-center gap-2">
+              {downloadingQrZip ? <Loader2 size={16} className="animate-spin" /> : null}
+              {downloadingQrZip ? 'Memproses...' : 'Download'}
+            </button>
+          </div>
+        </div>
+      </Modal>
 
       {/* ══ MODAL: Hapus semua ═══════════════════════════════════════════════ */}
       <Modal open={showDeleteAll} onClose={() => { setShowDeleteAll(false); setDeleteConfirm(''); }} maxWidth="max-w-md">
