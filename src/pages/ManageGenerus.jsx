@@ -893,7 +893,7 @@ export default function ManageGenerus() {
                 </div>
                 <div className="px-3 py-3 text-center flex-1 flex flex-col items-center justify-center">
                   <p className="text-[7px] font-bold text-slate-400 uppercase tracking-widest mb-1">Kartu Absensi Generus</p>
-                  <p className="font-black text-slate-800 text-sm uppercase leading-tight mb-0.5 max-w-full truncate px-1">{selected.nama_lengkap}</p>
+                  <p className="font-black text-slate-800 text-sm uppercase leading-tight mb-0.5 max-w-full line-clamp-2 px-1">{selected.nama_lengkap}</p>
                   <p className="text-[9px] font-semibold text-teal-600 mb-3">{selected.kelompok}</p>
                   <div className="flex justify-center p-1.5 bg-slate-50 rounded-lg border border-slate-100">
                     <QRCodeCanvas value={`SLOGO-GEN-${selected.id}`} size={110} level="H" includeMargin={false} />
@@ -1001,7 +1001,7 @@ export default function ManageGenerus() {
             </div>
             <div className="px-3 py-3 text-center flex-1 flex flex-col items-center justify-center">
               <p className="text-[7px] font-bold text-slate-400 uppercase tracking-widest mb-1">Kartu Absensi Generus</p>
-              <p className="font-black text-slate-800 text-sm uppercase leading-tight mb-0.5 max-w-full truncate px-1">{g.nama_lengkap}</p>
+              <p className="font-black text-slate-800 text-sm uppercase leading-tight mb-0.5 max-w-full line-clamp-2 px-1">{g.nama_lengkap}</p>
               <p className="text-[9px] font-semibold text-teal-600 mb-3">{g.kelompok}</p>
               <div className="flex justify-center p-1.5 bg-slate-50 rounded-lg border border-slate-100">
                 <QRCodeCanvas value={`SLOGO-GEN-${g.id}`} size={110} level="H" includeMargin={false} />
