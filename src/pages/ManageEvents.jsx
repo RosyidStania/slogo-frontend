@@ -499,7 +499,6 @@ export default function ManageEvents() {
             <div className="space-y-4">
               <p className="text-sm text-slate-500">
                 Pilih template untuk mengisi otomatis nama, waktu, dan peserta.
-                Atau lewati untuk mengisi secara manual.
               </p>
 
               <div className="space-y-1.5" ref={typeDropRef}>
@@ -520,13 +519,6 @@ export default function ManageEvents() {
 
                 {isTypeOpen && (
                   <div className="border border-slate-200 rounded-xl shadow-lg overflow-hidden bg-white">
-                    <button
-                      type="button"
-                      onClick={() => { setFormData(f => ({ ...f, event_type_id: '' })); setIsTypeOpen(false); }}
-                      className="w-full text-left px-4 py-3 text-sm text-slate-500 hover:bg-slate-50 border-b border-slate-100"
-                    >
-                      Tanpa template — isi manual
-                    </button>
                     {eventTypes.map(type => (
                       <button
                         key={type.id}
@@ -711,7 +703,7 @@ export default function ManageEvents() {
           {modalStep < TOTAL_STEPS - 1 ? (
             <button
               type="button"
-              disabled={modalStep === 1 && !step2Valid}
+              disabled={(modalStep === 0 && !formData.event_type_id) || (modalStep === 1 && !step2Valid)}
               onClick={() => setModalStep(s => s + 1)}
               className="flex-1 py-3 rounded-xl bg-teal-500 hover:bg-teal-600 disabled:bg-slate-200 disabled:text-slate-400 text-white font-semibold text-sm transition-colors active:scale-95"
             >
