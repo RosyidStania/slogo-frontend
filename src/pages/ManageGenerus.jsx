@@ -19,7 +19,7 @@ import logoImg from '../assets/logo.png';
 
 // ─── Tiny helpers ────────────────────────────────────────────────────────────
 const KELOMPOK_LIST = ['Semua', 'Slogo', 'Gabugan', 'Jekani', 'Gawan', 'Pengkruk', 'Sidomulyo', 'Karangasem'];
-const JENJANG_LIST  = ['Semua', 'MT', 'PAUD', 'TK', '1 SD', '2 SD', '3 SD', '4 SD', '5 SD', '6 SD', '1 SMP', '2 SMP', '3 SMP', '1 SMA/SMK', '2 SMA/SMK', '3 SMA/SMK', 'USMAN'];
+const JENJANG_LIST  = ['Semua', 'MT', 'PAUD', 'TK', '1 SD', '2 SD', '3 SD', '4 SD', '5 SD', '6 SD', '1 SMP', '2 SMP', '3 SMP', '1 SMA/SMK', '2 SMA/SMK', '3 SMA/SMK', 'USMAN', 'PENGURUS'];
 
 const STATUS_META = {
   'aktif':       { label: 'Aktif',       color: 'text-emerald-700 bg-emerald-50 border-emerald-200',  dot: 'bg-emerald-500' },
@@ -128,7 +128,7 @@ function calcAge(birthDate, dbUmur) {
 const FORM_DEFAULT = {
   id: '', nama_lengkap: '', kelompok: 'Slogo', status: 'aktif',
   tempat_lahir: '', tanggal_lahir: '', umur: '', jenis_kelamin: 'L',
-  jenjang: 'PAUD', keterangan: '', libur: '', nama_ayah: '', nama_ibu: '',
+  jenjang: 'PAUD', is_pengurus: false, keterangan: '', libur: '', nama_ayah: '', nama_ibu: '',
   no_hp: '', akun_media: '', hobi: ''
 };
 
@@ -307,7 +307,7 @@ export default function ManageGenerus() {
         'Kelompok': item.kelompok || '', 'Status': item.status || '',
         'Tempat Lahir': item.tempat_lahir || '', 'Tanggal Lahir': item.tanggal_lahir || '',
         'Umur': item.umur || '', 'Jenis Kelamin': item.jenis_kelamin || '',
-        'Jenjang': item.jenjang || '', 'Keterangan': item.keterangan || '',
+        'Jenjang': item.is_pengurus ? `${item.jenjang || ''}, PENGURUS` : (item.jenjang || ''), 'Keterangan': item.keterangan || '',
         'Libur': item.libur || '', 'Nama Ayah': item.nama_ayah || '',
         'Nama Ibu': item.nama_ibu || '', 'No HP': item.no_hp || '',
         'Akun Media': item.akun_media || '', 'Hobi': item.hobi || '',
@@ -438,7 +438,10 @@ export default function ManageGenerus() {
   const filtered = generusList.filter(g => {
     const q = search.toLowerCase();
     const matchKelompok = filterKelompok.includes('Semua') || filterKelompok.some(k => g.kelompok?.toLowerCase() === k.toLowerCase());
-    const matchJenjang = filterJenjang.includes('Semua') || filterJenjang.some(j => g.jenjang?.toLowerCase() === j.toLowerCase());
+    const matchJenjang = filterJenjang.includes('Semua') || filterJenjang.some(j => {
+      if (j === 'PENGURUS') return g.is_pengurus === 1 || g.is_pengurus === true;
+      return g.jenjang?.toLowerCase() === j.toLowerCase();
+    });
     
     return (
       g.nama_lengkap?.toLowerCase().includes(q) &&
@@ -702,7 +705,7 @@ export default function ManageGenerus() {
                     </td>
                     <td className="px-5 py-3.5 hidden md:table-cell">
                       <span className="text-xs font-semibold px-2.5 py-1 bg-slate-100 text-slate-600 rounded-lg">
-                        {item.jenjang || '—'}
+                        {item.is_pengurus ? `${item.jenjang || ''}, PENGURUS` : (item.jenjang || '-')}
                       </span>
                     </td>
                     <td className="px-5 py-3.5 hidden sm:table-cell">
@@ -774,7 +777,13 @@ export default function ManageGenerus() {
             </Field>
             <Field label="Jenjang">
               <CustomSelect name="jenjang" value={formData.jenjang} onChange={inp}
-                options={JENJANG_LIST.filter(j => j !== 'Semua').map(j => ({ value: j, label: j }))} />
+                options={JENJANG_LIST.filter(j => j !== 'Semua' && j !== 'PENGURUS').map(j => ({ value: j, label: j }))} />
+              <label className="flex items-center gap-2 mt-2 cursor-pointer select-none">
+                <input type="checkbox" name="is_pengurus" checked={!!formData.is_pengurus}
+                  onChange={(e) => setFormData(prev => ({ ...prev, is_pengurus: e.target.checked }))}
+                  className="rounded border-slate-300 text-teal-600 focus:ring-teal-500 w-4 h-4" />
+                <span className="text-sm font-semibold text-slate-700">Juga sebagai Pengurus</span>
+              </label>
             </Field>
             <Field label="Status">
               <CustomSelect name="status" value={formData.status} onChange={inp}

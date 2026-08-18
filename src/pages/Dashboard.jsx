@@ -305,7 +305,7 @@ export default function Dashboard() {
                     <p className="font-semibold text-slate-800 text-xs truncate">{item.nama_lengkap}</p>
                     <div className="flex gap-1 mt-1">
                       <span className="bg-slate-100 px-1.5 py-0.5 rounded text-[8px] uppercase font-bold text-slate-500">{item.kelompok}</span>
-                      <span className="bg-slate-100 px-1.5 py-0.5 rounded text-[8px] uppercase font-bold text-slate-500">{item.jenjang}</span>
+                      <span className="bg-slate-100 px-1.5 py-0.5 rounded text-[8px] uppercase font-bold text-slate-500">{item.is_pengurus ? `${item.jenjang || ''}, PENGURUS` : item.jenjang}</span>
                     </div>
                   </div>
                   <div className="text-right shrink-0">
