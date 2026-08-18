@@ -323,7 +323,7 @@ export default function ReportByType() {
         </div>
 
         {/* Tabel Data */}
-        <div className="bg-white/80 backdrop-blur-xl border border-white shadow-[0_8px_30px_rgb(0,0,0,0.06)] rounded-[20px] overflow-hidden flex flex-col h-auto md:h-[calc(100vh-180px)]">
+        <div className="bg-white/80 backdrop-blur-xl border border-white shadow-[0_8px_30px_rgb(0,0,0,0.06)] rounded-[20px] overflow-hidden flex flex-col h-[calc(100dvh-280px)] md:h-[calc(100vh-180px)]" style={{ minHeight: '750px' }}>
           
           {/* Toolbar Table */}
           <div className="bg-slate-50/50 p-4 border-b border-slate-100 shrink-0 flex flex-col gap-4">
@@ -395,7 +395,7 @@ export default function ReportByType() {
           </div>
 
           {/* Table Container */}
-          <div className="flex-1 overflow-auto thin-scrollbar h-[500px] md:h-auto">
+          <div className="flex-1 overflow-auto thin-scrollbar">
             {loading ? (
               <div className="h-full flex flex-col items-center justify-center space-y-3">
                 <Loader2 size={32} className="animate-spin text-teal-500" />
