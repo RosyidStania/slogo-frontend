@@ -4,12 +4,13 @@ import api from '../api/axios';
 import {
   Users, TrendingUp, Calendar, AlertCircle, ChevronRight,
   MapPin, Award, Medal, Loader2, CheckCircle2, UserCheck,
-  ArrowUpRight, Clock, AlertTriangle
+  ArrowUpRight, Clock, AlertTriangle, Filter
 } from 'lucide-react';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell
 } from 'recharts';
+import CustomMultiSelect from '../components/CustomMultiSelect';
 
 const COLORS = ['#14b8a6', '#3b82f6', '#f59e0b', '#8b5cf6', '#f43f5e'];
 
@@ -65,12 +66,32 @@ export default function Dashboard() {
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [topAttendees, setTopAttendees]   = useState([]);
   const [topGroups, setTopGroups]         = useState([]);
+  
+  const [eventTypes, setEventTypes] = useState([]);
+  const [selectedEventTypes, setSelectedEventTypes] = useState([]);
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => {
+    fetchEventTypes();
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [selectedEventTypes]);
+
+  const fetchEventTypes = async () => {
+    try {
+      const res = await api.get('/admin/event-types');
+      const formatted = res.data.data.map(et => ({ value: et.id, label: et.name }));
+      setEventTypes(formatted);
+    } catch (e) { console.error(e); }
+  };
 
   const fetchData = async () => {
     try {
-      const res = await api.get('/admin/dashboard-stats');
+      setLoading(true);
+      const res = await api.get('/admin/dashboard-stats', {
+        params: { event_type_ids: selectedEventTypes }
+      });
       setStats(res.data.stats          ?? { totalGenerus: 0, aktifGenerus: 0, rataKehadiran: 0, acaraBulanIni: 0 });
       setDemografiData(res.data.demografi     ?? []);
       setKategoriData(res.data.kategori       ?? []);
@@ -125,11 +146,23 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="max-w-7xl mx-auto px-4 py-6 space-y-5">
-
         {/* ── Page header (mirrors ManageAttendance top bar spacing) ───────── */}
-        <div>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight">Selamat Datang 👋</h1>
-          <p className="text-slate-500 text-sm mt-0.5">Pantau statistik dan perkembangan ke-Generus-an.</p>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-xl font-bold text-slate-900 tracking-tight">Selamat Datang 👋</h1>
+            <p className="text-slate-500 text-sm mt-0.5">Pantau statistik dan perkembangan ke-Generus-an.</p>
+          </div>
+          
+          {/* Multi-select filter template acara */}
+          <div className="w-full sm:w-80 relative flex items-center gap-2">
+            <Filter size={18} className="text-slate-400 shrink-0" />
+            <CustomMultiSelect 
+              options={eventTypes} 
+              value={selectedEventTypes} 
+              onChange={setSelectedEventTypes} 
+              placeholder="Semua Template Acara" 
+            />
+          </div>
         </div>
 
         {/* ── Stat cards ───────────────────────────────────────────────────── */}
