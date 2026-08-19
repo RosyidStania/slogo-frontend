@@ -157,9 +157,9 @@ export default function MtAttendance() {
 
     const columns = [
       { header: 'NO', key: 'no', width: 5 },
+      { header: 'STATUS', key: 'status', width: 8 },
       { header: 'NAMA LENGKAP', key: 'nama', width: 30 },
       { header: 'JENJANG', key: 'jenjang', width: 15 },
-      { header: 'STATUS', key: 'status', width: 12 },
     ];
 
     eventsList.forEach(e => {
@@ -180,9 +180,9 @@ export default function MtAttendance() {
     filteredData.forEach((g, index) => {
       const rowData = {
         no: index + 1,
+        status: g.status ? g.status.toUpperCase() : '',
         nama: g.nama_lengkap,
         jenjang: g.is_pengurus ? `${g.jenjang || ''}, PENGURUS` : (g.jenjang || ''),
-        status: g.status ? g.status.toUpperCase() : '',
       };
 
       eventsList.forEach(e => {
@@ -196,12 +196,16 @@ export default function MtAttendance() {
         cell.border = { top: { style: 'thin', color: { argb: 'FFE2E8F0' } }, left: { style: 'thin', color: { argb: 'FFE2E8F0' } }, bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } }, right: { style: 'thin', color: { argb: 'FFE2E8F0' } } };
         cell.alignment = { vertical: 'middle' };
 
-        if (colNumber === 1 || colNumber === 3 || colNumber === 4) cell.alignment = { vertical: 'middle', horizontal: 'center' };
+        if (colNumber === 1 || colNumber === 2 || colNumber === 4) cell.alignment = { vertical: 'middle', horizontal: 'center' };
 
-        if (colNumber === 4 && cell.value) {
+        if (colNumber === 2 && cell.value) {
           const val = cell.value.toString().replace(/\s+/g, '');
-          if (val === 'AKTIF') cell.font = { name: 'Poppins', color: { argb: 'FF10B981' }, bold: true };
-          else if (val === 'NONAKTIF' || val === 'TIDAKAKTIF') cell.font = { name: 'Poppins', color: { argb: 'FFEF4444' }, bold: true };
+          if (val === 'AKTIF') {
+            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF10B981' } };
+          } else if (val === 'NONAKTIF' || val === 'TIDAKAKTIF') {
+            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEF4444' } };
+          }
+          cell.value = '';
         }
 
         if (colNumber > 4 && cell.value) {

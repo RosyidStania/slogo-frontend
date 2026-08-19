@@ -162,16 +162,15 @@ export default function ReportByType() {
     const columns = [
       { header: 'ID GENERUS', key: 'id', width: 10, hidden: true },
       { header: 'NO', key: 'no', width: 5 },
+      { header: 'STATUS', key: 'status', width: 8 },
       { header: 'NAMA LENGKAP', key: 'nama', width: 30 },
-      { header: 'KODE UNIK', key: 'kode_unik', width: 20 },
       { header: 'JENJANG', key: 'jenjang', width: 15 },
       { header: 'KELOMPOK', key: 'kelompok', width: 15 },
-      { header: 'STATUS', key: 'status', width: 12 },
     ];
 
     eventsList.forEach(e => {
       columns.push({
-        header: `${formatDate(e.event_date).toUpperCase()} [ID: ${e.id}]`,
+        header: formatDate(e.event_date).toUpperCase(),
         key: `event_${e.id}`,
         width: 15
       });
@@ -203,11 +202,10 @@ export default function ReportByType() {
       const rowData = {
         id: g.id,
         no: index + 1,
+        status: g.status ? g.status.toUpperCase() : '',
         nama: g.nama_lengkap,
-        kode_unik: g.kode_unik || '',
         jenjang: g.jenjang,
         kelompok: g.kelompok,
-        status: g.status ? g.status.toUpperCase() : '',
       };
 
       eventsList.forEach(e => {
@@ -229,19 +227,23 @@ export default function ReportByType() {
         };
         cell.alignment = { vertical: 'middle' };
 
-        if (colNumber === 1 || colNumber === 2 || colNumber === 5 || colNumber === 6 || colNumber === 7) {
+        if (colNumber === 1 || colNumber === 2 || colNumber === 3 || colNumber === 5 || colNumber === 6) {
           cell.alignment = { vertical: 'middle', horizontal: 'center' };
         }
 
         // Color Status
-        if (colNumber === 7 && cell.value) {
+        if (colNumber === 3 && cell.value) {
           const val = cell.value.toString().replace(/\s+/g, '');
-          if (val === 'AKTIF') cell.font = { name: 'Poppins', color: { argb: 'FF10B981' }, bold: true };
-          else if (val === 'NONAKTIF' || val === 'TIDAKAKTIF') cell.font = { name: 'Poppins', color: { argb: 'FFEF4444' }, bold: true };
+          if (val === 'AKTIF') {
+            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF10B981' } }; // Green
+          } else if (val === 'NONAKTIF' || val === 'TIDAKAKTIF') {
+            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEF4444' } }; // Red
+          }
+          cell.value = ''; // Remove text
         }
 
         // Color Attendance
-        if (colNumber > 7 && cell.value) {
+        if (colNumber > 6 && cell.value) {
           cell.alignment = { vertical: 'middle', horizontal: 'center' };
           cell.font = { name: 'Poppins', bold: true };
           if (cell.value === 'H') {
