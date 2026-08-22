@@ -139,10 +139,12 @@ export default function ManageAttendance() {
   };
 
   const isLate = (batas) => {
-    if (!batas) return false;
+    if (!batas || !event?.event_date) return false;
     const now = new Date();
+    const eventDateTime = new Date(event.event_date);
     const [h, m] = batas.split(':').map(Number);
-    return now.getHours() > h || (now.getHours() === h && now.getMinutes() > m);
+    eventDateTime.setHours(h, m, 59, 999);
+    return now > eventDateTime;
   };
 
   const handleAbsen = async (generus, status) => {
