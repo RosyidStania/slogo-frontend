@@ -138,9 +138,9 @@ export default function ManageAttendance() {
     finally { setLoading(false); }
   };
 
-  const isLate = (batas) => {
+  const isLate = (batas, customNow = null) => {
     if (!batas || !event?.event_date) return false;
-    const now = new Date();
+    const now = customNow || new Date();
     const eventDateTime = new Date(event.event_date);
     const [h, m] = batas.split(':').map(Number);
     eventDateTime.setHours(h, m, 59, 999);
@@ -148,9 +148,10 @@ export default function ManageAttendance() {
   };
 
   const handleAbsen = async (generus, status) => {
-    const late    = status === 'hadir' ? isLate(event?.start_time) : false;
+    const now = new Date();
+    const late    = status === 'hadir' ? isLate(event?.start_time, now) : false;
     const timeStr = status === 'hadir'
-      ? currentTime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+      ? now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
       : null;
     const record = { ...generus, status_absen: status, is_late: late, time_arrived: timeStr || '-' };
     setGenerusList(prev => prev.filter(g => g.id !== generus.id));
@@ -164,8 +165,9 @@ export default function ManageAttendance() {
 
   const execHadirSemua = async () => {
     setConfirm(c => ({ ...c, loading: true }));
-    const late    = isLate(event?.start_time);
-    const timeStr = currentTime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+    const now = new Date();
+    const late    = isLate(event?.start_time, now);
+    const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
     
     try {
       await api.post('/admin/attendance/bulk', {
