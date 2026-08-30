@@ -7,7 +7,7 @@ import {
   Plus, Edit, Trash2, X, Calendar, Clock, Users,
   BookOpen, Layers, ChevronDown, CopyPlus, AlertTriangle,
   CheckSquare, Square, Search, Filter, HelpCircle,
-  Loader2, CalendarDays
+  Loader2, CalendarDays, Lock, Unlock
 } from 'lucide-react';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -189,6 +189,16 @@ export default function ManageEvents() {
       fetchData();
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleToggleStatus = async (event) => {
+    try {
+      await api.patch(`/admin/events/${event.id}/toggle-status`);
+      fetchData();
+    } catch (err) {
+      console.error(err);
+      alert('Gagal mengubah status acara');
     }
   };
 
@@ -392,10 +402,29 @@ export default function ManageEvents() {
                     <div className="flex flex-wrap items-center gap-2 shrink-0 lg:justify-end">
                       <button
                         onClick={() => navigate(`/admin/attendance/${event.id}`)}
-                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-500 text-emerald-700 hover:text-white border border-emerald-200 hover:border-emerald-500 text-sm font-bold transition-all shadow-sm"
+                        disabled={event.is_closed}
+                        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-bold transition-all shadow-sm ${
+                          event.is_closed
+                            ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
+                            : 'bg-emerald-50 hover:bg-emerald-500 text-emerald-700 hover:text-white border-emerald-200 hover:border-emerald-500'
+                        }`}
                       >
                         <Users size={16} /> Absen
                       </button>
+                      
+                      <button
+                        onClick={() => handleToggleStatus(event)}
+                        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-bold transition-all shadow-sm ${
+                          event.is_closed
+                            ? 'bg-amber-50 hover:bg-amber-500 text-amber-700 hover:text-white border-amber-200 hover:border-amber-500'
+                            : 'bg-slate-50 hover:bg-slate-600 text-slate-700 hover:text-white border-slate-200 hover:border-slate-600'
+                        }`}
+                        title={event.is_closed ? "Buka kembali absen acara ini" : "Tutup absen acara ini"}
+                      >
+                        {event.is_closed ? <Unlock size={16} /> : <Lock size={16} />} 
+                        {event.is_closed ? 'Buka Absen' : 'Selesai'}
+                      </button>
+
                       <button
                         onClick={() => navigate(`/admin/events/${event.id}/summary`)}
                         className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-50 hover:bg-blue-500 text-blue-700 hover:text-white border border-blue-200 hover:border-blue-500 text-sm font-bold transition-all shadow-sm"
