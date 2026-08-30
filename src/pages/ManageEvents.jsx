@@ -350,11 +350,11 @@ export default function ManageEvents() {
                   <div
                     key={event.id}
                     className={`flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-4 bg-white border border-slate-200 rounded-xl transition-all group ${
-                      event.is_completed ? 'opacity-60 grayscale hover:opacity-100 hover:grayscale-0' : 'hover:border-teal-300 hover:shadow-md hover:shadow-teal-500/5'
+                      event.is_completed ? 'hover:border-slate-300' : 'hover:border-teal-300 hover:shadow-md hover:shadow-teal-500/5'
                     }`}
                   >
                     {/* Left: info */}
-                    <div className="flex-1 min-w-0 space-y-2.5">
+                    <div className={`flex-1 min-w-0 space-y-2.5 transition-all ${event.is_completed ? 'opacity-60 grayscale group-hover:opacity-100 group-hover:grayscale-0' : ''}`}>
                       <div className="flex items-center gap-2.5 flex-wrap">
                         {!typeName && (
                           <p className="font-bold text-slate-800 text-sm md:text-base">{event.name}</p>
@@ -408,7 +408,7 @@ export default function ManageEvents() {
                           event.is_closed
                             ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
                             : 'bg-emerald-50 hover:bg-emerald-500 text-emerald-700 hover:text-white border-emerald-200 hover:border-emerald-500'
-                        }`}
+                        } ${event.is_completed ? 'opacity-60 grayscale group-hover:opacity-100 group-hover:grayscale-0' : ''}`}
                       >
                         <Users size={14} /> Absen
                       </button>
@@ -419,7 +419,7 @@ export default function ManageEvents() {
                           event.is_closed
                             ? 'bg-amber-50 hover:bg-amber-500 text-amber-700 hover:text-white border-amber-200 hover:border-amber-500'
                             : 'bg-slate-50 hover:bg-slate-600 text-slate-700 hover:text-white border-slate-200 hover:border-slate-600'
-                        }`}
+                        } ${event.is_completed ? 'opacity-60 grayscale group-hover:opacity-100 group-hover:grayscale-0' : ''}`}
                         title={event.is_closed ? "Buka kembali absen acara ini" : "Tutup absen acara ini"}
                       >
                         {event.is_closed ? <Unlock size={14} /> : <Lock size={14} />} 
@@ -433,7 +433,7 @@ export default function ManageEvents() {
                         <BookOpen size={14} /> Rekapan
                       </button>
                       
-                      <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm ml-0.5">
+                      <div className={`flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm ml-0.5 transition-all ${event.is_completed ? 'opacity-60 grayscale group-hover:opacity-100 group-hover:grayscale-0' : ''}`}>
                         <button
                           onClick={() => openModal('edit', event)}
                           title="Edit"
@@ -442,12 +442,15 @@ export default function ManageEvents() {
                           <Edit size={14} />
                         </button>
                         <button
-                          onClick={() => setConfirm({
-                            open: true,
-                            title: 'Hapus Jadwal Ini?',
-                            message: `Jadwal "${event.name}" akan dihapus permanen. Data absensi terkait juga ikut terhapus.`,
-                            action: () => execDelete(event),
-                          })}
+                          onClick={() => {
+                            setDeleteInput('');
+                            setConfirm({
+                              open: true,
+                              title: 'Hapus Jadwal Ini?',
+                              message: `Jadwal "${event.name}" akan dihapus permanen. Data absensi terkait juga ikut terhapus.`,
+                              action: () => execDelete(event),
+                            });
+                          }}
                           title="Hapus"
                           className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors border-l border-slate-200"
                         >
