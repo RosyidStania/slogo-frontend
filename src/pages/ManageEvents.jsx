@@ -5,8 +5,8 @@ import api from '../api/axios';
 import CustomSelect from '../components/CustomSelect';
 import {
   Plus, Edit, Trash2, X, Calendar, Clock, Users,
-  BookOpen, Layers, ChevronDown, CopyPlus, AlertTriangle,
-  CheckSquare, Square, Search, Filter, HelpCircle,
+  BookOpen, Layers, ChevronDown,
+  CheckSquare, Square, Search, HelpCircle,
   Loader2, CalendarDays, Lock, Unlock
 } from 'lucide-react';
 
@@ -348,48 +348,48 @@ export default function ManageEvents() {
                 return (
                   <div
                     key={event.id}
-                    className={`flex flex-col lg:flex-row lg:items-center justify-between gap-5 p-5 bg-white border border-slate-200 rounded-2xl transition-all group ${
+                    className={`flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-4 bg-white border border-slate-200 rounded-xl transition-all group ${
                       event.is_completed ? 'opacity-60 grayscale hover:opacity-100 hover:grayscale-0' : 'hover:border-teal-300 hover:shadow-md hover:shadow-teal-500/5'
                     }`}
                   >
                     {/* Left: info */}
-                    <div className="flex-1 min-w-0 space-y-3">
-                      <div className="flex items-center gap-3 flex-wrap">
+                    <div className="flex-1 min-w-0 space-y-2.5">
+                      <div className="flex items-center gap-2.5 flex-wrap">
                         {!typeName && (
-                          <p className="font-bold text-slate-800 text-base">{event.name}</p>
+                          <p className="font-bold text-slate-800 text-sm md:text-base">{event.name}</p>
                         )}
                         {typeName && (
-                          <span className="inline-flex items-center gap-1 text-xs font-bold uppercase border bg-blue-50 text-blue-700 border-blue-100 px-2.5 py-1 rounded-lg">
-                            <Layers size={14} /> {typeName}
+                          <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase border bg-blue-50 text-blue-700 border-blue-100 px-2 py-0.5 rounded-md">
+                            <Layers size={12} /> {typeName}
                           </span>
                         )}
                         {event.is_completed && (
-                          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
-                            <CheckSquare size={14} /> Selesai Diabsen
+                          <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                            <CheckSquare size={12} /> Selesai Diabsen
                           </span>
                         )}
                       </div>
 
-                      <div className="flex flex-wrap items-center gap-4">
-                        <span className="flex items-center gap-1.5 text-sm text-slate-600 font-medium bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
-                          <Calendar size={15} className="text-teal-500 shrink-0" />
+                      <div className="flex flex-wrap items-center gap-3">
+                        <span className="flex items-center gap-1.5 text-xs text-slate-600 font-medium bg-slate-50 px-2.5 py-1 rounded-md border border-slate-100">
+                          <Calendar size={13} className="text-teal-500 shrink-0" />
                           {new Date(event.event_date).toLocaleDateString('id-ID', {
-                            weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+                            weekday: 'short', day: 'numeric', month: 'short', year: 'numeric'
                           })}
                         </span>
-                        <span className="flex items-center gap-1.5 text-xs font-bold text-amber-700 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-100">
-                          <Clock size={13} /> Batas {event.start_time?.substring(0, 5)} WIB
+                        <span className="flex items-center gap-1.5 text-xs font-bold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-100">
+                          <Clock size={12} /> {event.start_time?.substring(0, 5)} WIB
                         </span>
                       </div>
 
-                      <div className="flex flex-wrap gap-2 pt-1">
+                      <div className="flex flex-wrap gap-1.5 pt-0.5">
                         {isAllCats ? (
                           <KategoriChip label="Semua Umur" />
                         ) : cats.length > 5 ? (
                           <>
                             {cats.slice(0, 4).map(k => <KategoriChip key={k} label={k} />)}
-                            <span className="inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold uppercase border bg-slate-100 text-slate-500 border-slate-200">
-                              +{cats.length - 4} lagi
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase border bg-slate-100 text-slate-500 border-slate-200">
+                              +{cats.length - 4}
                             </span>
                           </>
                         ) : (
@@ -403,48 +403,42 @@ export default function ManageEvents() {
                       <button
                         onClick={() => navigate(`/admin/attendance/${event.id}`)}
                         disabled={event.is_closed}
-                        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-bold transition-all shadow-sm ${
+                        className={`flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-bold transition-all shadow-sm ${
                           event.is_closed
                             ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
                             : 'bg-emerald-50 hover:bg-emerald-500 text-emerald-700 hover:text-white border-emerald-200 hover:border-emerald-500'
                         }`}
                       >
-                        <Users size={16} /> Absen
+                        <Users size={14} /> Absen
                       </button>
                       
                       <button
                         onClick={() => handleToggleStatus(event)}
-                        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-bold transition-all shadow-sm ${
+                        className={`flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-bold transition-all shadow-sm ${
                           event.is_closed
                             ? 'bg-amber-50 hover:bg-amber-500 text-amber-700 hover:text-white border-amber-200 hover:border-amber-500'
                             : 'bg-slate-50 hover:bg-slate-600 text-slate-700 hover:text-white border-slate-200 hover:border-slate-600'
                         }`}
                         title={event.is_closed ? "Buka kembali absen acara ini" : "Tutup absen acara ini"}
                       >
-                        {event.is_closed ? <Unlock size={16} /> : <Lock size={16} />} 
-                        {event.is_closed ? 'Buka Absen' : 'Selesai'}
+                        {event.is_closed ? <Unlock size={14} /> : <Lock size={14} />} 
+                        {event.is_closed ? 'Buka Absen' : 'Tutup'}
                       </button>
 
                       <button
                         onClick={() => navigate(`/admin/events/${event.id}/summary`)}
-                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-50 hover:bg-blue-500 text-blue-700 hover:text-white border border-blue-200 hover:border-blue-500 text-sm font-bold transition-all shadow-sm"
+                        className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-blue-50 hover:bg-blue-500 text-blue-700 hover:text-white border border-blue-200 hover:border-blue-500 text-xs font-bold transition-all shadow-sm"
                       >
-                        <BookOpen size={16} /> Rekapan
+                        <BookOpen size={14} /> Rekapan
                       </button>
-                      <div className="flex items-center border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm ml-1">
-                        <button
-                          onClick={() => openModal('add', event)}
-                          title="Duplikat"
-                          className="p-2.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
-                        >
-                          <CopyPlus size={16} />
-                        </button>
+                      
+                      <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm ml-0.5">
                         <button
                           onClick={() => openModal('edit', event)}
                           title="Edit"
-                          className="p-2.5 text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors border-l border-slate-200"
+                          className="p-2 text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors"
                         >
-                          <Edit size={16} />
+                          <Edit size={14} />
                         </button>
                         <button
                           onClick={() => setConfirm({
@@ -454,9 +448,9 @@ export default function ManageEvents() {
                             action: () => execDelete(event),
                           })}
                           title="Hapus"
-                          className="p-2.5 text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors border-l border-slate-200"
+                          className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors border-l border-slate-200"
                         >
-                          <Trash2 size={16} />
+                          <Trash2 size={14} />
                         </button>
                       </div>
                     </div>
