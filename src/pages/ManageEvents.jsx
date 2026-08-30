@@ -343,10 +343,12 @@ export default function ManageEvents() {
                     {/* Left: info */}
                     <div className="flex-1 min-w-0 space-y-3">
                       <div className="flex items-center gap-3 flex-wrap">
-                        <p className="font-bold text-slate-800 text-base">{event.name}</p>
+                        {!typeName && (
+                          <p className="font-bold text-slate-800 text-base">{event.name}</p>
+                        )}
                         {typeName && (
-                          <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase border bg-blue-50 text-blue-700 border-blue-100 px-2.5 py-1 rounded-lg">
-                            <Layers size={11} /> {typeName}
+                          <span className="inline-flex items-center gap-1 text-xs font-bold uppercase border bg-blue-50 text-blue-700 border-blue-100 px-2.5 py-1 rounded-lg">
+                            <Layers size={14} /> {typeName}
                           </span>
                         )}
                       </div>
