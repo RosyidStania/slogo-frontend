@@ -75,6 +75,7 @@ export default function ManageEvents() {
   });
 
   const [confirm,       setConfirm]       = useState({ open: false, title: '', message: '', action: null });
+  const [deleteInput,   setDeleteInput]   = useState('');
   const [isTypeOpen,    setIsTypeOpen]    = useState(false);
   const typeDropRef = useRef(null);
 
@@ -463,23 +464,41 @@ export default function ManageEvents() {
       </div>
 
       {/* ══ MODAL: Confirm / Delete ════════════════════════════════════════════ */}
-      <Modal open={confirm.open} onClose={() => setConfirm(c => ({ ...c, open: false }))}>
+      <Modal open={confirm.open} onClose={() => { setConfirm(c => ({ ...c, open: false })); setDeleteInput(''); }}>
         <div className="p-8 text-center">
           <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-5">
             <HelpCircle size={28} className="text-red-500" />
           </div>
           <h3 className="text-lg font-bold text-slate-800 mb-2">{confirm.title}</h3>
-          <p className="text-slate-500 text-sm mb-7 leading-relaxed">{confirm.message}</p>
+          <p className="text-slate-500 text-sm mb-4 leading-relaxed">{confirm.message}</p>
+          
+          <div className="text-left mb-7">
+            <label className="text-xs font-bold text-slate-500 mb-2 block">
+              Ketik <span className="text-red-500 select-all font-mono bg-red-50 px-1 rounded">hapus acara</span> untuk konfirmasi
+            </label>
+            <input 
+              type="text" 
+              value={deleteInput}
+              onChange={(e) => setDeleteInput(e.target.value)}
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400 transition-colors"
+              placeholder="hapus acara"
+            />
+          </div>
+
           <div className="flex gap-3">
             <button
-              onClick={() => setConfirm(c => ({ ...c, open: false }))}
+              onClick={() => { setConfirm(c => ({ ...c, open: false })); setDeleteInput(''); }}
               className="flex-1 py-3 rounded-xl bg-slate-100 text-slate-700 font-semibold text-sm hover:bg-slate-200 transition-colors"
             >
               Batal
             </button>
             <button
-              onClick={confirm.action}
-              className="flex-1 py-3 rounded-xl bg-red-500 hover:bg-red-600 text-white font-semibold text-sm transition-colors"
+              onClick={() => {
+                confirm.action();
+                setDeleteInput('');
+              }}
+              disabled={deleteInput.toLowerCase() !== 'hapus acara'}
+              className="flex-1 py-3 rounded-xl bg-red-500 hover:bg-red-600 disabled:bg-slate-200 disabled:text-slate-400 text-white font-semibold text-sm transition-colors"
             >
               Ya, Hapus
             </button>
