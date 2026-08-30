@@ -34,7 +34,7 @@ const stepTitles  = ['Pilih Template', 'Isi Detail Acara', 'Pilih Peserta Wajib'
 
 function KategoriChip({ label }) {
   return (
-    <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase border bg-teal-50 text-teal-700 border-teal-100">
+    <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase border bg-slate-50 text-slate-500 border-slate-200">
       {label}
     </span>
   );
@@ -338,7 +338,9 @@ export default function ManageEvents() {
                 return (
                   <div
                     key={event.id}
-                    className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 p-5 bg-white border border-slate-200 rounded-2xl hover:border-teal-300 hover:shadow-md hover:shadow-teal-500/5 transition-all group"
+                    className={`flex flex-col lg:flex-row lg:items-center justify-between gap-5 p-5 bg-white border border-slate-200 rounded-2xl transition-all group ${
+                      event.is_completed ? 'opacity-60 grayscale hover:opacity-100 hover:grayscale-0' : 'hover:border-teal-300 hover:shadow-md hover:shadow-teal-500/5'
+                    }`}
                   >
                     {/* Left: info */}
                     <div className="flex-1 min-w-0 space-y-3">
@@ -349,6 +351,11 @@ export default function ManageEvents() {
                         {typeName && (
                           <span className="inline-flex items-center gap-1 text-xs font-bold uppercase border bg-blue-50 text-blue-700 border-blue-100 px-2.5 py-1 rounded-lg">
                             <Layers size={14} /> {typeName}
+                          </span>
+                        )}
+                        {event.is_completed && (
+                          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
+                            <CheckSquare size={14} /> Selesai Diabsen
                           </span>
                         )}
                       </div>
@@ -363,11 +370,6 @@ export default function ManageEvents() {
                         <span className="flex items-center gap-1.5 text-xs font-bold text-amber-700 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-100">
                           <Clock size={13} /> Batas {event.start_time?.substring(0, 5)} WIB
                         </span>
-                        {event.is_completed && (
-                          <span className="flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200">
-                            <CheckSquare size={14} /> Selesai Diabsen
-                          </span>
-                        )}
                       </div>
 
                       <div className="flex flex-wrap gap-2 pt-1">
