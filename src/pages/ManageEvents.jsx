@@ -363,6 +363,11 @@ export default function ManageEvents() {
                         <span className="flex items-center gap-1.5 text-xs font-bold text-amber-700 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-100">
                           <Clock size={13} /> Batas {event.start_time?.substring(0, 5)} WIB
                         </span>
+                        {event.is_completed && (
+                          <span className="flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200">
+                            <CheckSquare size={14} /> Selesai Diabsen
+                          </span>
+                        )}
                       </div>
 
                       <div className="flex flex-wrap gap-2 pt-1">
