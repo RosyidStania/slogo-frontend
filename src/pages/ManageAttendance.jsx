@@ -12,7 +12,7 @@ import { Scanner } from '@yudiel/react-qr-scanner';
 // ─── Shared small components ──────────────────────────────────────────────────
 
 const KELOMPOK_LIST = ['Semua', 'Slogo', 'Gabugan', 'Jekani', 'Gawan', 'Pengkruk', 'Sidomulyo', 'Karangasem'];
-const JENJANG_LIST  = ['Semua', 'MT', 'PAUD', 'TK', '1 SD', '2 SD', '3 SD', '4 SD', '5 SD', '6 SD', '1 SMP', '2 SMP', '3 SMP', '1 SMA/SMK', '2 SMA/SMK', '3 SMA/SMK', 'USMAN', 'PENGURUS'];
+const JENJANG_LIST  = ['Semua', 'MT', 'PAUD', 'TK', '1 SD', '2 SD', '3 SD', '4 SD', '5 SD', '6 SD', '1 SMP', '2 SMP', '3 SMP', '1 SMA/SMK', '2 SMA/SMK', '3 SMA/SMK', 'USMAN', 'PENGURUS USMAN', 'PENGURUS MUDA MUDI'];
 
 function Avatar({ name, gender, size = 'md' }) {
   const sz = size === 'lg' ? 'w-12 h-12 text-lg' : 'w-9 h-9 text-sm';
@@ -126,7 +126,8 @@ export default function ManageAttendance() {
         const j = (g.jenjang || '').toLowerCase();
         return (
           (targetKategori.length === 0 || targetKategori.some(t => {
-            if (t.toLowerCase() === 'pengurus') return !!g.is_pengurus;
+            if (t.toLowerCase() === 'pengurus usman') return !!g.is_pengurus;
+            if (t.toLowerCase() === 'pengurus muda mudi') return !!g.is_pengurus_muda_mudi;
             return j.includes(t.toLowerCase());
           })) &&
           !attendedIds.includes(g.id) &&
@@ -267,7 +268,7 @@ export default function ManageAttendance() {
     return (
       g.nama_lengkap?.toLowerCase().includes(q) &&
       (filterKelompok === 'Semua' || g.kelompok?.toLowerCase() === filterKelompok.toLowerCase()) &&
-      (filterJenjang  === 'Semua' || (filterJenjang === 'PENGURUS' ? !!g.is_pengurus : g.jenjang?.toLowerCase()  === filterJenjang.toLowerCase()))
+      (filterJenjang  === 'Semua' || (filterJenjang === 'PENGURUS USMAN' ? !!g.is_pengurus : (filterJenjang === 'PENGURUS MUDA MUDI' ? !!g.is_pengurus_muda_mudi : g.jenjang?.toLowerCase()  === filterJenjang.toLowerCase())))
     );
   });
 

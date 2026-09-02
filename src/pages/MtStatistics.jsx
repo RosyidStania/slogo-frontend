@@ -202,7 +202,7 @@ export default function MtStatistics() {
                   ) : data.memberStats.map((item, i) => (
                     <tr key={i} className="border-b border-slate-50 hover:bg-slate-50">
                       <td className="px-4 py-2 font-semibold text-slate-700">{item.nama_lengkap}</td>
-                      <td className="px-4 py-2 text-center"><span className="text-[10px] bg-slate-100 px-2 py-0.5 rounded text-slate-600">{item.is_pengurus ? `${item.jenjang || ''}, PENGURUS` : (item.jenjang || '-')}</span></td>
+                      <td className="px-4 py-2 text-center"><span className="text-[10px] bg-slate-100 px-2 py-0.5 rounded text-slate-600">{(item.is_pengurus ? 'PENGURUS USMAN, ' : '')}{(item.is_pengurus_muda_mudi ? 'PENGURUS MUDA MUDI, ' : '')}{(item.jenjang || '-')}</span></td>
                       <td className="px-4 py-2 text-center text-emerald-600 font-bold">{item.total_hadir}</td>
                       <td className="px-4 py-2 text-center text-red-600 font-bold">{item.total_absen}</td>
                       <td className="px-4 py-2 text-center text-blue-600 font-bold">{item.percentage}%</td>

@@ -3,7 +3,7 @@ import api from '../api/axios';
 import { Search, Loader2, Edit, X, Users, User, CheckCircle2, RefreshCw, AlertTriangle } from 'lucide-react';
 import CustomSelect from '../components/CustomSelect';
 
-const JENJANG_LIST  = ['PAUD', 'TK', '1 SD', '2 SD', '3 SD', '4 SD', '5 SD', '6 SD', '1 SMP', '2 SMP', '3 SMP', '1 SMA/SMK', '2 SMA/SMK', '3 SMA/SMK', 'USMAN', 'MT', 'PENGURUS'];
+const JENJANG_LIST  = ['PAUD', 'TK', '1 SD', '2 SD', '3 SD', '4 SD', '5 SD', '6 SD', '1 SMP', '2 SMP', '3 SMP', '1 SMA/SMK', '2 SMA/SMK', '3 SMA/SMK', 'USMAN', 'MT', 'PENGURUS USMAN', 'PENGURUS MUDA MUDI'];
 
 function Avatar({ name, gender }) {
   const bg = gender === 'L' ? 'bg-blue-100 text-blue-600' : 'bg-pink-100 text-pink-600';
@@ -176,7 +176,7 @@ export default function MtMembers() {
                     </td>
                     <td className="px-5 py-3.5">
                       <span className="text-xs font-semibold px-2.5 py-1 bg-slate-100 text-slate-600 rounded-lg">
-                        {item.is_pengurus ? `${item.jenjang || ''}, PENGURUS` : (item.jenjang || '—')}
+                        {(item.is_pengurus ? 'PENGURUS USMAN, ' : '')}{(item.is_pengurus_muda_mudi ? 'PENGURUS MUDA MUDI, ' : '')}{(item.jenjang || '-')}
                       </span>
                     </td>
                     <td className="px-5 py-3.5 text-slate-600">{item.jenis_kelamin}</td>
@@ -219,12 +219,18 @@ export default function MtMembers() {
                   <CustomSelect name="jenis_kelamin" value={formData.jenis_kelamin} onChange={inp} options={[{ value: 'L', label: 'Laki-laki' }, { value: 'P', label: 'Perempuan' }]} />
                 </Field>
                 <Field label="Jenjang">
-                  <CustomSelect name="jenjang" value={formData.jenjang} onChange={inp} options={JENJANG_LIST.filter(j => j !== 'PENGURUS').map(j => ({ value: j, label: j }))} />
+                  <CustomSelect name="jenjang" value={formData.jenjang} onChange={inp} options={JENJANG_LIST.filter(j => j !== 'PENGURUS USMAN' && j !== 'PENGURUS MUDA MUDI').map(j => ({ value: j, label: j }))} />
                   <label className="flex items-center gap-2 mt-2 cursor-pointer select-none">
                     <input type="checkbox" name="is_pengurus" checked={!!formData.is_pengurus}
                       onChange={(e) => setFormData(prev => ({ ...prev, is_pengurus: e.target.checked }))}
                       className="rounded border-slate-300 text-teal-600 focus:ring-teal-500 w-4 h-4" />
-                    <span className="text-sm font-semibold text-slate-700">Juga Pengurus</span>
+                    <span className="text-sm font-semibold text-slate-700">Pengurus Usman</span>
+                  </label>
+                  <label className="flex items-center gap-2 mt-2 cursor-pointer select-none">
+                    <input type="checkbox" name="is_pengurus_muda_mudi" checked={!!formData.is_pengurus_muda_mudi}
+                      onChange={(e) => setFormData(prev => ({ ...prev, is_pengurus_muda_mudi: e.target.checked }))}
+                      className="rounded border-slate-300 text-teal-600 focus:ring-teal-500 w-4 h-4" />
+                    <span className="text-sm font-semibold text-slate-700">Pengurus Muda Mudi</span>
                   </label>
                 </Field>
                 <Field label="Status">
