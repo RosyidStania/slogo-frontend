@@ -295,10 +295,12 @@ export default function ManageUsers() {
                         <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border ${
                           user.role === 'admin'
                             ? 'bg-teal-50 text-teal-700 border-teal-100'
+                            : user.role === 'operator_absensi'
+                            ? 'bg-blue-50 text-blue-700 border-blue-100'
                             : 'bg-slate-50 text-slate-600 border-slate-200'
                         }`}>
-                          {user.role === 'admin' ? <ShieldCheck size={12} /> : <UserIcon size={12} />}
-                          {user.role}
+                          {user.role === 'admin' || user.role === 'operator_absensi' ? <ShieldCheck size={12} /> : <UserIcon size={12} />}
+                          {user.role === 'operator_absensi' ? 'Operator' : user.role}
                         </span>
                       </td>
                       <td className="px-5 py-3">
@@ -346,7 +348,7 @@ export default function ManageUsers() {
               <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
                 Nama Lengkap
               </label>
-              {formData.role === 'admin' ? (
+              {['admin', 'operator_absensi'].includes(formData.role) ? (
                 <input
                   type="text"
                   name="name"
@@ -409,6 +411,7 @@ export default function ManageUsers() {
                   options={[
                     { value: 'user', label: 'User' },
                     { value: 'admin', label: 'Admin' },
+                    { value: 'operator_absensi', label: 'Operator Absensi' },
                     { value: 'mt', label: 'MT (Pengajar)' }
                   ]}
                 />
