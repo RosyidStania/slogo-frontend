@@ -129,7 +129,7 @@ export default function Dashboard() {
       iconClass: 'bg-blue-50 text-blue-600',
       label: 'Rata-rata Kehadiran',
       value: `${stats.rataKehadiran}%`,
-      sub: 'Dari total absensi',
+      sub: `Selama tahun ini ${new Date().getFullYear()}`,
       subClass: 'text-slate-400',
     },
     {
