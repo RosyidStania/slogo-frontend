@@ -61,6 +61,11 @@ export default function Layout() {
         { name: 'Rekapan Absensi', path: '/admin/reports', icon: <BookOpen size={18} strokeWidth={2} /> },
         { name: 'Users', path: '/admin/users', icon: <Users size={18} strokeWidth={2} /> },
       ]
+    : role === 'operator_absensi'
+    ? [
+        { name: 'Dashboard', path: '/admin', icon: <LayoutDashboard size={18} strokeWidth={2} /> },
+        { name: 'Acara', path: '/admin/events', icon: <Calendar size={18} strokeWidth={2} /> },
+      ]
     : role === 'mt'
     ? [
         { name: 'Dashboard', path: '/mt', icon: <LayoutDashboard size={18} strokeWidth={2} /> },

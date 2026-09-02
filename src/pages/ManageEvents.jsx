@@ -56,6 +56,7 @@ function Modal({ open, onClose, children, maxWidth = 'max-w-sm' }) {
 // ─── Main component ───────────────────────────────────────────────────────────
 export default function ManageEvents() {
   const navigate = useNavigate();
+  const role = localStorage.getItem('role');
 
   const [events,     setEvents]     = useState([]);
   const [eventTypes, setEventTypes] = useState([]);
@@ -231,20 +232,24 @@ export default function ManageEvents() {
             <p className="text-xs text-slate-400 mt-0.5">Kelola agenda dan jadwal kegiatan bulanan.</p>
           </div>
           <div className="flex flex-col sm:flex-row gap-2 shrink-0 w-full sm:w-auto mt-3 sm:mt-0">
-            <button
-              onClick={() => openModal('add')}
-              className="flex items-center justify-center gap-1.5 px-4 py-2.5 bg-teal-500 hover:bg-teal-600 active:scale-95 text-white rounded-xl font-semibold text-sm shadow-sm shadow-teal-200 transition-all whitespace-nowrap"
-            >
-              <Plus size={16} strokeWidth={2.5} />
-              Buat Jadwal Baru
-            </button>
-            <button
-              onClick={() => navigate('/admin/event-types')}
-              className="flex items-center justify-center gap-1.5 px-4 py-2.5 bg-white hover:bg-slate-50 border border-slate-200 active:scale-95 text-slate-700 rounded-xl font-semibold text-sm shadow-sm transition-all whitespace-nowrap"
-            >
-              <Layers size={16} strokeWidth={2.5} />
-              Buat Kategori Baru
-            </button>
+            {role !== 'operator_absensi' && (
+              <>
+                <button
+                  onClick={() => openModal('add')}
+                  className="flex items-center justify-center gap-1.5 px-4 py-2.5 bg-teal-500 hover:bg-teal-600 active:scale-95 text-white rounded-xl font-semibold text-sm shadow-sm shadow-teal-200 transition-all whitespace-nowrap"
+                >
+                  <Plus size={16} strokeWidth={2.5} />
+                  Buat Jadwal Baru
+                </button>
+                <button
+                  onClick={() => navigate('/admin/event-types')}
+                  className="flex items-center justify-center gap-1.5 px-4 py-2.5 bg-white hover:bg-slate-50 border border-slate-200 active:scale-95 text-slate-700 rounded-xl font-semibold text-sm shadow-sm transition-all whitespace-nowrap"
+                >
+                  <Layers size={16} strokeWidth={2.5} />
+                  Buat Kategori Baru
+                </button>
+              </>
+            )}
           </div>
         </div>
 
@@ -329,7 +334,7 @@ export default function ManageEvents() {
               <p className="text-slate-400 font-medium text-sm">
                 {search ? 'Acara tidak ditemukan' : 'Belum ada acara dijadwalkan'}
               </p>
-              {!search && (
+              {!search && role !== 'operator_absensi' && (
                 <button
                   onClick={() => openModal('add')}
                   className="mt-1 text-teal-600 text-sm font-semibold hover:underline"
@@ -414,50 +419,54 @@ export default function ManageEvents() {
                         <Users size={14} /> Absen
                       </button>
                       
-                      <button
-                        onClick={() => handleToggleStatus(event)}
-                        className={`flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-bold transition-all shadow-sm ${
-                          event.is_closed
-                            ? 'bg-amber-50 hover:bg-amber-500 text-amber-700 hover:text-white border-amber-200 hover:border-amber-500'
-                            : 'bg-slate-50 hover:bg-slate-600 text-slate-700 hover:text-white border-slate-200 hover:border-slate-600'
-                        } ${event.is_completed ? 'opacity-60 grayscale group-hover:opacity-100 group-hover:grayscale-0' : ''}`}
-                        title={event.is_closed ? "Buka kembali absen acara ini" : "Tutup absen acara ini"}
-                      >
-                        {event.is_closed ? <Unlock size={14} /> : <Lock size={14} />} 
-                        {event.is_closed ? 'Buka Absen' : 'Tutup'}
-                      </button>
+                      {role !== 'operator_absensi' && (
+                        <>
+                          <button
+                            onClick={() => handleToggleStatus(event)}
+                            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-bold transition-all shadow-sm ${
+                              event.is_closed
+                                ? 'bg-amber-50 hover:bg-amber-500 text-amber-700 hover:text-white border-amber-200 hover:border-amber-500'
+                                : 'bg-slate-50 hover:bg-slate-600 text-slate-700 hover:text-white border-slate-200 hover:border-slate-600'
+                            } ${event.is_completed ? 'opacity-60 grayscale group-hover:opacity-100 group-hover:grayscale-0' : ''}`}
+                            title={event.is_closed ? "Buka kembali absen acara ini" : "Tutup absen acara ini"}
+                          >
+                            {event.is_closed ? <Unlock size={14} /> : <Lock size={14} />} 
+                            {event.is_closed ? 'Buka Absen' : 'Tutup'}
+                          </button>
 
-                      <button
-                        onClick={() => navigate(`/admin/events/${event.id}/summary`)}
-                        className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-blue-50 hover:bg-blue-500 text-blue-700 hover:text-white border border-blue-200 hover:border-blue-500 text-xs font-bold transition-all shadow-sm"
-                      >
-                        <BookOpen size={14} /> Rekapan
-                      </button>
-                      
-                      <div className={`flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm ml-0.5 transition-all ${event.is_completed ? 'opacity-60 grayscale group-hover:opacity-100 group-hover:grayscale-0' : ''}`}>
-                        <button
-                          onClick={() => openModal('edit', event)}
-                          title="Edit"
-                          className="p-2 text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors"
-                        >
-                          <Edit size={14} />
-                        </button>
-                        <button
-                          onClick={() => {
-                            setDeleteInput('');
-                            setConfirm({
-                              open: true,
-                              title: 'Hapus Jadwal Ini?',
-                              message: `Jadwal "${event.name}" akan dihapus permanen. Data absensi terkait juga ikut terhapus.`,
-                              action: () => execDelete(event),
-                            });
-                          }}
-                          title="Hapus"
-                          className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors border-l border-slate-200"
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
+                          <button
+                            onClick={() => navigate(`/admin/events/${event.id}/summary`)}
+                            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-blue-50 hover:bg-blue-500 text-blue-700 hover:text-white border border-blue-200 hover:border-blue-500 text-xs font-bold transition-all shadow-sm"
+                          >
+                            <BookOpen size={14} /> Rekapan
+                          </button>
+                          
+                          <div className={`flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm ml-0.5 transition-all ${event.is_completed ? 'opacity-60 grayscale group-hover:opacity-100 group-hover:grayscale-0' : ''}`}>
+                            <button
+                              onClick={() => openModal('edit', event)}
+                              title="Edit"
+                              className="p-2 text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors"
+                            >
+                              <Edit size={14} />
+                            </button>
+                            <button
+                              onClick={() => {
+                                setDeleteInput('');
+                                setConfirm({
+                                  open: true,
+                                  title: 'Hapus Jadwal Ini?',
+                                  message: `Jadwal "${event.name}" akan dihapus permanen. Data absensi terkait juga ikut terhapus.`,
+                                  action: () => execDelete(event),
+                                });
+                              }}
+                              title="Hapus"
+                              className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors border-l border-slate-200"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
                 );
