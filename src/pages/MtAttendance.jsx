@@ -127,11 +127,15 @@ export default function MtAttendance() {
   const uniqueJenjang = [...new Set(reportData.map(d => d.jenjang))].filter(Boolean);
   const hasPengurusUsman = reportData.some(d => d.is_pengurus);
   const hasPengurusMudaMudi = reportData.some(d => d.is_pengurus_muda_mudi);
+  const hasKetuaWakilKelompok = reportData.some(d => d.is_ketua_wakil_kelompok);
   if (hasPengurusUsman && !uniqueJenjang.includes('PENGURUS USMAN')) {
     uniqueJenjang.push('PENGURUS USMAN');
   }
   if (hasPengurusMudaMudi && !uniqueJenjang.includes('PENGURUS MUDA MUDI')) {
     uniqueJenjang.push('PENGURUS MUDA MUDI');
+  }
+  if (hasKetuaWakilKelompok && !uniqueJenjang.includes('KETUA/WAKIL KELOMPOK')) {
+    uniqueJenjang.push('KETUA/WAKIL KELOMPOK');
   }
 
   const filteredData = reportData.filter(g => {
@@ -139,6 +143,7 @@ export default function MtAttendance() {
     const matchJenjang = filterJenjang.length === 0 ? true : filterJenjang.some(j => {
       if (j === 'PENGURUS USMAN') return !!g.is_pengurus;
       if (j === 'PENGURUS MUDA MUDI') return !!g.is_pengurus_muda_mudi;
+      if (j === 'KETUA/WAKIL KELOMPOK') return !!g.is_ketua_wakil_kelompok;
       return g.jenjang === j;
     });
     return matchName && matchJenjang;
@@ -187,7 +192,7 @@ export default function MtAttendance() {
         no: index + 1,
         status: g.status ? g.status.toUpperCase() : '',
         nama: g.nama_lengkap,
-        jenjang: (g.is_pengurus ? 'PENGURUS USMAN, ' : '') + (g.is_pengurus_muda_mudi ? 'PENGURUS MUDA MUDI, ' : '') + (g.jenjang || ''),
+        jenjang: (g.is_pengurus ? 'PENGURUS USMAN, ' : '') + (g.is_pengurus_muda_mudi ? 'PENGURUS MUDA MUDI, ' : '') + (g.is_ketua_wakil_kelompok ? 'KETUA/WAKIL KELOMPOK, ' : '') + (g.jenjang || ''),
       };
 
       eventsList.forEach(e => {
@@ -370,7 +375,7 @@ export default function MtAttendance() {
                       </td>
                       <td className="px-2 py-2 text-center border border-slate-200 bg-white md:sticky md:left-[270px] z-20 md:shadow-[1px_0_0_#e2e8f0]">
                         <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded-md uppercase">
-                          {(g.is_pengurus ? 'PENGURUS USMAN, ' : '')}{(g.is_pengurus_muda_mudi ? 'PENGURUS MUDA MUDI, ' : '')}{(g.jenjang || '-')}
+                          {(g.is_pengurus ? 'PENGURUS USMAN, ' : '')}{(g.is_pengurus_muda_mudi ? 'PENGURUS MUDA MUDI, ' : '')}{(g.is_ketua_wakil_kelompok ? 'KETUA/WAKIL KELOMPOK, ' : '')}{(g.jenjang || '-')}
                         </span>
                       </td>
                       <td className="px-2 py-2 text-center border border-slate-200 bg-white md:sticky md:left-[370px] z-20 md:shadow-[2px_0_5px_-2px_rgba(0,0,0,0.2)]">

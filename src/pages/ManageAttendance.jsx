@@ -12,7 +12,7 @@ import { Scanner } from '@yudiel/react-qr-scanner';
 // ─── Shared small components ──────────────────────────────────────────────────
 
 const KELOMPOK_LIST = ['Semua', 'Slogo', 'Gabugan', 'Jekani', 'Gawan', 'Pengkruk', 'Sidomulyo', 'Karangasem'];
-const JENJANG_LIST  = ['Semua', 'MT', 'PAUD', 'TK', '1 SD', '2 SD', '3 SD', '4 SD', '5 SD', '6 SD', '1 SMP', '2 SMP', '3 SMP', '1 SMA/SMK', '2 SMA/SMK', '3 SMA/SMK', 'USMAN', 'PENGURUS USMAN', 'PENGURUS MUDA MUDI'];
+const JENJANG_LIST  = ['Semua', 'MT', 'PAUD', 'TK', '1 SD', '2 SD', '3 SD', '4 SD', '5 SD', '6 SD', '1 SMP', '2 SMP', '3 SMP', '1 SMA/SMK', '2 SMA/SMK', '3 SMA/SMK', 'USMAN', 'PENGURUS USMAN', 'PENGURUS MUDA MUDI', 'KETUA/WAKIL KELOMPOK'];
 
 function Avatar({ name, gender, size = 'md' }) {
   const sz = size === 'lg' ? 'w-12 h-12 text-lg' : 'w-9 h-9 text-sm';
@@ -70,6 +70,8 @@ export default function ManageAttendance() {
   // Modals
   const [confirm, setConfirm] = useState({ open: false, title: '', message: '', action: null, type: 'danger' });
   const [showScanner, setShowScanner] = useState(false);
+  const [showManualAdd, setShowManualAdd] = useState(false);
+  const [manualSearch, setManualSearch] = useState('');
   const [scanStatus, setScanStatus]   = useState(null);
   const [scanMessage, setScanMessage] = useState('');
 
@@ -128,6 +130,7 @@ export default function ManageAttendance() {
           (targetKategori.length === 0 || targetKategori.some(t => {
             if (t.toLowerCase() === 'pengurus usman') return !!g.is_pengurus;
             if (t.toLowerCase() === 'pengurus muda mudi') return !!g.is_pengurus_muda_mudi;
+            if (t.toLowerCase() === 'ketua/wakil kelompok') return !!g.is_ketua_wakil_kelompok;
             return j.includes(t.toLowerCase());
           })) &&
           !attendedIds.includes(g.id) &&
@@ -249,8 +252,11 @@ export default function ManageAttendance() {
       return;
     }
 
-    // Periksa apakah dia target acara ini
-    if (!generusRef.current.some(g => g.id === target.id)) {
+    // Periksa apakah dia target acara ini (kecuali jika acara mengizinkan peserta luar)
+    const isTarget = generusRef.current.some(g => g.id === target.id);
+    const allowOutside = !!event?.allow_other_participants;
+
+    if (!isTarget && !allowOutside) {
       setScanStatus('error');
       setScanMessage(`${target.nama_lengkap} bukan target acara`);
       setTimeout(() => setScanStatus(null), 1500);
@@ -268,7 +274,7 @@ export default function ManageAttendance() {
     return (
       g.nama_lengkap?.toLowerCase().includes(q) &&
       (filterKelompok === 'Semua' || g.kelompok?.toLowerCase() === filterKelompok.toLowerCase()) &&
-      (filterJenjang  === 'Semua' || (filterJenjang === 'PENGURUS USMAN' ? !!g.is_pengurus : (filterJenjang === 'PENGURUS MUDA MUDI' ? !!g.is_pengurus_muda_mudi : g.jenjang?.toLowerCase()  === filterJenjang.toLowerCase())))
+      (filterJenjang  === 'Semua' || (filterJenjang === 'PENGURUS USMAN' ? !!g.is_pengurus : (filterJenjang === 'PENGURUS MUDA MUDI' ? !!g.is_pengurus_muda_mudi : (filterJenjang === 'KETUA/WAKIL KELOMPOK' ? !!g.is_ketua_wakil_kelompok : g.jenjang?.toLowerCase()  === filterJenjang.toLowerCase()))))
     );
   });
 
@@ -455,20 +461,32 @@ export default function ManageAttendance() {
                     {displayed.length} orang
                   </span>
                 </div>
-                {displayed.length > 0 && (
+                {(displayed.length > 0 || event?.allow_other_participants) && (
                   <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto mt-2 sm:mt-0">
                     <button onClick={() => setShowScanner(true)}
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold transition-colors">
                       <Camera size={13} /> Scan QR
                     </button>
-                    <button onClick={() => setConfirm({ open: true, title: 'Hadirkan Semua?', message: `Tandai HADIR untuk ${displayed.length} peserta yang tampil?`, type: 'success', action: execHadirSemua })}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold transition-colors">
-                      <CheckCheck size={13} /> Hadir Semua
-                    </button>
-                    <button onClick={() => setConfirm({ open: true, title: 'Alpakan Sisa?', message: `Tandai ALPA untuk sisa ${displayed.length} peserta?`, type: 'danger', action: execAlpaSemua })}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-500 hover:bg-red-600 text-white text-xs font-semibold transition-colors">
-                      <XCircle size={13} /> Alpa Semua
-                    </button>
+                    
+                    {event?.allow_other_participants && (
+                      <button onClick={() => setShowManualAdd(true)}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-500 hover:bg-teal-600 text-white text-xs font-semibold transition-colors">
+                        <UserCheck size={13} /> Tambah Manual
+                      </button>
+                    )}
+
+                    {displayed.length > 0 && (
+                      <>
+                        <button onClick={() => setConfirm({ open: true, title: 'Hadirkan Semua?', message: `Tandai HADIR untuk ${displayed.length} peserta yang tampil?`, type: 'success', action: execHadirSemua })}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold transition-colors">
+                          <CheckCheck size={13} /> Hadir Semua
+                        </button>
+                        <button onClick={() => setConfirm({ open: true, title: 'Alpakan Sisa?', message: `Tandai ALPA untuk sisa ${displayed.length} peserta?`, type: 'danger', action: execAlpaSemua })}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-500 hover:bg-red-600 text-white text-xs font-semibold transition-colors">
+                          <XCircle size={13} /> Alpa Semua
+                        </button>
+                      </>
+                    )}
                   </div>
                 )}
               </div>
@@ -635,6 +653,76 @@ export default function ManageAttendance() {
           <p className="text-center text-xs text-slate-400 mt-3">
             Arahkan kamera ke QR Code peserta. Layar otomatis mendeteksi.
           </p>
+        </div>
+      </Modal>
+
+      {/* ══ MODAL: Tambah Peserta Manual ══════════════════════════════════════ */}
+      <Modal open={showManualAdd} onClose={() => { setShowManualAdd(false); setManualSearch(''); }} maxWidth="max-w-md">
+        <div className="p-5 flex flex-col h-[70vh] sm:h-auto sm:max-h-[85vh]">
+          <div className="flex items-center justify-between mb-4 shrink-0">
+            <div>
+              <h3 className="font-bold text-slate-800 flex items-center gap-2 text-sm">
+                <UserCheck size={16} className="text-teal-500" /> Tambah Peserta Manual
+              </h3>
+              <p className="text-xs text-slate-500 mt-1">
+                Cari dan tambahkan peserta dari seluruh data yang ada.
+              </p>
+            </div>
+            <button onClick={() => { setShowManualAdd(false); setManualSearch(''); }}
+              className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors shrink-0">
+              <X size={16} />
+            </button>
+          </div>
+
+          <div className="relative shrink-0 mb-3">
+            <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+            <input
+              type="text"
+              placeholder="Ketik nama untuk mencari..."
+              value={manualSearch}
+              onChange={e => setManualSearch(e.target.value)}
+              className="w-full pl-11 pr-4 py-3 text-sm bg-slate-50 rounded-xl border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-400"
+            />
+          </div>
+
+          <div className="flex-1 min-h-0 overflow-y-auto divide-y divide-slate-50">
+            {manualSearch.length < 2 ? (
+              <div className="py-10 text-center text-slate-400 text-sm">
+                Ketik minimal 2 huruf untuk mencari
+              </div>
+            ) : (() => {
+              const q = manualSearch.toLowerCase();
+              const results = allGenerusList.filter(g => 
+                g.nama_lengkap?.toLowerCase().includes(q) &&
+                !attendedList.some(a => a.id === g.id) && 
+                !generusList.some(gen => gen.id === g.id) // exclude those already in the call list to avoid duplicates
+              ).slice(0, 15); // limit to 15
+
+              if (results.length === 0) return (
+                <div className="py-10 text-center text-slate-400 text-sm">
+                  Tidak ditemukan peserta yang belum diabsen
+                </div>
+              );
+
+              return results.map(g => (
+                <div key={g.id} className="flex items-center justify-between py-2 hover:bg-slate-50 transition-colors group">
+                  <div className="flex items-center gap-3 min-w-0 pr-3">
+                    <Avatar name={g.nama_lengkap} gender={g.jenis_kelamin} size="sm" />
+                    <div className="min-w-0">
+                      <p className="font-semibold text-slate-800 text-sm truncate">{g.nama_lengkap}</p>
+                      <p className="text-[10px] text-slate-400 mt-0.5">
+                        {g.kelompok} · {g.jenjang || '—'}
+                      </p>
+                    </div>
+                  </div>
+                  <button onClick={() => handleAbsen(g, 'hadir')}
+                    className="px-3 py-1.5 shrink-0 rounded-lg bg-teal-50 hover:bg-teal-500 text-teal-700 hover:text-white border border-teal-200 hover:border-teal-500 text-xs font-bold transition-all">
+                    + Hadir
+                  </button>
+                </div>
+              ));
+            })()}
+          </div>
         </div>
       </Modal>
     </div>

@@ -24,7 +24,7 @@ const kategoriGroups = [
   { label: 'SD',        items: ['1 SD', '2 SD', '3 SD', '4 SD', '5 SD', '6 SD'] },
   { label: 'SMP',       items: ['1 SMP', '2 SMP', '3 SMP'] },
   { label: 'SMA/SMK',   items: ['1 SMA/SMK', '2 SMA/SMK', '3 SMA/SMK'] },
-  { label: 'Lainnya',   items: ['USMAN', 'MT', 'PENGURUS USMAN', 'PENGURUS MUDA MUDI'] },
+  { label: 'Lainnya',   items: ['USMAN', 'MT', 'PENGURUS USMAN', 'PENGURUS MUDA MUDI', 'KETUA/WAKIL KELOMPOK'] },
 ];
 
 const TOTAL_STEPS = 3;
@@ -71,7 +71,7 @@ export default function ManageEvents() {
   const [submitLoading, setSubmitLoading] = useState(false);
 
   const [formData, setFormData] = useState({
-    id: '', name: '', event_date: '', start_time: '', target_kategori: [], event_type_id: ''
+    id: '', name: '', event_date: '', start_time: '', target_kategori: [], event_type_id: '', allow_other_participants: false
   });
 
   const [confirm,       setConfirm]       = useState({ open: false, title: '', message: '', action: null });
@@ -160,9 +160,10 @@ export default function ManageEvents() {
         start_time:     event.start_time,
         target_kategori: cats,
         event_type_id:  event.event_type_id || '',
+        allow_other_participants: !!event.allow_other_participants,
       });
     } else {
-      setFormData({ id: '', name: '', event_date: '', start_time: '', target_kategori: [], event_type_id: '' });
+      setFormData({ id: '', name: '', event_date: '', start_time: '', target_kategori: [], event_type_id: '', allow_other_participants: false });
     }
     setShowModal(true);
   };
@@ -730,6 +731,26 @@ export default function ManageEvents() {
                   ⚠ Pilih minimal satu kelompok peserta.
                 </p>
               )}
+              
+              <div className="mt-4 p-3 bg-blue-50 border border-blue-100 rounded-xl">
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <div className="pt-0.5">
+                    <input 
+                      type="checkbox" 
+                      name="allow_other_participants"
+                      checked={formData.allow_other_participants}
+                      onChange={(e) => setFormData(prev => ({ ...prev, allow_other_participants: e.target.checked }))}
+                      className="w-4 h-4 text-teal-600 rounded border-slate-300 focus:ring-teal-500"
+                    />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-slate-800">Izinkan Tambah Peserta Lain (Luar Target)</p>
+                    <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
+                      Centang ini jika acara ini dihadiri perwakilan/tamu di luar kategori wajib di atas. Anda akan bisa mengabsen nama siapapun saat acara berlangsung.
+                    </p>
+                  </div>
+                </label>
+              </div>
             </div>
           )}
         </div>
