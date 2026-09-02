@@ -63,7 +63,6 @@ export default function Layout() {
       ]
     : role === 'operator_absensi'
     ? [
-        { name: 'Dashboard', path: '/admin', icon: <LayoutDashboard size={18} strokeWidth={2} /> },
         { name: 'Acara', path: '/admin/events', icon: <Calendar size={18} strokeWidth={2} /> },
       ]
     : role === 'mt'

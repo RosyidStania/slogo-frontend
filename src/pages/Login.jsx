@@ -30,6 +30,8 @@ export default function Login() {
           const role = response.data.role;
           if (role === 'admin') {
             navigate('/admin');
+          } else if (role === 'operator_absensi') {
+            navigate('/admin/events');
           } else if (role === 'mt') {
             navigate('/mt');
           } else {

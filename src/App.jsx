@@ -30,7 +30,7 @@ const PrivateRoute = ({ children, allowedRole, allowedRoles }) => {
 
   if (!isAllowed) {
     if (role === 'mt') return <Navigate to="/mt" replace />;
-    if (role === 'operator_absensi') return <Navigate to="/admin" replace />;
+    if (role === 'operator_absensi') return <Navigate to="/admin/events" replace />;
     return <Navigate to={role === 'admin' ? '/admin' : '/users'} replace />;
   }
 
@@ -55,12 +55,12 @@ function App() {
         <Route element={<PrivateRoute><Layout /></PrivateRoute>}>
           
           {/* Rute Khusus Admin & Operator Absensi */}
-          <Route path="/admin" element={<PrivateRoute allowedRoles={['admin', 'operator_absensi']}><Dashboard /></PrivateRoute>} />
           <Route path="/admin/events" element={<PrivateRoute allowedRoles={['admin', 'operator_absensi']}><ManageEvents /></PrivateRoute>} />
           <Route path="/admin/attendance/:eventId" element={<PrivateRoute allowedRoles={['admin', 'operator_absensi']}><ManageAttendance /></PrivateRoute>} />
-          <Route path="/admin/events/:eventId/summary" element={<PrivateRoute allowedRoles={['admin', 'operator_absensi']}><EventSummary /></PrivateRoute>} />
 
           {/* Rute Khusus Admin Saja */}
+          <Route path="/admin/events/:eventId/summary" element={<PrivateRoute allowedRole="admin"><EventSummary /></PrivateRoute>} />
+          <Route path="/admin" element={<PrivateRoute allowedRole="admin"><Dashboard /></PrivateRoute>} />
           <Route path="/admin/users" element={<PrivateRoute allowedRole="admin"><ManageUsers /></PrivateRoute>} />
           <Route path="/admin/generus" element={<PrivateRoute allowedRole="admin"><ManageGenerus /></PrivateRoute>} />
           <Route path="/admin/event-types" element={<PrivateRoute allowedRole="admin"><ManageEventTypes /></PrivateRoute>} />
