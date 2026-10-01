@@ -152,49 +152,51 @@ export default function ManageUsers() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="max-w-7xl mx-auto px-4 py-6 space-y-5">
+      <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
 
         {/* ── Top bar ── */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-xl font-bold text-slate-900">Manajemen Akun</h1>
-            <p className="text-xs text-slate-400 mt-0.5">Kelola akses dan keamanan user.</p>
+            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Manajemen Akun</h1>
+            <p className="text-slate-500 text-sm mt-0.5">Kelola akses dan keamanan user.</p>
           </div>
-          <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+          <div className="flex overflow-x-auto hide-scrollbar gap-2 w-full sm:w-auto mt-3 sm:mt-0 pb-1 sm:pb-0">
             <button
               onClick={() => setShowDeleteAllModal(true)}
-              className="shrink-0 flex items-center gap-1.5 bg-red-500 hover:bg-red-600 text-white px-4 py-2.5 rounded-xl text-xs font-semibold transition-colors shadow-sm"
+              className="shrink-0 flex items-center justify-center gap-1.5 bg-red-500 hover:bg-red-600 text-white px-3 sm:px-4 py-2.5 rounded-xl text-xs font-semibold transition-colors shadow-sm whitespace-nowrap"
             >
-              <Trash2 size={15} /> Hapus Semua
+              <Trash2 size={15} /> <span className="hidden sm:inline">Hapus Semua</span>
             </button>
             <button
               onClick={handleGenerateUsers}
-              className="shrink-0 flex items-center gap-1.5 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl text-xs font-semibold transition-colors shadow-sm"
+              className="shrink-0 flex items-center justify-center gap-1.5 bg-blue-500 hover:bg-blue-600 text-white px-3 sm:px-4 py-2.5 rounded-xl text-xs font-semibold transition-colors shadow-sm whitespace-nowrap"
             >
-              <Users size={15} /> Generate Akun Generus
+              <Users size={15} /> <span className="hidden sm:inline">Generate Akun Generus</span>
             </button>
             <button
               onClick={openAddModal}
-              className="shrink-0 flex items-center gap-1.5 bg-teal-500 hover:bg-teal-600 text-white px-4 py-2.5 rounded-xl text-xs font-semibold transition-colors shadow-sm"
+              className="shrink-0 flex items-center justify-center gap-1.5 bg-teal-500 hover:bg-teal-600 text-white px-3 sm:px-4 py-2.5 rounded-xl text-xs font-semibold transition-colors shadow-sm whitespace-nowrap"
             >
-              <Plus size={15} /> Tambah User
+              <Plus size={15} /> <span className="hidden sm:inline">Tambah User</span>
             </button>
           </div>
         </div>
 
         {/* ── Stat cards ── */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="flex overflow-x-auto hide-scrollbar gap-2 sm:gap-3 snap-x pb-1 sm:pb-0">
           {[
             { label: 'Total Akun',  value: users.length,  color: 'text-slate-700',  bg: 'bg-white border-slate-200',    icon: <Users size={16} className="text-slate-400" /> },
             { label: 'Admin',       value: totalAdmin,     color: 'text-teal-700',   bg: 'bg-teal-50 border-teal-100',   icon: <Shield size={16} className="text-teal-400" /> },
             { label: 'User Biasa',  value: totalUser,      color: 'text-slate-700',  bg: 'bg-white border-slate-200',    icon: <UserIcon size={16} className="text-slate-400" /> },
           ].map(s => (
-            <div key={s.label} className={`${s.bg} border rounded-2xl px-4 py-3 flex items-center justify-between`}>
+            <div key={s.label} className={`${s.bg} border rounded-2xl px-4 py-3 flex items-center justify-between gap-3 flex-1 min-w-[140px]`}>
               <div>
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{s.label}</p>
                 <p className={`text-2xl font-bold mt-0.5 tabular-nums ${s.color}`}>{s.value}</p>
               </div>
-              {s.icon}
+              <div className="shrink-0 bg-slate-50 p-2 rounded-xl">
+                {s.icon}
+              </div>
             </div>
           ))}
         </div>

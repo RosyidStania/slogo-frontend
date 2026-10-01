@@ -103,17 +103,17 @@ export default function MtMembers() {
           <p className="text-slate-500 text-sm mt-0.5">Kelola data peserta generus kelompok Anda</p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {[
-            { label: 'Total Peserta', value: members.length, color: 'text-slate-700', bg: 'bg-white', border: 'border-slate-200', icon: <Users size={18} className="text-slate-400" /> },
-            { label: 'Aktif', value: totalAktif, color: 'text-emerald-700', bg: 'bg-emerald-50', border: 'border-emerald-100', icon: <CheckCircle2 size={18} className="text-emerald-500" /> },
-            { label: 'Pasif', value: totalPasif, color: 'text-amber-700', bg: 'bg-amber-50', border: 'border-amber-100', icon: <RefreshCw size={18} className="text-amber-500" /> },
-            { label: 'Tidak Aktif', value: totalNonaktif, color: 'text-red-700', bg: 'bg-red-50', border: 'border-red-100', icon: <AlertTriangle size={18} className="text-red-500" /> },
+            { label: 'Total Peserta', value: members.length, color: 'text-slate-700', bg: 'bg-white', border: 'border-slate-200', icon: <Users size={16} className="text-slate-400" /> },
+            { label: 'Aktif', value: totalAktif, color: 'text-emerald-700', bg: 'bg-emerald-50', border: 'border-emerald-100', icon: <CheckCircle2 size={16} className="text-emerald-500" /> },
+            { label: 'Pasif', value: totalPasif, color: 'text-amber-700', bg: 'bg-amber-50', border: 'border-amber-100', icon: <RefreshCw size={16} className="text-amber-500" /> },
+            { label: 'Tidak Aktif', value: totalNonaktif, color: 'text-red-700', bg: 'bg-red-50', border: 'border-red-100', icon: <AlertTriangle size={16} className="text-red-500" /> },
           ].map(s => (
-            <div key={s.label} className={`${s.bg} border ${s.border} rounded-2xl px-4 py-4 flex items-center justify-between transition-all duration-300`}>
+            <div key={s.label} className={`${s.bg} border ${s.border} rounded-xl px-3 py-2.5 flex items-center justify-between transition-all duration-300`}>
               <div>
-                <p className="text-xs text-slate-500 font-medium truncate max-w-[110px] sm:max-w-none">{s.label}</p>
-                <p className={`text-2xl font-bold mt-0.5 ${s.color} tabular-nums`}>{s.value}</p>
+                <p className="text-[11px] sm:text-xs text-slate-500 font-medium truncate max-w-[100px] sm:max-w-none">{s.label}</p>
+                <p className={`text-lg sm:text-xl font-bold mt-0.5 ${s.color} tabular-nums`}>{s.value}</p>
               </div>
               {s.icon}
             </div>

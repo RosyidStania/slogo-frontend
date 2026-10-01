@@ -164,50 +164,57 @@ export default function LandingPage() {
       `}</style>
 
       {/* NAVBAR */}
-      <nav className="absolute top-0 w-full z-50 px-6 md:px-12 py-6 flex justify-between items-center">
-        <div className="text-2xl font-extrabold tracking-tighter text-white drop-shadow-md">
+      <nav className="fixed top-0 w-full z-50 px-6 md:px-12 py-4 flex justify-between items-center backdrop-blur-xl bg-teal-900/40 border-b border-teal-700/40 shadow-sm transition-all">
+        <div className="text-2xl font-extrabold tracking-tight text-white drop-shadow-md">
           DesaSlogo.
         </div>
       </nav>
 
       {/* HERO SECTION */}
-      <section className="relative min-h-[100dvh] flex items-center justify-center">
+      <section className="relative min-h-[100dvh] flex items-center justify-center pt-20 px-4">
+        {/* Background Image */}
         <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat fixed"
           style={{ backgroundImage: `url(${bgImage})` }}
         ></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/80 via-slate-900/60 to-slate-900/90"></div>
+        
+        {/* iOS-style overlay (semi-transparent with slight blur) */}
+        <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-[4px]"></div>
 
-        <div className="relative z-10 text-center px-4 max-w-4xl animate-in fade-in slide-in-from-bottom-8 duration-1000">
-          <span className="inline-block py-1 px-3 rounded-full bg-teal-500/20 border border-teal-400/30 text-teal-300 text-sm font-bold tracking-widest uppercase mb-6 backdrop-blur-sm">
-            Platform Manajemen Generus
-          </span>
-          <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-extrabold text-white tracking-tight leading-tight mb-6">
-            Membangun Generasi <br className="hidden md:block"/> Berkarakter Luhur
+        {/* Ambient background glow (iOS/macOS modern aesthetic) */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-teal-500/40 rounded-full blur-[120px] pointer-events-none"></div>
+        <div className="absolute bottom-1/4 right-1/3 w-96 h-96 bg-blue-500/40 rounded-full blur-[120px] pointer-events-none"></div>
+
+        {/* Glassmorphism Card */}
+        <div className="relative z-10 text-center px-6 sm:px-10 py-12 md:py-16 max-w-4xl w-full mx-auto rounded-[2.5rem] backdrop-blur-2xl bg-gradient-to-b from-teal-900/50 to-teal-950/50 border border-teal-700/40 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] animate-in fade-in slide-in-from-bottom-8 duration-1000">
+
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold text-white tracking-tight leading-[1.15] mb-6 drop-shadow-lg">
+            Membangun Generasi <br className="hidden md:block"/> 29 Karakter Luhur
           </h1>
-          <p className="text-lg md:text-xl text-slate-300 font-medium max-w-2xl mx-auto mb-10 leading-relaxed">
-            Menanamkan nilai-nilai akhlak mulia untuk membentuk pribadi yang berintegritas, mandiri, dan beriman demi masa depan yang gemilang.
-          </p>
+          
+          
           <Link
             to="/login"
-            className="inline-flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white px-8 py-4 rounded-full font-bold text-lg shadow-lg shadow-teal-600/30 transition-transform active:scale-95"
+            className="inline-flex items-center gap-3 bg-white/90 hover:bg-white text-slate-900 px-8 py-4 rounded-2xl font-semibold text-lg shadow-[0_4px_20px_0_rgba(255,255,255,0.3)] hover:shadow-[0_8px_30px_rgba(255,255,255,0.4)] hover:-translate-y-1 transition-all duration-300 active:scale-95 backdrop-blur-sm"
           >
-            Mulai Kelola Data <LogIn size={20} />
+            Login <LogIn size={20} className="text-slate-700" />
           </Link>
         </div>
 
-        <div className="absolute bottom-6 sm:bottom-10 left-1/2 -translate-x-1/2 animate-bounce">
-            <ChevronDownIcon className="text-white/50 w-8 h-8" />
+        {/* Scroll Indicator */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce flex flex-col items-center gap-2">
+            <span className="text-white/70 text-[10px] font-bold tracking-[0.2em] uppercase">Scroll</span>
+            <ChevronDownIcon className="text-white/70 w-5 h-5" />
         </div>
       </section>
 
       {/* ABOUT / 29 KARAKTER LUHUR SECTION */}
-      <section className="py-12 sm:py-16 md:py-24 px-6 md:px-12 bg-slate-50">
+      <section className="py-12 sm:py-16 md:py-24 px-6 md:px-12 relative z-10">
         <div className="max-w-7xl mx-auto">
 
           <div className="text-center mb-4 max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4 tracking-tight">29 Karakter Luhur</h2>
-            <p className="text-slate-500 text-lg leading-relaxed">
+            <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4 tracking-tight drop-shadow-md">29 Karakter Luhur</h2>
+            <p className="text-slate-200 text-lg leading-relaxed drop-shadow-md">
               Karakter luhur adalah pedoman nilai-nilai akhlak mulia yang membentuk generasi muda menjadi pribadi berintegritas, mandiri, dan beriman.
             </p>
           </div>
@@ -246,12 +253,12 @@ export default function LandingPage() {
                           onClick={() => handleSelectBubble(idx)}
                           className={`w-full h-full rounded-full flex flex-col items-center justify-center text-center transition-all duration-500 ease-out bg-gradient-to-br ${colorStyles[item.color].grad} ${
                             isActive
-                              ? "scale-110 shadow-2xl ring-4 ring-white"
+                              ? "scale-110 shadow-[0_0_20px_rgba(255,255,255,0.4)] ring-4 ring-white/80"
                               : "scale-100 shadow-lg hover:scale-105"
                           }`}
                         >
                           {React.cloneElement(item.icon, { className: "text-white w-5 h-5 mb-1" })}
-                          <span className="text-white font-bold text-[11px] leading-tight px-2">{item.title}</span>
+                          <span className="text-white font-bold text-[11px] leading-tight px-2 drop-shadow-md">{item.title}</span>
                         </button>
                       </div>
                     </div>
@@ -261,7 +268,7 @@ export default function LandingPage() {
 
               {/* LINGKARAN TENGAH - menampilkan keterangan dengan animasi berputar */}
               <div
-                className="absolute rounded-full bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-slate-200 flex items-center justify-center overflow-hidden z-30"
+                className="absolute rounded-full backdrop-blur-2xl bg-gradient-to-b from-teal-900/50 to-teal-950/50 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] border border-teal-700/40 flex items-center justify-center overflow-hidden z-30"
                 style={{
                   width: centerCircleSize,
                   height: centerCircleSize,
@@ -270,18 +277,18 @@ export default function LandingPage() {
                 }}
               >
                 <div key={selected} className="smooth-reveal text-center px-4 py-2 w-[360px]">
-                  <div className="flex flex-col items-center">
+                  <div className="flex flex-col items-center drop-shadow-md">
                     {karakterData[selected].icon}
                   </div>
-                  <h3 className="text-xl font-bold text-slate-800 mb-1">{karakterData[selected].title}</h3>
-                  <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 pb-3 border-b border-slate-100">
+                  <h3 className="text-xl font-bold text-white mb-1 drop-shadow-md">{karakterData[selected].title}</h3>
+                  <p className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-4 pb-3 border-b border-white/20 drop-shadow-sm">
                     {karakterData[selected].subtitle}
                   </p>
                   <ul className="space-y-3 inline-block text-left mt-2">
                     {karakterData[selected].items.map((it, i) => (
                       <li key={i} className="flex items-center gap-2">
-                        <CheckCircle2 className="text-teal-500 w-4 h-4 shrink-0" />
-                        <strong className="text-sm text-slate-700">{it.name}</strong>
+                        <CheckCircle2 className="text-teal-400 w-4 h-4 shrink-0 drop-shadow-sm" />
+                        <strong className="text-sm text-slate-200 drop-shadow-sm">{it.name}</strong>
                       </li>
                     ))}
                   </ul>
@@ -297,23 +304,23 @@ export default function LandingPage() {
               return (
                 <div
                   key={kategori.title}
-                  className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden"
+                  className="backdrop-blur-xl bg-gradient-to-b from-teal-900/50 to-teal-950/50 rounded-2xl border border-teal-700/40 shadow-lg overflow-hidden"
                 >
                   <button
                     onClick={() => setMobileOpen(isOpen ? null : idx)}
                     className="w-full flex items-center justify-between gap-4 p-5 text-left"
                   >
                     <div className="flex items-center gap-3">
-                      <span className={`w-10 h-10 shrink-0 rounded-full flex items-center justify-center bg-gradient-to-br ${colorStyles[kategori.color].grad}`}>
+                      <span className={`w-10 h-10 shrink-0 rounded-full flex items-center justify-center bg-gradient-to-br ${colorStyles[kategori.color].grad} shadow-inner`}>
                         {React.cloneElement(kategori.icon, { className: "text-white w-5 h-5 mb-0" })}
                       </span>
                       <div>
-                        <h3 className="text-sm font-bold text-slate-800">{kategori.title}</h3>
-                        <p className="text-[11px] text-slate-400">{kategori.subtitle}</p>
+                        <h3 className="text-sm font-bold text-white drop-shadow-sm">{kategori.title}</h3>
+                        <p className="text-[11px] text-slate-300 drop-shadow-sm">{kategori.subtitle}</p>
                       </div>
                     </div>
                     <ChevronDownIcon
-                      className={`w-5 h-5 text-slate-400 shrink-0 transition-transform duration-500 ${isOpen ? "rotate-180" : ""}`}
+                      className={`w-5 h-5 text-white/60 shrink-0 transition-transform duration-500 ${isOpen ? "rotate-180" : ""}`}
                     />
                   </button>
                   <div
@@ -325,8 +332,8 @@ export default function LandingPage() {
                       <ul className="space-y-3 px-5 pb-5 inline-block text-left">
                         {kategori.items.map((item, itemIdx) => (
                           <li key={itemIdx} className="flex items-center gap-3">
-                            <CheckCircle2 className="text-teal-500 w-4 h-4 shrink-0" />
-                            <strong className="text-sm text-slate-700">{item.name}</strong>
+                            <CheckCircle2 className="text-teal-400 w-4 h-4 shrink-0 drop-shadow-sm" />
+                            <strong className="text-sm text-slate-200 drop-shadow-sm">{item.name}</strong>
                           </li>
                         ))}
                       </ul>
@@ -338,21 +345,21 @@ export default function LandingPage() {
           </div>
 
           {/* SECTION PENERAPAN */}
-          <div className="bg-teal-600 rounded-2xl sm:rounded-3xl md:rounded-[3rem] p-6 sm:p-10 md:p-16 text-white relative overflow-hidden shadow-2xl shadow-teal-600/20">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+          <div className="backdrop-blur-2xl bg-gradient-to-b from-teal-900/50 to-teal-950/50 rounded-2xl sm:rounded-3xl md:rounded-[3rem] p-6 sm:p-10 md:p-16 text-white relative overflow-hidden border border-teal-700/40 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)]">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-teal-400/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-teal-400/20 rounded-full blur-2xl translate-y-1/3 -translate-x-1/4 pointer-events-none"></div>
 
             <div className="relative z-10 max-w-4xl mx-auto">
-              <h2 className="text-2xl md:text-3xl font-bold mb-8 text-center">Penerapan dalam Kehidupan</h2>
+              <h2 className="text-2xl md:text-3xl font-bold mb-8 text-center drop-shadow-md">Penerapan dalam Kehidupan</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {penerapanData.map((item, idx) => (
-                  <div key={idx} className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
-                    <h4 className="text-lg font-bold mb-3 text-teal-100">{item.title}</h4>
-                    <p className="text-sm text-teal-50/80 leading-relaxed">{item.desc}</p>
+                  <div key={idx} className="bg-teal-900/40 backdrop-blur-md rounded-2xl p-6 border border-teal-700/40 shadow-inner">
+                    <h4 className="text-lg font-bold mb-3 text-white drop-shadow-sm">{item.title}</h4>
+                    <p className="text-sm text-slate-200 leading-relaxed drop-shadow-sm">{item.desc}</p>
                   </div>
                 ))}
               </div>
-              <p className="text-center mt-12 text-teal-100 font-medium leading-relaxed max-w-3xl mx-auto border-t border-white/20 pt-8">
+              <p className="text-center mt-12 text-slate-200 font-medium leading-relaxed max-w-3xl mx-auto border-t border-white/20 pt-8 drop-shadow-sm">
                 29 Karakter luhur ini menjadi fondasi moral, spiritual, dan sosial bagi generasi muda, membentuk pribadi yang tangguh, berakhlak mulia, dan siap berkontribusi bagi masyarakat dan agama.
               </p>
             </div>
@@ -362,7 +369,7 @@ export default function LandingPage() {
       </section>
 
       {/* FOOTER */}
-      <footer className="bg-slate-900 text-slate-400 py-8 text-center text-sm">
+      <footer className="relative z-10 backdrop-blur-lg bg-black/40 border-t border-white/10 text-slate-300 py-8 text-center text-sm">
         <p>© {new Date().getFullYear()} DesaSlogo. Sistem Manajemen Generus.</p>
       </footer>
     </div>

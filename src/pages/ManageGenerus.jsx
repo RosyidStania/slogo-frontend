@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ReactDOM from 'react-dom';
 import api from '../api/axios';
 import CustomSelect from '../components/CustomSelect';
@@ -134,6 +135,7 @@ const FORM_DEFAULT = {
 
 // ═══════════════════════════════════════════════════════════════════════════════
 export default function ManageGenerus() {
+  const navigate = useNavigate();
   const [generusList, setGenerusList]     = useState([]);
   const [loading, setLoading]             = useState(true);
   const [importing, setImporting]         = useState(false);
@@ -145,6 +147,7 @@ export default function ManageGenerus() {
   const [search, setSearch]               = useState('');
   const [filterKelompok, setFilterKelompok] = useState(['Semua']);
   const [filterJenjang, setFilterJenjang]   = useState(['Semua']);
+  const [showFilters, setShowFilters]       = useState(false);
 
   const handleToggleKelompok = (k) => {
     if (k === 'Semua') {
@@ -549,6 +552,12 @@ export default function ManageGenerus() {
               <span className="hidden sm:inline">Import</span>
             </button>
 
+            <button onClick={() => navigate('/admin/users')}
+              className="lg:hidden flex items-center gap-2 px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors">
+              <Users size={16} className="text-blue-500" />
+              <span className="hidden sm:inline">Users</span>
+            </button>
+
             <button onClick={openAdd}
               className="flex items-center gap-2 px-4 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-sm font-semibold transition-colors shadow-sm">
               <Plus size={16} />
@@ -558,17 +567,17 @@ export default function ManageGenerus() {
         </div>
 
         {/* ── Stats cards — berubah sesuai kelompok aktif ──────────────────── */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {[
-            { label: filterKelompok.includes('Semua') ? 'Total Peserta' : (filterKelompok.length === 1 ? `Kelompok ${filterKelompok[0]}` : 'Multi Kelompok'), value: totalKelompok, color: 'text-slate-700', bg: 'bg-white', border: 'border-slate-200', icon: <Users size={18} className="text-slate-400" /> },
-            { label: 'Aktif', value: totalAktif, color: 'text-emerald-700', bg: 'bg-emerald-50', border: 'border-emerald-100', icon: <CheckCircle2 size={18} className="text-emerald-500" /> },
-            { label: 'Pasif', value: totalPasif, color: 'text-amber-700', bg: 'bg-amber-50', border: 'border-amber-100', icon: <RefreshCw size={18} className="text-amber-500" /> },
-            { label: 'Tidak Aktif', value: totalNonaktif, color: 'text-red-700', bg: 'bg-red-50', border: 'border-red-100', icon: <AlertTriangle size={18} className="text-red-500" /> },
+            { label: filterKelompok.includes('Semua') ? 'Total Peserta' : (filterKelompok.length === 1 ? `Kelompok ${filterKelompok[0]}` : 'Multi Kelompok'), value: totalKelompok, color: 'text-slate-700', bg: 'bg-white', border: 'border-slate-200', icon: <Users size={16} className="text-slate-400" /> },
+            { label: 'Aktif', value: totalAktif, color: 'text-emerald-700', bg: 'bg-emerald-50', border: 'border-emerald-100', icon: <CheckCircle2 size={16} className="text-emerald-500" /> },
+            { label: 'Pasif', value: totalPasif, color: 'text-amber-700', bg: 'bg-amber-50', border: 'border-amber-100', icon: <RefreshCw size={16} className="text-amber-500" /> },
+            { label: 'Tidak Aktif', value: totalNonaktif, color: 'text-red-700', bg: 'bg-red-50', border: 'border-red-100', icon: <AlertTriangle size={16} className="text-red-500" /> },
           ].map(s => (
-            <div key={s.label} className={`${s.bg} border ${s.border} rounded-2xl px-4 py-4 flex items-center justify-between transition-all duration-300`}>
+            <div key={s.label} className={`${s.bg} border ${s.border} rounded-xl px-3 py-2.5 flex items-center justify-between transition-all duration-300`}>
               <div>
-                <p className="text-xs text-slate-500 font-medium truncate max-w-[110px]">{s.label}</p>
-                <p className={`text-2xl font-bold mt-0.5 ${s.color} tabular-nums`}>{s.value}</p>
+                <p className="text-[11px] sm:text-xs text-slate-500 font-medium truncate max-w-[100px]">{s.label}</p>
+                <p className={`text-lg sm:text-xl font-bold mt-0.5 ${s.color} tabular-nums`}>{s.value}</p>
               </div>
               {s.icon}
             </div>
@@ -578,19 +587,32 @@ export default function ManageGenerus() {
         {/* ── Filters ──────────────────────────────────────────────────────── */}
         <div className="space-y-2 z-20 bg-slate-50 pt-2 pb-4 -mt-2 lg:sticky lg:top-0">
           {/* Search bar */}
-          <div className="relative">
-            <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-            <input
-              type="text"
-              placeholder="Cari nama peserta..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="w-full pl-11 pr-4 py-3 text-sm bg-white rounded-2xl border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-teal-400 shadow-sm"
-            />
+          <div className="flex flex-col sm:flex-row gap-2">
+            <div className="relative flex-1">
+              <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+              <input
+                type="text"
+                placeholder="Cari nama peserta..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="w-full pl-11 pr-4 py-3 text-sm bg-white rounded-2xl border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-teal-400 shadow-sm"
+              />
+            </div>
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className={`px-4 py-3 text-sm font-bold rounded-2xl border flex items-center justify-center gap-2 shadow-sm transition-colors ${showFilters ? 'bg-teal-50 border-teal-200 text-teal-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}
+            >
+              <Filter size={16} /> Filter
+              {((!filterKelompok.includes('Semua') && filterKelompok.length > 0) || (!filterJenjang.includes('Semua') && filterJenjang.length > 0)) && (
+                <span className="w-2 h-2 rounded-full bg-red-500"></span>
+              )}
+            </button>
           </div>
 
+          {showFilters && (
+          <div className="flex flex-col md:flex-row gap-2 animate-in fade-in slide-in-from-top-2 duration-200">
           {/* Pill filter — Kelompok */}
-          <div className="bg-white border border-slate-200 rounded-2xl px-3 py-2.5 shadow-sm">
+          <div className="bg-white border border-slate-200 rounded-2xl px-3 py-2.5 shadow-sm flex-1">
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 px-1 flex items-center gap-1.5">
               <MapPin size={10} className="text-teal-500" /> Kelompok
             </p>
@@ -623,7 +645,7 @@ export default function ManageGenerus() {
           </div>
 
           {/* Pill filter — Jenjang */}
-          <div className="bg-white border border-slate-200 rounded-2xl px-3 py-2.5 shadow-sm">
+          <div className="bg-white border border-slate-200 rounded-2xl px-3 py-2.5 shadow-sm flex-1">
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 px-1 flex items-center gap-1.5">
               <Filter size={10} className="text-emerald-500" /> Jenjang
             </p>
@@ -646,6 +668,8 @@ export default function ManageGenerus() {
               })}
             </div>
           </div>
+          </div>
+          )}
         </div>
 
         {/* ── Table ────────────────────────────────────────────────────────── */}

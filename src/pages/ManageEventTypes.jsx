@@ -125,21 +125,21 @@ export default function ManageEventTypes() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="max-w-7xl mx-auto px-4 py-6 space-y-5">
+      <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
 
         {/* ── Top bar ── */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-xl font-bold text-slate-900">Template Kategori Acara</h1>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Template Kategori Acara</h1>
+            <p className="text-slate-500 text-sm mt-0.5">
               Kelola aturan bawaan nama, jam hadir, dan target peserta per jenis acara rutin.
             </p>
           </div>
           <button
             onClick={openAddModal}
-            className="shrink-0 flex items-center gap-1.5 bg-teal-500 hover:bg-teal-600 text-white px-4 py-2.5 rounded-xl text-xs font-semibold transition-colors shadow-sm"
+            className="shrink-0 flex items-center justify-center gap-1.5 bg-teal-500 hover:bg-teal-600 text-white px-4 py-2.5 rounded-xl text-xs font-semibold transition-colors shadow-sm"
           >
-            <Plus size={15} /> Buat Template Baru
+            <Plus size={15} /> <span className="hidden sm:inline">Buat Template Baru</span>
           </button>
         </div>
 

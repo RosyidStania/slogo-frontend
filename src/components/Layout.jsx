@@ -16,7 +16,13 @@ import {
   QrCode,
   User,
   ClipboardList,
-  BarChart3
+  BarChart3,
+  Home,
+  CalendarDays,
+  Library,
+  UsersRound,
+  Activity,
+  UserRound
 } from 'lucide-react';
 
 export default function Layout() {
@@ -54,30 +60,30 @@ export default function Layout() {
 
   const menuItems = role === 'admin' 
     ? [
-        { name: 'Dashboard', path: '/admin', icon: <LayoutDashboard size={18} strokeWidth={2} /> },
-        { name: 'Acara', path: '/admin/events', icon: <Calendar size={18} strokeWidth={2} /> },
-        { name: 'Generus', path: '/admin/generus', icon: <Database size={18} strokeWidth={2} /> },
+        { name: 'Dashboard', path: '/admin', icon: <Home size={18} strokeWidth={2} /> },
+        { name: 'Acara', path: '/admin/events', icon: <CalendarDays size={18} strokeWidth={2} /> },
+        { name: 'Generus', path: '/admin/generus', icon: <UsersRound size={18} strokeWidth={2} /> },
         { name: 'Kategori Acara', path: '/admin/event-types', icon: <Layers size={18} strokeWidth={2} /> },
-        { name: 'Rekapan Absensi', path: '/admin/reports', icon: <BookOpen size={18} strokeWidth={2} /> },
-        { name: 'Users', path: '/admin/users', icon: <Users size={18} strokeWidth={2} /> },
+        { name: 'Rekapan Absensi', path: '/admin/reports', icon: <Library size={18} strokeWidth={2} /> },
+        { name: 'Users', path: '/admin/users', icon: <UsersRound size={18} strokeWidth={2} /> },
       ]
     : role === 'operator_absensi'
     ? [
-        { name: 'Acara', path: '/admin/events', icon: <Calendar size={18} strokeWidth={2} /> },
+        { name: 'Acara', path: '/admin/events', icon: <CalendarDays size={18} strokeWidth={2} /> },
       ]
     : role === 'mt'
     ? [
-        { name: 'Dashboard', path: '/mt', icon: <LayoutDashboard size={18} strokeWidth={2} /> },
-        { name: 'Data Anggota', path: '/mt/members', icon: <Users size={18} strokeWidth={2} /> },
-        { name: 'Statistik', path: '/mt/statistics', icon: <BarChart3 size={18} strokeWidth={2} /> },
-        { name: 'Rekapan Absensi', path: '/mt/attendance', icon: <ClipboardList size={18} strokeWidth={2} /> },
+        { name: 'Dashboard', path: '/mt', icon: <Home size={18} strokeWidth={2} /> },
+        { name: 'Data Anggota', path: '/mt/members', icon: <UsersRound size={18} strokeWidth={2} /> },
+        { name: 'Statistik', path: '/mt/statistics', icon: <Activity size={18} strokeWidth={2} /> },
+        { name: 'Rekapan Absensi', path: '/mt/attendance', icon: <Library size={18} strokeWidth={2} /> },
         { name: 'QR Absen', path: '/mt/qr', icon: <QrCode size={18} strokeWidth={2} /> },
-        { name: 'Profil', path: '/mt/profile', icon: <User size={18} strokeWidth={2} /> },
+        { name: 'Profil', path: '/mt/profile', icon: <UserRound size={18} strokeWidth={2} /> },
       ]
     : [
-        { name: 'Dashboard', path: '/users', icon: <LayoutDashboard size={18} strokeWidth={2} /> },
+        { name: 'Dashboard', path: '/users', icon: <Home size={18} strokeWidth={2} /> },
         { name: 'QR Absen', path: '/users/qr', icon: <QrCode size={18} strokeWidth={2} /> },
-        { name: 'Profil', path: '/users/profile', icon: <User size={18} strokeWidth={2} /> },
+        { name: 'Profil', path: '/users/profile', icon: <UserRound size={18} strokeWidth={2} /> },
       ];
 
   const pageTitle = (() => {
@@ -256,42 +262,60 @@ export default function Layout() {
       {/* ============================= */}
       {/* BOTTOM NAVIGATION (MOBILE)    */}
       {/* ============================= */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-gradient-to-r from-teal-900 to-teal-950 border-t border-teal-800/50 shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.5)] z-40 pb-[env(safe-area-inset-bottom)]">
-        <div className="flex items-center justify-evenly h-20 px-2 overflow-x-auto hide-scrollbar">
-          {menuItems.filter(m => m.name !== 'Kategori Acara').map((menu) => {
-            const isActive = location.pathname === menu.path || 
-              (menu.path !== '/admin' && menu.path !== '/users' && menu.path !== '/mt' && location.pathname.startsWith(menu.path));
-            
-            // Shorten name for mobile if necessary
-            let shortName = menu.name;
-            if (menu.name === 'Kategori Acara') shortName = 'Kategori';
-            if (menu.name === 'Rekapan Absensi') shortName = 'Rekapan';
-            if (menu.name === 'QR Absen') shortName = 'QR';
-            if (menu.name === 'Data Anggota') shortName = 'Anggota';
-            if (menu.name === 'Statistik') shortName = 'Statistik';
+      <nav className="lg:hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-40 w-[94vw] max-w-[450px]">
+        <div className="relative flex items-center justify-between w-full h-[70px]">
+          
+          {(() => {
+            const navItems = menuItems.filter(m => m.name !== 'Kategori Acara' && m.name !== 'Users');
+            const activeIndex = navItems.findIndex(menu => {
+              return location.pathname === menu.path || 
+                (menu.path !== '/admin' && menu.path !== '/users' && menu.path !== '/mt' && location.pathname.startsWith(menu.path));
+            });
+            const safeActiveIndex = activeIndex >= 0 ? activeIndex : 0;
 
             return (
-              <Link
-                key={menu.name}
-                to={menu.path}
-                className={`flex flex-col items-center justify-center w-16 h-16 rounded-2xl transition-all duration-300 relative shrink-0 ${
-                  isActive ? 'text-white' : 'text-teal-100/60 hover:text-white'
-                }`}
-              >
-                {isActive && (
-                  <div className="absolute inset-0 bg-teal-800/50 shadow-inner border border-teal-700/50 rounded-2xl -z-10"></div>
-                )}
-                <div className={`transition-transform duration-300 ${isActive ? '-translate-y-2' : ''}`}>
-                  {React.cloneElement(menu.icon, { size: 22 })}
+              <div className="relative w-full h-[70px]">
+                
+                {/* Background Layer with Transparent Notch and Drop Shadow */}
+                <div 
+                  className="absolute inset-0"
+                  style={{ filter: 'drop-shadow(0 8px 12px rgba(0,0,0,0.3))' }}
+                >
+                  <div 
+                    className="absolute inset-0 bg-teal-900 rounded-[35px] transition-all duration-300"
+                    style={{
+                      WebkitMaskImage: `radial-gradient(circle at calc((100% / ${navItems.length}) * ${safeActiveIndex} + (100% / ${navItems.length}) / 2) 8px, transparent 32px, black 33px)`,
+                      maskImage: `radial-gradient(circle at calc((100% / ${navItems.length}) * ${safeActiveIndex} + (100% / ${navItems.length}) / 2) 8px, transparent 32px, black 33px)`
+                    }}
+                  ></div>
                 </div>
-                <span className={`text-[10px] font-bold tracking-tight transition-all duration-300 absolute bottom-2 ${
-                  isActive ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
-                }`}>
-                  {shortName}
-                </span>
-              </Link>
+
+                {/* Nav Items */}
+                <div className="relative flex items-center justify-between w-full h-full px-0">
+                  {navItems.map((menu, i) => {
+                    const isActive = i === safeActiveIndex;
+                    return (
+                      <Link
+                        key={menu.name}
+                        to={menu.path}
+                        className="relative z-10 flex-1 flex justify-center items-center h-full"
+                      >
+                        <div className={`
+                          flex items-center justify-center w-[52px] h-[52px] rounded-full transition-all duration-500 ease-in-out
+                          ${isActive ? 'bg-teal-900 text-white -translate-y-[24px] shadow-lg shadow-teal-900/40' : 'bg-transparent text-teal-100/60 hover:text-white'}
+                        `}>
+                          {React.cloneElement(menu.icon, { 
+                            size: 24, 
+                            strokeWidth: isActive ? 2.5 : 2
+                          })}
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
             );
-          })}
+          })()}
         </div>
       </nav>
     </div>

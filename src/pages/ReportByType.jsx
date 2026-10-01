@@ -4,7 +4,7 @@ import { Layers, Loader2, Download, Search, AlertCircle, MapPin, Filter, Chevron
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 
-function CustomSelect({ options, value, onChange, placeholder }) {
+function CustomSelect({ options, value, onChange, placeholder, multiple = false }) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef(null);
 
@@ -18,32 +18,58 @@ function CustomSelect({ options, value, onChange, placeholder }) {
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
-  const selectedOption = options.find(o => o.value == value) || null;
+  const getLabel = () => {
+    if (multiple) {
+      if (!value || value.length === 0) return placeholder;
+      if (value.length === 1) {
+        const opt = options.find(o => o.value == value[0]);
+        return opt ? opt.label : placeholder;
+      }
+      return `${value.length} Terpilih`;
+    }
+    const selectedOption = options.find(o => o.value == value) || null;
+    return selectedOption ? selectedOption.label : placeholder;
+  };
 
   return (
     <div className="relative w-full md:w-auto" ref={containerRef}>
       <div 
         onClick={() => setOpen(!open)}
-        className="flex items-center justify-between gap-4 pl-4 pr-3 py-2.5 bg-white/80 border border-slate-200/80 rounded-xl text-sm font-bold text-slate-700 shadow-sm cursor-pointer hover:bg-white transition-colors select-none min-w-[150px]"
+        className="flex items-center justify-between gap-2 md:gap-4 pl-3 md:pl-4 pr-2 md:pr-3 py-2.5 bg-white/80 border border-slate-200/80 rounded-xl text-xs md:text-sm font-bold text-slate-700 shadow-sm cursor-pointer hover:bg-white transition-colors select-none min-w-0 md:min-w-[150px]"
       >
-        <span>{selectedOption ? selectedOption.label : placeholder}</span>
-        <ChevronDown size={16} className={`text-slate-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+        <span className="truncate">{getLabel()}</span>
+        <ChevronDown size={16} className={`text-slate-400 transition-transform duration-200 shrink-0 ${open ? 'rotate-180' : ''}`} />
       </div>
 
       {open && (
         <div className="absolute z-50 top-full right-0 md:left-0 md:right-auto mt-1.5 w-max min-w-full bg-white/95 backdrop-blur-xl border border-slate-200/80 rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] overflow-hidden py-1.5 max-h-64 overflow-y-auto thin-scrollbar">
-          {options.map(opt => (
-            <div 
-              key={opt.value}
-              onClick={() => {
-                onChange(opt.value);
-                setOpen(false);
-              }}
-              className={`px-4 py-2.5 text-sm font-semibold cursor-pointer transition-colors ${value == opt.value ? 'bg-teal-50 text-teal-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}
-            >
-              {opt.label}
-            </div>
-          ))}
+          {options.map(opt => {
+            const isSelected = multiple ? (value || []).includes(opt.value) : value == opt.value;
+            return (
+              <div 
+                key={opt.value}
+                onClick={() => {
+                  if (multiple) {
+                    const current = value || [];
+                    if (current.includes(opt.value)) {
+                      onChange(current.filter(v => v !== opt.value));
+                    } else {
+                      onChange([...current, opt.value]);
+                    }
+                  } else {
+                    onChange(opt.value);
+                    setOpen(false);
+                  }
+                }}
+                className={`px-4 py-2.5 text-sm font-semibold cursor-pointer transition-colors flex justify-between items-center ${isSelected ? 'bg-teal-50 text-teal-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}
+              >
+                <span>{opt.label}</span>
+                {multiple && isSelected && (
+                  <svg className="w-4 h-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
@@ -55,7 +81,7 @@ export default function ReportByType() {
   const [loading, setLoading] = useState(false);
   
   // Filters
-  const [selectedType, setSelectedType] = useState('');
+  const [selectedType, setSelectedType] = useState([]);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
   const [availableYears, setAvailableYears] = useState([new Date().getFullYear()]);
   
@@ -64,12 +90,54 @@ export default function ReportByType() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterKelompok, setFilterKelompok] = useState([]);
   const [filterJenjang, setFilterJenjang] = useState([]);
+  const [showFilters, setShowFilters] = useState(false);
   
   const formatDate = (dateString) => {
     const d = new Date(dateString);
     const day = d.getDate().toString().padStart(2, '0');
     const month = d.toLocaleString('id-ID', { month: 'short' });
     return `${day} ${month}`;
+  };
+
+  const getEventTypeColor = (eventTypeId) => {
+    const colors = [
+      'bg-blue-100 text-blue-800 border-blue-200',
+      'bg-orange-100 text-orange-800 border-orange-200',
+      'bg-emerald-100 text-emerald-800 border-emerald-200',
+      'bg-purple-100 text-purple-800 border-purple-200',
+      'bg-rose-100 text-rose-800 border-rose-200',
+      'bg-cyan-100 text-cyan-800 border-cyan-200',
+      'bg-amber-100 text-amber-800 border-amber-200',
+      'bg-indigo-100 text-indigo-800 border-indigo-200',
+      'bg-lime-100 text-lime-800 border-lime-200',
+      'bg-fuchsia-100 text-fuchsia-800 border-fuchsia-200',
+      'bg-sky-100 text-sky-800 border-sky-200',
+      'bg-pink-100 text-pink-800 border-pink-200',
+      'bg-teal-100 text-teal-800 border-teal-200',
+      'bg-red-100 text-red-800 border-red-200',
+      'bg-violet-100 text-violet-800 border-violet-200',
+      'bg-yellow-100 text-yellow-800 border-yellow-200'
+    ];
+
+    const mapping = {};
+    let nextColorIdx = 3; 
+    const sortedTypes = [...eventTypes].sort((a, b) => a.id - b.id);
+    
+    sortedTypes.forEach(type => {
+      const name = type.name.toLowerCase();
+      if (name.includes('bersih') && !Object.values(mapping).includes(colors[0])) {
+        mapping[type.id] = colors[0];
+      } else if ((name.includes('musyawarah') || name.includes('musyawaroh')) && !Object.values(mapping).includes(colors[1])) {
+        mapping[type.id] = colors[1];
+      } else if (name.includes('pengajian') && !Object.values(mapping).includes(colors[2])) {
+        mapping[type.id] = colors[2];
+      } else {
+        mapping[type.id] = colors[nextColorIdx % colors.length];
+        nextColorIdx++;
+      }
+    });
+
+    return mapping[eventTypeId] || 'bg-slate-100 text-slate-500 border-slate-200';
   };
 
   useEffect(() => {
@@ -97,7 +165,7 @@ export default function ReportByType() {
       setEventTypes(res.data.data || []);
       // Auto-select first type if available
       if (res.data.data?.length > 0) {
-        setSelectedType(res.data.data[0].id.toString());
+        setSelectedType([res.data.data[0].id.toString()]);
       }
     } catch (err) {
       console.error("Gagal mengambil kategori acara", err);
@@ -105,8 +173,11 @@ export default function ReportByType() {
   };
 
   useEffect(() => {
-    if (selectedType && selectedYear) {
+    if (selectedType.length > 0 && selectedYear) {
       fetchReport();
+    } else {
+      setReportData([]);
+      setEventsList([]);
     }
   }, [selectedType, selectedYear]);
 
@@ -114,7 +185,7 @@ export default function ReportByType() {
     setLoading(true);
     try {
       const res = await api.get('/admin/reports/attendance-by-type', {
-        params: { event_type_id: selectedType, year: selectedYear }
+        params: { event_type_id: selectedType.join(','), year: selectedYear }
       });
       setReportData(res.data.data || []);
       setEventsList(res.data.events || []);
@@ -127,13 +198,23 @@ export default function ReportByType() {
 
   // Extract unique options for filters
   const uniqueKelompok = [...new Set(reportData.map(d => d.kelompok))].filter(Boolean).sort();
-  // For jenjang we might just want to use the unique values in the order they appear (already sorted by backend)
-  const uniqueJenjang = [...new Set(reportData.map(d => d.jenjang))].filter(Boolean);
+  
+  const baseJenjang = ['MT', 'USMAN', '3 SMA/SMK', '2 SMA/SMK', '1 SMA/SMK', '3 SMP', '2 SMP', '1 SMP', '6 SD', '5 SD', '4 SD', '3 SD', '2 SD', '1 SD', 'TK', 'PAUD'];
+  const uniqueJenjang = baseJenjang.filter(j => reportData.some(g => g.jenjang === j));
+  
+  if (reportData.some(g => g.is_pengurus)) uniqueJenjang.push('PENGURUS USMAN');
+  if (reportData.some(g => g.is_pengurus_muda_mudi)) uniqueJenjang.push('PENGURUS MUDA MUDI');
+  if (reportData.some(g => g.is_ketua_wakil_kelompok)) uniqueJenjang.push('KETUA/WAKIL KELOMPOK');
 
   const filteredData = reportData.filter(g => {
     const matchName = g.nama_lengkap.toLowerCase().includes(searchTerm.toLowerCase());
     const matchKelompok = filterKelompok.length === 0 ? true : filterKelompok.includes(g.kelompok);
-    const matchJenjang = filterJenjang.length === 0 ? true : filterJenjang.includes(g.jenjang);
+    const matchJenjang = filterJenjang.length === 0 ? true : filterJenjang.some(f => {
+      if (f === 'PENGURUS USMAN') return !!g.is_pengurus;
+      if (f === 'PENGURUS MUDA MUDI') return !!g.is_pengurus_muda_mudi;
+      if (f === 'KETUA/WAKIL KELOMPOK') return !!g.is_ketua_wakil_kelompok;
+      return g.jenjang === f;
+    });
     return matchName && matchKelompok && matchJenjang;
   });
 
@@ -155,7 +236,7 @@ export default function ReportByType() {
       views: [{ state: 'frozen', ySplit: 1, topLeftCell: 'A2' }]
     });
 
-    const typeName = eventTypes.find(t => t.id.toString() === selectedType)?.name || 'Kategori';
+    const typeName = eventTypes.filter(t => selectedType.includes(t.id.toString())).map(t => t.name).join('_') || 'Kategori';
     const titleText = `Rekapan_${typeName.replace(/\s+/g, '_')}_Tahun_${selectedYear}.xlsx`;
 
     // Define Columns
@@ -166,6 +247,7 @@ export default function ReportByType() {
       { header: 'NAMA LENGKAP', key: 'nama', width: 30 },
       { header: 'JENJANG', key: 'jenjang', width: 15 },
       { header: 'KELOMPOK', key: 'kelompok', width: 15 },
+      { header: 'RECAP', key: 'recap', width: 10 },
     ];
 
     eventsList.forEach(e => {
@@ -199,13 +281,24 @@ export default function ReportByType() {
 
     // Add Data
     filteredData.forEach((g, index) => {
+      let present = 0;
+      let totalParticipant = 0;
+      eventsList.forEach(e => {
+        const stat = g.events_attendance[e.id];
+        if (stat && stat !== '-') {
+          totalParticipant++;
+          if (stat === 'H') present++;
+        }
+      });
+
       const rowData = {
         id: g.id,
         no: index + 1,
         status: g.status ? g.status.toUpperCase() : '',
         nama: g.nama_lengkap,
-        jenjang: g.jenjang,
+        jenjang: (g.is_pengurus ? 'PENGURUS USMAN, ' : '') + (g.is_pengurus_muda_mudi ? 'PENGURUS MUDA MUDI, ' : '') + (g.is_ketua_wakil_kelompok ? 'KETUA/WAKIL KELOMPOK, ' : '') + (g.jenjang || ''),
         kelompok: g.kelompok,
+        recap: totalParticipant === 0 ? '-' : `${present}/${totalParticipant}`
       };
 
       eventsList.forEach(e => {
@@ -287,39 +380,42 @@ export default function ReportByType() {
 
   return (
     <div className="min-h-screen bg-transparent">
-      <div className="max-w-7xl mx-auto space-y-6">
+      <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
         
         {/* Header & Controls */}
-        <div className="relative z-20 bg-white/70 backdrop-blur-xl border border-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[20px] p-4 sm:p-6 flex flex-col md:flex-row gap-4 items-center justify-between">
-          <div className="flex-1 w-full">
-            <h1 className="text-xl font-bold text-slate-800 tracking-tight">Rekapan Kehadiran per Kategori</h1>
-            <p className="text-sm text-slate-500 mt-1">Pantau absensi bulanan berdasarkan jenis kegiatan.</p>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Rekapan Kehadiran per Kategori</h1>
+            <p className="text-slate-500 text-sm mt-0.5">Pantau absensi bulanan berdasarkan jenis kegiatan.</p>
           </div>
           
-          <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-            {/* Filter Year */}
-            <CustomSelect 
-              options={availableYears.map(y => ({ value: y.toString(), label: y.toString() }))}
-              value={selectedYear}
-              onChange={setSelectedYear}
-              placeholder="Tahun"
-            />
+          <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto mt-3 sm:mt-0">
+            <div className="grid grid-cols-2 gap-2 sm:gap-3 w-full sm:w-auto">
+              {/* Filter Year */}
+              <CustomSelect 
+                options={availableYears.map(y => ({ value: y.toString(), label: y.toString() }))}
+                value={selectedYear}
+                onChange={setSelectedYear}
+                placeholder="Tahun"
+              />
 
-            {/* Filter Kategori */}
-            <CustomSelect 
-              options={eventTypes.map(t => ({ value: t.id.toString(), label: t.name }))}
-              value={selectedType ? selectedType.toString() : ''}
-              onChange={setSelectedType}
-              placeholder="Pilih Kategori Acara"
-            />
+              {/* Filter Kategori */}
+              <CustomSelect 
+                multiple
+                options={eventTypes.map(t => ({ value: t.id.toString(), label: t.name }))}
+                value={selectedType}
+                onChange={setSelectedType}
+                placeholder="Pilih Kategori Acara"
+              />
+            </div>
 
             {/* Export Button */}
             <button 
               onClick={exportToExcel}
               disabled={!filteredData.length}
-              className="w-full md:w-auto justify-center flex items-center gap-2 px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50"
+              className="shrink-0 w-full md:w-auto justify-center flex items-center gap-2 px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50"
             >
-              <FileUp size={16} className="text-teal-500" /> Export
+              <FileUp size={16} className="text-teal-500" /> <span className="hidden sm:inline">Export</span>
             </button>
           </div>
         </div>
@@ -340,12 +436,41 @@ export default function ReportByType() {
                   className="w-full pl-11 pr-4 py-2 text-sm bg-white rounded-xl border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-400 shadow-sm transition-all"
                 />
               </div>
-              <div className="px-4 py-2 bg-white text-slate-600 text-xs font-bold rounded-xl border border-slate-200 flex items-center shrink-0 shadow-sm">
-                Total: {filteredData.length} Data
+              <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
+                <span className="text-slate-500 text-xs font-bold">
+                  Total: {filteredData.length} Data
+                </span>
+                <button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className={`px-4 py-2 text-xs font-bold rounded-xl border flex items-center gap-2 shadow-sm transition-colors ${showFilters ? 'bg-teal-50 border-teal-200 text-teal-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}
+                >
+                  <Filter size={14} /> Filter
+                  {(filterKelompok.length > 0 || filterJenjang.length > 0) && (
+                    <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                  )}
+                </button>
               </div>
+              
+              {/* Keterangan Warna Kategori */}
+              {selectedType.length > 0 && eventTypes.length > 0 && (
+                <div className="flex flex-wrap items-center gap-2 mt-2 pt-3 border-t border-slate-100">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mr-1">Keterangan Warna:</span>
+                  {selectedType.map(id => {
+                    const type = eventTypes.find(t => t.id.toString() === id);
+                    if (!type) return null;
+                    return (
+                      <div key={id} className={`px-2.5 py-1 rounded-md text-[10px] font-bold border ${getEventTypeColor(type.id)} flex items-center gap-1.5`}>
+                        <div className="w-2 h-2 rounded-full bg-current opacity-70"></div>
+                        {type.name}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
             
-            <div className="flex flex-col xl:flex-row gap-4">
+            {showFilters && (
+            <div className="flex flex-col xl:flex-row gap-4 animate-in fade-in slide-in-from-top-2 duration-200">
               {/* Pill filter: Kelompok */}
               <div className="bg-white border border-slate-200 rounded-xl px-4 py-3 shadow-sm flex-1">
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2.5 px-1 flex items-center gap-1.5">
@@ -394,6 +519,7 @@ export default function ReportByType() {
                 </div>
               </div>
             </div>
+            )}
           </div>
 
           {/* Table Container */}
@@ -403,7 +529,7 @@ export default function ReportByType() {
                 <Loader2 size={32} className="animate-spin text-teal-500" />
                 <p className="text-slate-400 font-medium text-sm">Memuat rekapan absensi...</p>
               </div>
-            ) : !selectedType ? (
+            ) : selectedType.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center space-y-3">
                 <Layers size={32} className="text-slate-300" />
                 <p className="text-slate-400 font-medium text-sm">Pilih kategori acara terlebih dahulu.</p>
@@ -415,18 +541,19 @@ export default function ReportByType() {
               </div>
             ) : (
               <div className="w-max min-w-full pb-4">
-              <table className="text-left border-collapse">
+              <table className="w-full text-left border-collapse">
                 <thead className="lg:sticky top-0 z-40 shadow-sm">
                   <tr>
-                    <th className="px-2 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 text-center bg-slate-100 lg:sticky lg:left-0 z-30 w-[50px] min-w-[50px] lg:shadow-[1px_0_0_#e2e8f0]">#</th>
-                    <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 bg-slate-100 lg:sticky lg:left-[50px] z-30 w-[220px] min-w-[220px] lg:shadow-[1px_0_0_#e2e8f0]">Nama</th>
-                    <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 text-center bg-slate-100 lg:sticky lg:left-[270px] z-30 w-[100px] min-w-[100px] lg:shadow-[1px_0_0_#e2e8f0]">Jenjang</th>
-                    <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 text-center bg-slate-100 lg:sticky lg:left-[370px] z-30 w-[120px] min-w-[120px] lg:shadow-[1px_0_0_#e2e8f0]">Kelompok</th>
-                    <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 text-center bg-slate-100 lg:sticky lg:left-[490px] z-30 w-[100px] min-w-[100px] lg:shadow-[2px_0_5px_-2px_rgba(0,0,0,0.2)]">Status</th>
+                    <th className="px-2 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 text-center bg-slate-100 lg:sticky lg:left-0 z-30 w-[40px] min-w-[40px] lg:shadow-[1px_0_0_#e2e8f0]">#</th>
+                    <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 bg-slate-100 lg:sticky lg:left-[40px] z-30 w-[180px] min-w-[180px] lg:shadow-[1px_0_0_#e2e8f0]">Nama</th>
+                    <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 text-center bg-slate-100 lg:sticky lg:left-[220px] z-30 w-[220px] min-w-[220px] lg:shadow-[1px_0_0_#e2e8f0]">Jenjang</th>
+                    <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 text-center bg-slate-100 lg:sticky lg:left-[440px] z-30 w-[100px] min-w-[100px] lg:shadow-[1px_0_0_#e2e8f0]">Kelompok</th>
+                    <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 text-center bg-slate-100 lg:sticky lg:left-[540px] z-30 w-[80px] min-w-[80px] lg:shadow-[1px_0_0_#e2e8f0]">Status</th>
+                    <th className="px-2 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 text-center bg-slate-100 lg:sticky lg:left-[620px] z-30 w-[70px] min-w-[70px] lg:shadow-[2px_0_5px_-2px_rgba(0,0,0,0.2)]">Recap</th>
                     
                     {/* Kolom Acara Dinamis */}
                     {eventsList.map(e => (
-                      <th key={e.id} className="px-2 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 text-center bg-slate-50 min-w-[70px] w-[70px]">
+                      <th key={e.id} className={`px-2 py-4 text-[10px] font-black uppercase tracking-widest border text-center min-w-[70px] w-[70px] ${getEventTypeColor(e.event_type_id)}`}>
                         <div className="flex flex-col items-center gap-1">
                           <span>{formatDate(e.event_date)}</span>
                         </div>
@@ -438,27 +565,43 @@ export default function ReportByType() {
                   {filteredData.map((g, idx) => (
                     <tr key={g.id} className="hover:bg-slate-50/80 transition-colors">
                       <td className="px-2 py-2 text-xs text-slate-400 font-semibold text-center border border-slate-200 bg-white lg:sticky lg:left-0 z-20 lg:shadow-[1px_0_0_#e2e8f0]">{idx + 1}</td>
-                      <td className="px-4 py-2 border border-slate-200 bg-white lg:sticky lg:left-[50px] z-20 lg:shadow-[1px_0_0_#e2e8f0]">
-                        <div className="flex items-center gap-3">
+                      <td className="px-4 py-2 border border-slate-200 bg-white lg:sticky lg:left-[40px] z-20 lg:shadow-[1px_0_0_#e2e8f0]">
+                        <div className="flex items-center gap-3 w-full">
                           <div className={`w-7 h-7 rounded-lg font-bold text-xs flex items-center justify-center shrink-0 ${g.jenis_kelamin === 'L' ? 'bg-blue-100 text-blue-600' : 'bg-pink-100 text-pink-600'}`}>
                             {g.nama_lengkap.charAt(0).toUpperCase()}
                           </div>
-                          <div className="truncate w-[150px]">
+                          <div className="flex-1 min-w-0 pr-2">
                             <p className="text-sm font-bold text-slate-700 truncate">{g.nama_lengkap}</p>
-                            <p className="text-[10px] text-slate-400">{g.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan'}</p>
+                            <p className="text-[10px] text-slate-400 truncate">{g.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan'}</p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-2 py-2 text-center border border-slate-200 bg-white lg:sticky lg:left-[270px] z-20 lg:shadow-[1px_0_0_#e2e8f0]">
-                        <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded-md uppercase">{g.jenjang}</span>
+                      <td className="px-2 py-2 text-center border border-slate-200 bg-white lg:sticky lg:left-[220px] z-20 lg:shadow-[1px_0_0_#e2e8f0]">
+                        <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded-md uppercase">
+                          {(g.is_pengurus ? 'PENGURUS USMAN, ' : '')}{(g.is_pengurus_muda_mudi ? 'PENGURUS MUDA MUDI, ' : '')}{(g.is_ketua_wakil_kelompok ? 'KETUA/WAKIL KELOMPOK, ' : '')}{(g.jenjang || '-')}
+                        </span>
                       </td>
-                      <td className="px-2 py-2 text-center text-xs text-slate-500 font-medium border border-slate-200 bg-white lg:sticky lg:left-[370px] z-20 lg:shadow-[1px_0_0_#e2e8f0]">{g.kelompok}</td>
-                      <td className="px-2 py-2 text-center border border-slate-200 bg-white lg:sticky lg:left-[490px] z-20 lg:shadow-[2px_0_5px_-2px_rgba(0,0,0,0.2)]">
+                      <td className="px-2 py-2 text-center text-xs text-slate-500 font-medium border border-slate-200 bg-white lg:sticky lg:left-[440px] z-20 lg:shadow-[1px_0_0_#e2e8f0]">{g.kelompok}</td>
+                      <td className="px-2 py-2 text-center border border-slate-200 bg-white lg:sticky lg:left-[540px] z-20 lg:shadow-[1px_0_0_#e2e8f0]">
                         <span className={`text-[10px] font-bold px-2 py-1 rounded-md uppercase ${
                           g.status?.toLowerCase() === 'aktif' ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'
                         }`}>
                           {g.status}
                         </span>
+                      </td>
+                      <td className="px-2 py-2 text-center text-xs font-bold text-slate-700 border border-slate-200 bg-white lg:sticky lg:left-[620px] z-20 lg:shadow-[2px_0_5px_-2px_rgba(0,0,0,0.2)]">
+                        {(() => {
+                          let present = 0;
+                          let totalParticipant = 0;
+                          eventsList.forEach(e => {
+                            const stat = g.events_attendance[e.id];
+                            if (stat && stat !== '-') {
+                              totalParticipant++;
+                              if (stat === 'H') present++;
+                            }
+                          });
+                          return totalParticipant === 0 ? '-' : `${present}/${totalParticipant}`;
+                        })()}
                       </td>
                       
                       {/* Sel Acara Dinamis */}

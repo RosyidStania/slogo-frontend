@@ -69,6 +69,7 @@ export default function Dashboard() {
   
   const [eventTypes, setEventTypes] = useState([]);
   const [selectedEventTypes, setSelectedEventTypes] = useState([]);
+  const [excludeMT, setExcludeMT] = useState(false);
 
   useEffect(() => {
     fetchEventTypes();
@@ -76,7 +77,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchData();
-  }, [selectedEventTypes]);
+  }, [selectedEventTypes, excludeMT]);
 
   const fetchEventTypes = async () => {
     try {
@@ -90,7 +91,10 @@ export default function Dashboard() {
     try {
       setLoading(true);
       const res = await api.get('/admin/dashboard-stats', {
-        params: { event_type_ids: selectedEventTypes }
+        params: { 
+          event_type_ids: selectedEventTypes,
+          exclude_mt: excludeMT ? 1 : 0
+        }
       });
       setStats(res.data.stats          ?? { totalGenerus: 0, aktifGenerus: 0, rataKehadiran: 0, acaraBulanIni: 0 });
       setDemografiData(res.data.demografi     ?? []);
@@ -117,7 +121,7 @@ export default function Dashboard() {
   // ── Stat cards data ────────────────────────────────────────────────────────
   const statCards = [
     {
-      icon: <Users size={18} />,
+      icon: <Users size={16} />,
       iconClass: 'bg-teal-50 text-teal-600',
       label: 'Total Generus',
       value: stats.totalGenerus,
@@ -125,7 +129,7 @@ export default function Dashboard() {
       subClass: 'text-teal-600',
     },
     {
-      icon: <TrendingUp size={18} />,
+      icon: <TrendingUp size={16} />,
       iconClass: 'bg-blue-50 text-blue-600',
       label: 'Rata-rata Kehadiran',
       value: `${stats.rataKehadiran}%`,
@@ -133,7 +137,7 @@ export default function Dashboard() {
       subClass: 'text-slate-400',
     },
     {
-      icon: <Calendar size={18} />,
+      icon: <Calendar size={16} />,
       iconClass: 'bg-amber-50 text-amber-600',
       label: 'Agenda Bulan Ini',
       value: stats.acaraBulanIni,
@@ -145,37 +149,58 @@ export default function Dashboard() {
   // ══════════════════════════════════════════════════════════════════════════
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="max-w-7xl mx-auto px-4 py-6 space-y-5">
+      <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
         {/* ── Page header (mirrors ManageAttendance top bar spacing) ───────── */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-xl font-bold text-slate-900 tracking-tight">Selamat Datang 👋</h1>
+            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Selamat Datang 👋</h1>
             <p className="text-slate-500 text-sm mt-0.5">Pantau statistik dan perkembangan ke-Generus-an.</p>
           </div>
           
-          {/* Multi-select filter template acara */}
-          <div className="w-full sm:w-80 relative flex items-center gap-2">
-            <Filter size={18} className="text-slate-400 shrink-0" />
-            <CustomMultiSelect 
-              options={eventTypes} 
-              value={selectedEventTypes} 
-              onChange={setSelectedEventTypes} 
-              placeholder="Semua Template Acara" 
-            />
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
+            {/* Checkbox Sembunyikan MT */}
+            <label className="flex items-center gap-2 cursor-pointer group bg-white border border-slate-200 px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors">
+              <div className="relative flex items-center justify-center">
+                <input 
+                  type="checkbox" 
+                  className="peer sr-only"
+                  checked={excludeMT}
+                  onChange={(e) => setExcludeMT(e.target.checked)}
+                />
+                <div className="w-4 h-4 border-2 border-slate-300 rounded peer-checked:bg-teal-500 peer-checked:border-teal-500 transition-all"></div>
+                <div className="absolute opacity-0 peer-checked:opacity-100 transition-opacity">
+                  <CheckCircle2 size={12} className="text-white" strokeWidth={4} />
+                </div>
+              </div>
+              <span className="text-xs font-semibold text-slate-600 group-hover:text-slate-900 transition-colors">
+                Kecualikan MT dari Peringkat
+              </span>
+            </label>
+
+            {/* Multi-select filter template acara */}
+            <div className="w-full sm:w-80 relative flex items-center gap-2">
+              <Filter size={18} className="text-slate-400 shrink-0 hidden sm:block" />
+              <CustomMultiSelect 
+                options={eventTypes} 
+                value={selectedEventTypes} 
+                onChange={setSelectedEventTypes} 
+                placeholder="Semua Template Acara" 
+              />
+            </div>
           </div>
         </div>
 
         {/* ── Stat cards ───────────────────────────────────────────────────── */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="flex overflow-x-auto hide-scrollbar gap-2 snap-x pb-1 sm:pb-0">
           {statCards.map(s => (
-            <div key={s.label} className="bg-white border border-slate-200 rounded-2xl px-4 py-3 flex items-center gap-3">
-              <div className={`w-10 h-10 ${s.iconClass} rounded-xl flex items-center justify-center shrink-0`}>
+            <div key={s.label} className="bg-white border border-slate-200 rounded-xl px-3 py-2.5 flex items-center gap-2.5 min-w-[160px] sm:min-w-0 flex-1 snap-start">
+              <div className={`w-8 h-8 ${s.iconClass} rounded-lg flex items-center justify-center shrink-0`}>
                 {s.icon}
               </div>
               <div>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{s.label}</p>
-                <p className="text-2xl font-bold mt-0.5 tabular-nums text-slate-800 leading-tight">{s.value}</p>
-                <p className={`text-[10px] font-semibold mt-0.5 ${s.subClass}`}>{s.sub}</p>
+                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider leading-tight">{s.label}</p>
+                <p className="text-xl font-bold mt-0.5 tabular-nums text-slate-800 leading-tight">{s.value}</p>
+                <p className={`text-[9px] font-semibold mt-0.5 ${s.subClass}`}>{s.sub}</p>
               </div>
             </div>
           ))}
