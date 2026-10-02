@@ -67,31 +67,31 @@ export default function MtStatistics() {
   );
 
   const statCards = [
-    { icon: <Users size={18} />, iconClass: 'bg-teal-50 text-teal-600', label: 'Total Anggota', value: data.stats.totalAnggota, sub: 'Orang', subClass: 'text-slate-400' },
-    { icon: <Users size={18} />, iconClass: 'bg-emerald-50 text-emerald-600', label: 'Anggota Aktif', value: data.stats.anggotaAktif, sub: 'Orang', subClass: 'text-emerald-600' },
-    { icon: <TrendingUp size={18} />, iconClass: 'bg-blue-50 text-blue-600', label: 'Rata-rata Kehadiran', value: `${data.stats.rataKehadiran}%`, sub: 'Berdasarkan semua acara', subClass: 'text-blue-600' },
+    { icon: <Users size={16} />, iconClass: 'bg-teal-50 text-teal-600', label: 'Total Anggota', value: data.stats.totalAnggota, sub: 'Orang', subClass: 'text-slate-400' },
+    { icon: <Users size={16} />, iconClass: 'bg-emerald-50 text-emerald-600', label: 'Anggota Aktif', value: data.stats.anggotaAktif, sub: 'Orang', subClass: 'text-emerald-600' },
+    { icon: <TrendingUp size={16} />, iconClass: 'bg-blue-50 text-blue-600', label: 'Rata-rata Kehadiran', value: `${data.stats.rataKehadiran}%`, sub: 'Berdasarkan semua acara', subClass: 'text-blue-600' },
   ];
 
   const topAttendees = [...data.memberStats].sort((a, b) => b.total_hadir - a.total_hadir).slice(0, 10);
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="max-w-7xl mx-auto px-4 py-6 space-y-5">
+      <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
         <div>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight">Statistik Kelompok {data.kelompok}</h1>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Statistik Kelompok {data.kelompok}</h1>
           <p className="text-slate-500 text-sm mt-0.5">Pantau statistik dan kehadiran kelompok Anda.</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="flex overflow-x-auto hide-scrollbar gap-2 snap-x pb-1 sm:pb-0">
           {statCards.map(s => (
-            <div key={s.label} className="bg-white border border-slate-200 rounded-2xl px-4 py-3 flex items-center gap-3">
-              <div className={`w-10 h-10 ${s.iconClass} rounded-xl flex items-center justify-center shrink-0`}>
+            <div key={s.label} className="bg-white border border-slate-200 rounded-xl px-3 py-2.5 flex items-center gap-2.5 min-w-[160px] sm:min-w-0 flex-1 snap-start">
+              <div className={`w-8 h-8 ${s.iconClass} rounded-lg flex items-center justify-center shrink-0`}>
                 {s.icon}
               </div>
               <div>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{s.label}</p>
-                <p className="text-2xl font-bold mt-0.5 tabular-nums text-slate-800 leading-tight">{s.value}</p>
-                <p className={`text-[10px] font-semibold mt-0.5 ${s.subClass}`}>{s.sub}</p>
+                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider leading-tight">{s.label}</p>
+                <p className="text-xl font-bold mt-0.5 tabular-nums text-slate-800 leading-tight">{s.value}</p>
+                <p className={`text-[9px] font-semibold mt-0.5 ${s.subClass}`}>{s.sub}</p>
               </div>
             </div>
           ))}

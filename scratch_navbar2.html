@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Navbar Test Mask</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: linear-gradient(to right, #ff7e5f, #feb47b); /* Colorful background to prove transparency */
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 2rem;
+    }
+    .nav-container {
+      position: relative;
+      width: 400px;
+      height: 70px;
+    }
+    
+    .nav-bg {
+      position: absolute;
+      inset: 0;
+      background-color: #0f766e; /* teal-700 */
+      border-radius: 35px;
+      /* We use CSS variables to animate the mask position */
+      --active-x: 50px;
+      
+      /* Mask image is a radial gradient */
+      /* We make a hole at var(--active-x), 4px */
+      -webkit-mask-image: radial-gradient(circle at var(--active-x) 4px, transparent 32px, black 33px);
+      mask-image: radial-gradient(circle at var(--active-x) 4px, transparent 32px, black 33px);
+      transition: -webkit-mask-position 0.5s, mask-position 0.5s;
+    }
+
+    .items-container {
+      position: relative;
+      display: flex;
+      width: 100%;
+      height: 100%;
+      align-items: center;
+      z-index: 10;
+    }
+    
+    .nav-item {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+    }
+    .icon-circle {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background-color: transparent;
+      transition: 0.5s;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #99f6e4; /* teal-200 */
+    }
+    .nav-item.active .icon-circle {
+      background-color: #0d9488; /* teal-600 */
+      color: white;
+      transform: translateY(-32px);
+      box-shadow: 0 10px 15px -3px rgba(13, 148, 136, 0.4);
+    }
+    
+  </style>
+</head>
+<body>
+
+  <div class="nav-container">
+    <div class="nav-bg" style="--active-x: calc((100% / 4) * 1 + (100% / 4) / 2);"></div>
+    <div class="items-container">
+      <div class="nav-item">
+        <div class="icon-circle">H</div>
+      </div>
+      <div class="nav-item active">
+        <div class="icon-circle">P</div>
+      </div>
+      <div class="nav-item">
+        <div class="icon-circle">C</div>
+      </div>
+      <div class="nav-item">
+        <div class="icon-circle">B</div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

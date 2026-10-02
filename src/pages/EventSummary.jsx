@@ -174,8 +174,8 @@ export default function EventSummary() {
         <div className="flex items-center gap-4">
           <button onClick={() => navigate('/admin/events')} className="p-3 bg-white border border-slate-200 hover:bg-teal-50 hover:text-teal-600 hover:border-teal-200 rounded-xl transition-colors text-slate-500 shadow-sm"><ArrowLeft size={20} /></button>
           <div>
-            <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Rekapan Absensi</h1>
-            <p className="text-slate-400 text-sm mt-0.5">{event.name} • {new Date(event.event_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Rekapan Absensi</h1>
+            <p className="text-slate-500 text-sm mt-0.5">{event.name} • {new Date(event.event_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
           </div>
         </div>
         <div className="flex items-center gap-3 w-full md:w-auto">
@@ -251,17 +251,17 @@ export default function EventSummary() {
       </div>
 
       {/* FILTERS */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-4">
+      <div className="grid grid-cols-2 sm:flex sm:flex-row gap-2 sm:gap-3 mb-4">
         <div className="relative w-full sm:w-56 shrink-0" ref={dropdownKelRef}>
-          <button type="button" onClick={() => setIsDropdownKelompokOpen(!isDropdownKelompokOpen)} className="w-full pl-12 pr-4 py-3.5 bg-white border border-slate-200 rounded-xl outline-none shadow-sm text-slate-800 font-bold text-sm transition-all text-left flex justify-between items-center hover:bg-slate-50">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><Filter className="h-4 w-4 text-slate-400" /></div>
-            <span className="truncate">{filterKelompok === 'Semua' ? 'Semua Kelompok' : filterKelompok}</span>
-            <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform ${isDropdownKelompokOpen ? 'rotate-180' : ''}`} />
+          <button type="button" onClick={() => setIsDropdownKelompokOpen(!isDropdownKelompokOpen)} className="w-full pl-8 sm:pl-12 pr-2 sm:pr-4 py-3 sm:py-3.5 bg-white border border-slate-200 rounded-xl outline-none shadow-sm text-slate-800 font-bold text-xs sm:text-sm transition-all text-left flex justify-between items-center hover:bg-slate-50">
+            <div className="absolute inset-y-0 left-0 pl-2.5 sm:pl-4 flex items-center pointer-events-none"><Filter className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-slate-400" /></div>
+            <span className="truncate">{filterKelompok === 'Semua' ? 'Kelompok' : filterKelompok}</span>
+            <ChevronDown className={`h-3.5 w-3.5 sm:h-4 sm:w-4 text-slate-400 transition-transform ${isDropdownKelompokOpen ? 'rotate-180' : ''} shrink-0 ml-1`} />
           </button>
           {isDropdownKelompokOpen && (
-            <div className="absolute z-50 w-full mt-2 bg-white border border-slate-100 rounded-2xl shadow-xl overflow-hidden py-2 animate-in fade-in">
+            <div className="absolute z-50 w-[200px] sm:w-full mt-2 bg-white border border-slate-100 rounded-2xl shadow-xl overflow-hidden py-2 animate-in fade-in">
               {kelompokList.map(k => (
-                <button key={k} onClick={() => { setFilterKelompok(k); setIsDropdownKelompokOpen(false); }} className={`w-full text-left px-5 py-3 text-sm font-medium transition-colors ${filterKelompok === k ? 'bg-teal-50 text-teal-600' : 'text-slate-700 hover:bg-slate-50'}`}>
+                <button key={k} onClick={() => { setFilterKelompok(k); setIsDropdownKelompokOpen(false); }} className={`w-full text-left px-4 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-medium transition-colors ${filterKelompok === k ? 'bg-teal-50 text-teal-600' : 'text-slate-700 hover:bg-slate-50'}`}>
                   {k === 'Semua' ? 'Semua Kelompok' : k}
                 </button>
               ))}
@@ -270,15 +270,15 @@ export default function EventSummary() {
         </div>
 
         <div className="relative w-full sm:w-48 shrink-0" ref={dropdownStatusRef}>
-          <button type="button" onClick={() => setIsDropdownStatusOpen(!isDropdownStatusOpen)} className="w-full pl-12 pr-4 py-3.5 bg-white border border-slate-200 rounded-xl outline-none shadow-sm text-slate-800 font-bold text-sm transition-all text-left flex justify-between items-center hover:bg-slate-50">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><CheckCircle className="h-4 w-4 text-slate-400" /></div>
-            <span className="truncate">{filterStatus === 'Semua' ? 'Semua Status' : filterStatus}</span>
-            <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform ${isDropdownStatusOpen ? 'rotate-180' : ''}`} />
+          <button type="button" onClick={() => setIsDropdownStatusOpen(!isDropdownStatusOpen)} className="w-full pl-8 sm:pl-12 pr-2 sm:pr-4 py-3 sm:py-3.5 bg-white border border-slate-200 rounded-xl outline-none shadow-sm text-slate-800 font-bold text-xs sm:text-sm transition-all text-left flex justify-between items-center hover:bg-slate-50">
+            <div className="absolute inset-y-0 left-0 pl-2.5 sm:pl-4 flex items-center pointer-events-none"><CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-slate-400" /></div>
+            <span className="truncate">{filterStatus === 'Semua' ? 'Status' : filterStatus}</span>
+            <ChevronDown className={`h-3.5 w-3.5 sm:h-4 sm:w-4 text-slate-400 transition-transform ${isDropdownStatusOpen ? 'rotate-180' : ''} shrink-0 ml-1`} />
           </button>
           {isDropdownStatusOpen && (
-            <div className="absolute z-50 w-full mt-2 bg-white border border-slate-100 rounded-2xl shadow-xl overflow-hidden py-2 animate-in fade-in">
+            <div className="absolute z-50 w-[200px] sm:w-full mt-2 bg-white border border-slate-100 rounded-2xl shadow-xl overflow-hidden py-2 animate-in fade-in right-0 sm:right-auto">
               {statusList.map(s => (
-                <button key={s} onClick={() => { setFilterStatus(s); setIsDropdownStatusOpen(false); }} className={`w-full text-left px-5 py-3 text-sm font-medium transition-colors ${filterStatus === s ? 'bg-teal-50 text-teal-600' : 'text-slate-700 hover:bg-slate-50'}`}>
+                <button key={s} onClick={() => { setFilterStatus(s); setIsDropdownStatusOpen(false); }} className={`w-full text-left px-4 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-medium transition-colors ${filterStatus === s ? 'bg-teal-50 text-teal-600' : 'text-slate-700 hover:bg-slate-50'}`}>
                   {s === 'Semua' ? 'Semua Status' : s}
                 </button>
               ))}

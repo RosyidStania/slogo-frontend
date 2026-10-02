@@ -301,7 +301,7 @@ export default function ManageAttendance() {
   // ══════════════════════════════════════════════════════════════════════════
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="max-w-7xl mx-auto px-4 py-6 space-y-5">
+      <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
 
         {/* ── Top bar ──────────────────────────────────────────────────────── */}
         <div className="flex items-center gap-3">
@@ -310,7 +310,7 @@ export default function ManageAttendance() {
             <ArrowLeft size={18} />
           </button>
           <div className="flex-1 min-w-0">
-            <h1 className="text-xl font-bold text-slate-900 truncate">{event.name}</h1>
+            <h1 className="text-2xl font-bold text-slate-900 tracking-tight truncate">{event.name}</h1>
             <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
               {(Array.isArray(event.target_kategori) && event.target_kategori.length > 0
                 ? event.target_kategori
@@ -462,28 +462,28 @@ export default function ManageAttendance() {
                   </span>
                 </div>
                 {(displayed.length > 0 || event?.allow_other_participants) && (
-                  <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto mt-2 sm:mt-0">
+                  <div className="flex overflow-x-auto hide-scrollbar items-center gap-2 w-full sm:w-auto mt-2 sm:mt-0 pb-1 sm:pb-0">
                     <button onClick={() => setShowScanner(true)}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold transition-colors">
-                      <Camera size={13} /> Scan QR
+                      className="shrink-0 whitespace-nowrap flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold transition-colors">
+                      <Camera size={15} /> <span className="hidden sm:inline">Scan QR</span>
                     </button>
                     
                     {event?.allow_other_participants && (
                       <button onClick={() => setShowManualAdd(true)}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-500 hover:bg-teal-600 text-white text-xs font-semibold transition-colors">
-                        <UserCheck size={13} /> Tambah Manual
+                        className="shrink-0 whitespace-nowrap flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-500 hover:bg-teal-600 text-white text-xs font-semibold transition-colors">
+                        <UserCheck size={15} /> <span className="hidden sm:inline">Tambah Manual</span>
                       </button>
                     )}
 
                     {displayed.length > 0 && (
                       <>
                         <button onClick={() => setConfirm({ open: true, title: 'Hadirkan Semua?', message: `Tandai HADIR untuk ${displayed.length} peserta yang tampil?`, type: 'success', action: execHadirSemua })}
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold transition-colors">
-                          <CheckCheck size={13} /> Hadir Semua
+                          className="shrink-0 whitespace-nowrap flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold transition-colors">
+                          <CheckCheck size={15} /> <span className="hidden sm:inline">Hadir Semua</span>
                         </button>
                         <button onClick={() => setConfirm({ open: true, title: 'Alpakan Sisa?', message: `Tandai ALPA untuk sisa ${displayed.length} peserta?`, type: 'danger', action: execAlpaSemua })}
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-500 hover:bg-red-600 text-white text-xs font-semibold transition-colors">
-                          <XCircle size={13} /> Alpa Semua
+                          className="shrink-0 whitespace-nowrap flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-500 hover:bg-red-600 text-white text-xs font-semibold transition-colors">
+                          <XCircle size={15} /> <span className="hidden sm:inline">Alpa Semua</span>
                         </button>
                       </>
                     )}

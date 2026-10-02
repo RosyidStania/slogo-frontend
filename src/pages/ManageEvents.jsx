@@ -223,30 +223,30 @@ export default function ManageEvents() {
   // ──────────────────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="max-w-7xl mx-auto px-4 py-6 space-y-5">
+      <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
 
         {/* ── Page header ─────────────────────────────────────────────────── */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-xl font-bold text-slate-900">Jadwal Acara</h1>
-            <p className="text-xs text-slate-400 mt-0.5">Kelola agenda dan jadwal kegiatan bulanan.</p>
+            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Jadwal Acara</h1>
+            <p className="text-slate-500 text-sm mt-0.5">Kelola agenda dan jadwal kegiatan bulanan.</p>
           </div>
-          <div className="flex flex-col sm:flex-row gap-2 shrink-0 w-full sm:w-auto mt-3 sm:mt-0">
+          <div className="flex overflow-x-auto hide-scrollbar gap-2 shrink-0 w-full sm:w-auto mt-3 sm:mt-0 pb-1 sm:pb-0">
             {role !== 'operator_absensi' && (
               <>
                 <button
                   onClick={() => openModal('add')}
-                  className="flex items-center justify-center gap-1.5 px-4 py-2.5 bg-teal-500 hover:bg-teal-600 active:scale-95 text-white rounded-xl font-semibold text-sm shadow-sm shadow-teal-200 transition-all whitespace-nowrap"
+                  className="flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2.5 bg-teal-500 hover:bg-teal-600 active:scale-95 text-white rounded-xl font-semibold text-sm shadow-sm shadow-teal-200 transition-all whitespace-nowrap"
                 >
                   <Plus size={16} strokeWidth={2.5} />
-                  Buat Jadwal Baru
+                  <span className="hidden sm:inline">Buat Jadwal Baru</span>
                 </button>
                 <button
                   onClick={() => navigate('/admin/event-types')}
-                  className="flex items-center justify-center gap-1.5 px-4 py-2.5 bg-white hover:bg-slate-50 border border-slate-200 active:scale-95 text-slate-700 rounded-xl font-semibold text-sm shadow-sm transition-all whitespace-nowrap"
+                  className="flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2.5 bg-white hover:bg-slate-50 border border-slate-200 active:scale-95 text-slate-700 rounded-xl font-semibold text-sm shadow-sm transition-all whitespace-nowrap"
                 >
                   <Layers size={16} strokeWidth={2.5} />
-                  Buat Kategori Baru
+                  <span className="hidden sm:inline">Buat Kategori Baru</span>
                 </button>
               </>
             )}
