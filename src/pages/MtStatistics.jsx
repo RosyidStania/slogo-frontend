@@ -102,19 +102,50 @@ export default function MtStatistics() {
             <div className="px-4 py-3 border-b border-slate-100 bg-slate-50">
               <SectionTitle accent="bg-teal-400">Kehadiran per Anggota (Top 10)</SectionTitle>
             </div>
-            <div className="p-4 h-64">
-              {topAttendees.length === 0 ? <EmptyState /> : (
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={topAttendees} margin={{ top: 4, right: 4, left: -20, bottom: 20 }}>
-                    <XAxis dataKey="nama_lengkap" axisLine={false} tickLine={false}
-                      tick={{ fontSize: 10, fill: '#94a3b8', fontWeight: 600 }} dy={6} angle={-45} textAnchor="end" height={40} />
-                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94a3b8' }} />
-                    <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(20,184,166,0.06)', radius: 6 }} />
-                    <Bar dataKey="total_hadir" name="Hadir" fill="#14b8a6" radius={[6, 6, 0, 0]} maxBarSize={28} />
-                  </BarChart>
-                </ResponsiveContainer>
-              )}
-            </div>
+            <div className="p-4 max-h-80 overflow-y-auto hide-scrollbar">
+                {topAttendees.length === 0 ? <EmptyState /> : (
+                  <div className="space-y-4 pr-1">
+                    {topAttendees.map((member, index) => {
+                      const maxHadir = topAttendees[0].total_hadir || 1;
+                      const percentage = Math.round((member.total_hadir / maxHadir) * 100);
+                      return (
+                        <div key={index} className="flex items-center gap-3 group">
+                          <div className={`shrink-0 flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold ${
+                            index === 0 ? 'bg-amber-100 text-amber-600' :
+                            index === 1 ? 'bg-slate-200 text-slate-600' :
+                            index === 2 ? 'bg-orange-100 text-orange-600' :
+                            'bg-slate-50 text-slate-400'
+                          }`}>
+                            #{index + 1}
+                          </div>
+                          
+                          <div className="flex-1 min-w-0">
+                            <div className="flex justify-between items-end mb-1.5 gap-2">
+                              <p className="text-sm font-semibold text-slate-700 truncate group-hover:text-teal-600 transition-colors">
+                                {member.nama_lengkap}
+                              </p>
+                              <span className="shrink-0 text-[11px] font-bold text-teal-600 bg-teal-50 px-2 py-0.5 rounded-md">
+                                {member.total_hadir} Hadir
+                              </span>
+                            </div>
+                            <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                              <div 
+                                className={`h-full rounded-full transition-all duration-500 ${
+                                  index === 0 ? 'bg-amber-400' : 
+                                  index === 1 ? 'bg-slate-400' : 
+                                  index === 2 ? 'bg-orange-400' : 
+                                  'bg-teal-400'
+                                }`}
+                                style={{ width: `${percentage}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
           </div>
 
           <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">

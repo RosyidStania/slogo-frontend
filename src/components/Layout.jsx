@@ -71,6 +71,13 @@ export default function Layout() {
     ? [
         { name: 'Acara', path: '/admin/events', icon: <CalendarDays size={18} strokeWidth={2} /> },
       ]
+    : role === 'absen_kelompok'
+    ? [
+        { name: 'Acara', path: '/admin/events', icon: <CalendarDays size={18} strokeWidth={2} /> },
+        { name: 'Data Anggota', path: '/mt/members', icon: <UsersRound size={18} strokeWidth={2} /> },
+        { name: 'Statistik', path: '/mt/statistics', icon: <Activity size={18} strokeWidth={2} /> },
+        { name: 'Rekapan Absensi', path: '/mt/attendance', icon: <Library size={18} strokeWidth={2} /> },
+      ]
     : role === 'mt'
     ? [
         { name: 'Dashboard', path: '/mt', icon: <Home size={18} strokeWidth={2} /> },
@@ -173,11 +180,14 @@ export default function Layout() {
           {isSidebarOpen && (
             <div className="mx-3 mb-2 p-3 rounded-xl bg-teal-800/30 border border-teal-700/30 flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg bg-teal-500/20 border border-teal-400/30 flex items-center justify-center text-teal-300 font-bold text-sm shrink-0">
-                {role?.charAt(0).toUpperCase()}
+                {role === 'absen_kelompok' || role === 'operator_absensi' ? 'O' : role?.charAt(0).toUpperCase()}
               </div>
               <div className="min-w-0">
-                <p className="text-teal-50 text-xs font-bold capitalize truncate">{role}</p>
-                <p className="text-teal-200/60 text-[10px] flex items-center gap-1">
+                <p className="text-teal-50 text-xs font-bold capitalize truncate">
+                  {role === 'absen_kelompok' ? 'Operator Kelompok' : role === 'operator_absensi' ? 'Operator Absensi' : role}
+                </p>
+                <p className="text-teal-200/60 text-[10px] truncate">{localStorage.getItem('name')} {localStorage.getItem('kelompok') ? `(${localStorage.getItem('kelompok')})` : ''}</p>
+                  <p className="text-teal-200/60 text-[10px] flex items-center gap-1 mt-0.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-teal-400"></span> Online
                 </p>
               </div>

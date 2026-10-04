@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import CustomSelect from '../components/CustomSelect';
+import TimeSelect from '../components/TimeSelect';
 import {
   Plus, Edit, Trash2, X, Calendar, Clock, Users,
   BookOpen, Layers, ChevronDown,
@@ -11,6 +12,7 @@ import {
 } from 'lucide-react';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
+
 const kategoriList = [
   'PAUD', 'TK',
   '1 SD', '2 SD', '3 SD', '4 SD', '5 SD', '6 SD',
@@ -61,10 +63,12 @@ export default function ManageEvents() {
   const [events,     setEvents]     = useState([]);
   const [eventTypes, setEventTypes] = useState([]);
   const [loading,    setLoading]    = useState(true);
-  const [search,     setSearch]     = useState('');
+  const [search, setSearch] = useState('');
+  const [activeTab, setActiveTab] = useState(role === 'absen_kelompok' ? 'kelompok' : 'umum'); // 'umum' or 'kelompok'
   
   const [filterMonth, setFilterMonth] = useState('');
   const [filterYear,  setFilterYear]  = useState('');
+    const [filterKelompok, setFilterKelompok] = useState('');
 
   const [showModal,   setShowModal]   = useState(false);
   const [modalMode,   setModalMode]   = useState('add');
@@ -208,13 +212,25 @@ export default function ManageEvents() {
   // ─── Derived ───────────────────────────────────────────────────────────────
   const getTypeName = (id) =>
     id ? (eventTypes.find(t => t.id === parseInt(id))?.name ?? null) : null;
+    
+  const isGroupEvent = (id) => {
+    if (!id) return false;
+    const t = eventTypes.find(t => t.id === parseInt(id));
+    return t ? (t.is_group_attendance === 1 || t.is_group_attendance === true) : false;
+  };
 
   const filteredEvents = events.filter(e => {
+    if (activeTab === 'kelompok') {
+        if (!isGroupEvent(e.event_type_id)) return false;
+    } else {
+        if (isGroupEvent(e.event_type_id)) return false;
+    }
     const matchSearch = e.name.toLowerCase().includes(search.toLowerCase());
     const eventDate = new Date(e.event_date);
     const matchMonth = filterMonth ? (eventDate.getMonth() + 1).toString().padStart(2, '0') === filterMonth : true;
     const matchYear = filterYear ? eventDate.getFullYear().toString() === filterYear : true;
-    return matchSearch && matchMonth && matchYear;
+      const matchKelompok = (activeTab === 'kelompok' && filterKelompok) ? (e.kelompok === filterKelompok) : true;
+    return matchSearch && matchMonth && matchYear && matchKelompok;
   });
 
   const step2Valid = formData.name.trim() && formData.event_date && formData.start_time;
@@ -232,24 +248,24 @@ export default function ManageEvents() {
             <p className="text-slate-500 text-sm mt-0.5">Kelola agenda dan jadwal kegiatan bulanan.</p>
           </div>
           <div className="flex overflow-x-auto hide-scrollbar gap-2 shrink-0 w-full sm:w-auto mt-3 sm:mt-0 pb-1 sm:pb-0">
-            {role !== 'operator_absensi' && (
-              <>
-                <button
-                  onClick={() => openModal('add')}
-                  className="flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2.5 bg-teal-500 hover:bg-teal-600 active:scale-95 text-white rounded-xl font-semibold text-sm shadow-sm shadow-teal-200 transition-all whitespace-nowrap"
-                >
-                  <Plus size={16} strokeWidth={2.5} />
-                  <span className="hidden sm:inline">Buat Jadwal Baru</span>
-                </button>
-                <button
-                  onClick={() => navigate('/admin/event-types')}
-                  className="flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2.5 bg-white hover:bg-slate-50 border border-slate-200 active:scale-95 text-slate-700 rounded-xl font-semibold text-sm shadow-sm transition-all whitespace-nowrap"
-                >
-                  <Layers size={16} strokeWidth={2.5} />
-                  <span className="hidden sm:inline">Buat Kategori Baru</span>
-                </button>
-              </>
-            )}
+            {['admin', 'absen_kelompok'].includes(role) && (
+                  <button
+                    onClick={() => openModal('add')}
+                    className="flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2.5 bg-teal-500 hover:bg-teal-600 active:scale-95 text-white rounded-xl font-semibold text-sm shadow-sm shadow-teal-200 transition-all whitespace-nowrap"
+                  >
+                    <Plus size={16} strokeWidth={2.5} />
+                    <span className="hidden sm:inline">Buat Jadwal Baru</span>
+                  </button>
+              )}
+              {role === 'admin' && (
+                  <button
+                    onClick={() => navigate('/admin/event-types')}
+                    className="flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2.5 bg-white hover:bg-slate-50 border border-slate-200 active:scale-95 text-slate-700 rounded-xl font-semibold text-sm shadow-sm transition-all whitespace-nowrap"
+                  >
+                    <Layers size={16} strokeWidth={2.5} />
+                    <span className="hidden sm:inline">Buat Kategori Baru</span>
+                  </button>
+              )}
           </div>
         </div>
 
@@ -290,14 +306,25 @@ export default function ManageEvents() {
               ]}
             />
             <CustomSelect
-              value={filterYear}
-              onChange={e => setFilterYear(e.target.value)}
-              className="min-w-0 w-full sm:min-w-[130px] sm:w-auto"
-              options={[
-                { value: '', label: 'Semua Tahun' },
-                ...Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 2 + i).map(y => ({ value: y, label: y }))
-              ]}
-            />
+                value={filterYear}
+                onChange={e => setFilterYear(e.target.value)}
+                className="min-w-0 w-full sm:min-w-[130px] sm:w-auto"
+                options={[
+                  { value: '', label: 'Semua Tahun' },
+                  ...Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 2 + i).map(y => ({ value: y, label: y }))
+                ]}
+              />
+              {activeTab === 'kelompok' && role !== 'absen_kelompok' && (
+                <CustomSelect
+                  value={filterKelompok}
+                  onChange={e => setFilterKelompok(e.target.value)}
+                  className="min-w-0 w-full sm:min-w-[130px] sm:w-auto"
+                  options={[
+                    { value: '', label: 'Semua Kelompok' },
+                    ...[...new Set(events.filter(e => isGroupEvent(e.event_type_id)).map(e => e.kelompok).filter(Boolean))].map(k => ({ value: k, label: k }))
+                  ]}
+                />
+              )}
           </div>
         </div>
 
@@ -305,14 +332,39 @@ export default function ManageEvents() {
         <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
 
           {/* Card header */}
-          <div className="px-4 py-3 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50">
-            <div className="flex items-center gap-2">
-              <h3 className="font-bold text-slate-800 text-sm">Daftar Jadwal</h3>
-              <span className="text-xs font-bold px-2 py-0.5 rounded-lg bg-blue-100 text-blue-700">
-                {filteredEvents.length} acara
-              </span>
-            </div>
-            {search && (
+            <div className="px-4 py-3 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                {role !== 'absen_kelompok' ? (
+                <div className="flex items-center gap-2 bg-slate-200/50 p-1 rounded-xl w-full sm:w-auto">
+                  <button
+                    onClick={() => setActiveTab('umum')}
+                    className={`flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                      activeTab === 'umum'
+                        ? 'bg-white text-slate-800 shadow-sm'
+                        : 'text-slate-500 hover:text-slate-700'
+                    }`}
+                  >
+                    Acara Umum
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('kelompok')}
+                    className={`flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                      activeTab === 'kelompok'
+                        ? 'bg-white text-slate-800 shadow-sm'
+                        : 'text-slate-500 hover:text-slate-700'
+                    }`}
+                  >
+                    Acara Perkelompok
+                  </button>
+                </div>
+                ) : (
+                  <h3 className="font-bold text-slate-800 text-sm">Daftar Jadwal</h3>
+                )}
+                <span className="text-xs font-bold px-2 py-0.5 rounded-lg bg-blue-100 text-blue-700 self-start sm:self-auto">
+                  {filteredEvents.length} acara
+                </span>
+              </div>
+              {search && (
               <button
                 onClick={() => setSearch('')}
                 className="text-xs text-slate-400 hover:text-slate-600 flex items-center gap-1"
@@ -360,7 +412,7 @@ export default function ManageEvents() {
                     }`}
                   >
                     {/* Left: info */}
-                    <div className={`flex-1 min-w-0 space-y-2.5 transition-all ${event.is_completed ? 'opacity-60 grayscale group-hover:opacity-100 group-hover:grayscale-0' : ''}`}>
+                    <div className={`flex-1 min-w-0 space-y-2.5 transition-all ${event.is_closed ? 'opacity-60 grayscale group-hover:opacity-100 group-hover:grayscale-0' : ''}`}>
                       <div className="flex items-center gap-2.5 flex-wrap">
                         {!typeName && (
                           <p className="font-bold text-slate-800 text-sm md:text-base">{event.name}</p>
@@ -414,12 +466,12 @@ export default function ManageEvents() {
                           event.is_closed
                             ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
                             : 'bg-emerald-50 hover:bg-emerald-500 text-emerald-700 hover:text-white border-emerald-200 hover:border-emerald-500'
-                        } ${event.is_completed ? 'opacity-60 grayscale group-hover:opacity-100 group-hover:grayscale-0' : ''}`}
+                        } ${event.is_closed ? 'opacity-60 grayscale group-hover:opacity-100 group-hover:grayscale-0' : ''}`}
                       >
                         <Users size={14} /> Absen
                       </button>
                       
-                      {role !== 'operator_absensi' && (
+                      {['admin', 'absen_kelompok'].includes(role) && (
                         <>
                           <button
                             onClick={() => handleToggleStatus(event)}
@@ -427,7 +479,7 @@ export default function ManageEvents() {
                               event.is_closed
                                 ? 'bg-amber-50 hover:bg-amber-500 text-amber-700 hover:text-white border-amber-200 hover:border-amber-500'
                                 : 'bg-slate-50 hover:bg-slate-600 text-slate-700 hover:text-white border-slate-200 hover:border-slate-600'
-                            } ${event.is_completed ? 'opacity-60 grayscale group-hover:opacity-100 group-hover:grayscale-0' : ''}`}
+                            } ${event.is_closed ? 'opacity-60 grayscale group-hover:opacity-100 group-hover:grayscale-0' : ''}`}
                             title={event.is_closed ? "Buka kembali absen acara ini" : "Tutup absen acara ini"}
                           >
                             {event.is_closed ? <Unlock size={14} /> : <Lock size={14} />} 
@@ -441,7 +493,7 @@ export default function ManageEvents() {
                             <BookOpen size={14} /> Rekapan
                           </button>
                           
-                          <div className={`flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm ml-0.5 transition-all ${event.is_completed ? 'opacity-60 grayscale group-hover:opacity-100 group-hover:grayscale-0' : ''}`}>
+                          <div className={`flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm ml-0.5 transition-all ${event.is_closed ? 'opacity-60 grayscale group-hover:opacity-100 group-hover:grayscale-0' : ''}`}>
                             <button
                               onClick={() => openModal('edit', event)}
                               title="Edit"
@@ -625,7 +677,8 @@ export default function ManageEvents() {
                   name="event_date"
                   value={formData.event_date}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-teal-400 transition-colors"
+                  onClick={(e) => e.target.showPicker?.()}
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-teal-400 transition-colors cursor-pointer [color-scheme:light]"
                 />
               </div>
 
@@ -647,13 +700,11 @@ export default function ManageEvents() {
                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                   Batas Jam Hadir <span className="text-red-400">*</span>
                 </label>
-                <input
-                  type="time"
-                  name="start_time"
-                  value={formData.start_time}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-teal-400 transition-colors"
-                />
+                <TimeSelect
+                    name="start_time"
+                    value={formData.start_time}
+                    onChange={handleInputChange}
+                  />
                 <p className="text-[10px] text-slate-400 font-medium">
                   Peserta yang hadir setelah jam ini akan dicatat terlambat.
                 </p>

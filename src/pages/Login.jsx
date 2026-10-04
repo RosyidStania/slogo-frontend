@@ -25,12 +25,14 @@ export default function Login() {
       if (response.data.access_token) {
         localStorage.setItem('token', response.data.access_token);
         localStorage.setItem('role', response.data.role);
+          localStorage.setItem('kelompok', response.data.user?.kelompok || response.data.user?.generus?.kelompok || '');
+          localStorage.setItem('name', response.data.user?.name || '');
         
         setTimeout(() => {
           const role = response.data.role;
           if (role === 'admin') {
             navigate('/admin');
-          } else if (role === 'operator_absensi') {
+          } else if (role === 'operator_absensi' || role === 'absen_kelompok') {
             navigate('/admin/events');
           } else if (role === 'mt') {
             navigate('/mt');
