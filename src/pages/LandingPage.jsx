@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { LogIn, BookOpen, Heart, Shield, Star, Users, Briefcase, RefreshCw, CheckCircle2 } from 'lucide-react';
-import bgImage from '../assets/Generus.jpeg';
+import bgImage from '../assets/Generus2.jpg';
 export default function LandingPage() {
   // Scroll ke atas saat halaman dimuat
   useEffect(() => {
@@ -172,14 +172,14 @@ export default function LandingPage() {
 
       {/* HERO SECTION */}
       <section className="relative min-h-[100dvh] flex items-center justify-center pt-20 px-4">
-        {/* Background Image */}
+        {/* Background Image & Global Overlay */}
         <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat fixed"
+          className="fixed inset-0 bg-cover bg-center bg-no-repeat z-[0]"
           style={{ backgroundImage: `url(${bgImage})` }}
-        ></div>
-        
-        {/* iOS-style overlay (semi-transparent with slight blur) */}
-        <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-[4px]"></div>
+        >
+          {/* Dark overlay fixed across all sections */}
+          <div className="absolute inset-0 bg-slate-900/50"></div>
+        </div>
 
         {/* Ambient background glow (iOS/macOS modern aesthetic) */}
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-teal-500/40 rounded-full blur-[120px] pointer-events-none"></div>

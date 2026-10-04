@@ -65,7 +65,7 @@ export default function ManageUsers() {
 
   const openAddModal = () => {
     setModalMode('add');
-    setFormData({ id: '', name: '', username: '', role: 'user', password: '', generus_id: '' });
+    setFormData({ id: '', name: '', username: '', role: 'user', password: '', generus_id: '', kelompok: 'Slogo' });
     setShowPassword(false);
     setShowModal(true);
   };
@@ -78,7 +78,8 @@ export default function ManageUsers() {
       username: user.username, 
       role: user.role, 
       password: user.plain_password || '', 
-      generus_id: user.generus?.id || '' 
+      generus_id: user.generus?.id || '',
+      kelompok: user.kelompok || user.generus?.kelompok || 'Slogo' 
     });
     setShowPassword(false);
     setShowModal(true);
@@ -95,7 +96,12 @@ export default function ManageUsers() {
       setShowModal(false);
       fetchUsers();
     } catch (error) {
-      alert(error.response?.data?.message || 'Terjadi kesalahan saat menyimpan data.');
+      const msg = error.response?.data?.message;
+      if (typeof msg === 'object') {
+        alert(Object.values(msg).flat().join('\n'));
+      } else {
+        alert(msg || 'Terjadi kesalahan saat menyimpan data.');
+      }
     }
   };
 
@@ -144,7 +150,7 @@ export default function ManageUsers() {
       user.username?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.role?.toLowerCase().includes(searchQuery.toLowerCase());
     
-    const userKelompok = user.generus?.kelompok || '';
+    const userKelompok = user.kelompok || user.generus?.kelompok || '';
     const matchKelompok = selectedKelompok ? userKelompok === selectedKelompok : true;
 
     return matchSearch && matchKelompok;
@@ -276,7 +282,7 @@ export default function ManageUsers() {
                           <div>
                             <p className="font-semibold text-slate-800 text-sm">{user.name}</p>
                             <p className="text-[10px] text-slate-400 uppercase tracking-widest mt-0.5">
-                              ID: {user.id} {user.generus?.kelompok ? `• ${user.generus.kelompok}` : ''}
+                              ID: {user.id} {(user.kelompok || user.generus?.kelompok) ? `• ${user.kelompok || user.generus?.kelompok}` : ''}
                             </p>
                           </div>
                         </div>
@@ -299,10 +305,12 @@ export default function ManageUsers() {
                             ? 'bg-teal-50 text-teal-700 border-teal-100'
                             : user.role === 'operator_absensi'
                             ? 'bg-blue-50 text-blue-700 border-blue-100'
+                            : user.role === 'absen_kelompok'
+                            ? 'bg-indigo-50 text-indigo-700 border-indigo-100'
                             : 'bg-slate-50 text-slate-600 border-slate-200'
                         }`}>
-                          {user.role === 'admin' || user.role === 'operator_absensi' ? <ShieldCheck size={12} /> : <UserIcon size={12} />}
-                          {user.role === 'operator_absensi' ? 'Operator' : user.role}
+                          {['admin', 'operator_absensi', 'absen_kelompok'].includes(user.role) ? <ShieldCheck size={12} /> : <UserIcon size={12} />}
+                          {user.role === 'operator_absensi' ? 'Operator' : user.role === 'absen_kelompok' ? 'Operator Kelompok' : user.role}
                         </span>
                       </td>
                       <td className="px-5 py-3">
@@ -350,7 +358,7 @@ export default function ManageUsers() {
               <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
                 Nama Lengkap
               </label>
-              {['admin', 'operator_absensi'].includes(formData.role) ? (
+              {['admin', 'operator_absensi', 'absen_kelompok'].includes(formData.role) ? (
                 <input
                   type="text"
                   name="name"
@@ -407,17 +415,39 @@ export default function ManageUsers() {
               </label>
               <div className="relative">
                 <CustomSelect
-                  name="role"
-                  value={formData.role}
-                  onChange={handleInputChange}
-                  options={[
-                    { value: 'user', label: 'User' },
-                    { value: 'admin', label: 'Admin' },
-                    { value: 'operator_absensi', label: 'Operator Absensi' },
-                    { value: 'mt', label: 'MT (Pengajar)' }
-                  ]}
-                />
-              </div>
+                    name="role"
+                    value={formData.role}
+                    onChange={handleInputChange}
+                    options={[
+                      { value: 'user', label: 'User' },
+                      { value: 'admin', label: 'Admin' },
+                      { value: 'operator_absensi', label: 'Operator Absensi' },
+                      { value: 'mt', label: 'MT (Pengajar)' },
+                      { value: 'absen_kelompok', label: 'Operator Absensi Kelompok' }
+                    ]}
+                  />
+                </div>
+                {formData.role === 'absen_kelompok' && (
+                  <div className="mt-4">
+                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+                      Tugaskan ke Kelompok
+                    </label>
+                    <CustomSelect
+                      name="kelompok"
+                      value={formData.kelompok}
+                      onChange={handleInputChange}
+                      options={[
+                        { value: 'Slogo', label: 'Slogo' },
+                        { value: 'Gabugan', label: 'Gabugan' },
+                        { value: 'Jekani', label: 'Jekani' },
+                        { value: 'Gawan', label: 'Gawan' },
+                        { value: 'Pengkruk', label: 'Pengkruk' },
+                        { value: 'Sidomulyo', label: 'Sidomulyo' },
+                        { value: 'Karangasem', label: 'Karangasem' }
+                      ]}
+                    />
+                  </div>
+                )}
             </div>
             <div>
               <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">

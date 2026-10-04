@@ -46,6 +46,13 @@ html, body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color-scheme: light;
+  background-color: #f8fafc;
+  color: #1e293b;
+}
+
+input, textarea, select {
+  color-scheme: light;
 }
 
 /* Remove default browser eye icon from password inputs (e.g. Edge) */

@@ -2,7 +2,40 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import { ArrowLeft, Users, CheckCircle, XCircle, AlertCircle, Clock, Filter, ChevronDown, Download, MapPin, Upload } from 'lucide-react';
+import { BarChart, Bar, PieChart, Pie, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LabelList, Cell, Sector } from 'recharts';
 import { read, utils } from 'xlsx';
+
+const renderRoseShape = (props) => {
+  const { cx, cy, startAngle, endAngle, fill, percent } = props;
+  const dynamicOuterRadius = 45 + (percent * 35);
+  return (
+    <Sector
+      cx={cx}
+      cy={cy}
+      innerRadius={10}
+      outerRadius={dynamicOuterRadius}
+      startAngle={startAngle}
+      endAngle={endAngle}
+      fill={fill}
+      cornerRadius={3}
+    />
+  );
+};
+
+const renderCustomizedLabel = (props) => {
+  const { cx, cy, midAngle, percent } = props;
+  if (percent < 0.05) return null;
+  const RADIAN = Math.PI / 180;
+  const dynamicOuterRadius = 45 + (percent * 35);
+  const radius = 10 + (dynamicOuterRadius - 10) * 0.65; 
+  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+  return (
+    <text x={x} y={y} fill="white" textAnchor="middle" dominantBaseline="central" fontSize="13" fontWeight="900" style={{ textShadow: '0px 1px 3px rgba(0,0,0,0.5)' }}>
+      {`${(percent * 100).toFixed(0)}%`}
+    </text>
+  );
+};
 
 export default function EventSummary() {
   const { eventId } = useParams();
@@ -10,6 +43,9 @@ export default function EventSummary() {
   
   const [event, setEvent] = useState(null);
   const [attendances, setAttendances] = useState([]);
+  const [targetGenerus, setTargetGenerus] = useState([]);
+  const [infaqAmount, setInfaqAmount] = useState("");
+  const [isSavingInfaq, setIsSavingInfaq] = useState(false);
   const [loading, setLoading] = useState(true);
   
   const [filterKelompok, setFilterKelompok] = useState('Semua');
@@ -117,6 +153,8 @@ export default function EventSummary() {
       const response = await api.get(`/admin/events/${eventId}/summary`);
       setEvent(response.data.event);
       setAttendances(response.data.attendances || []);
+      setTargetGenerus(response.data.target_generus || []);
+      setInfaqAmount(response.data.event.infaq || "");
     } catch (error) {
       console.error('Gagal mengambil data rekapan:', error);
     } finally {
@@ -146,15 +184,54 @@ export default function EventSummary() {
   };
 
   const groupStats = kelompokList.filter(k => k !== 'Semua').map(kelompok => {
-    const groupData = attendances.filter(a => a.generus.kelompok.toLowerCase() === kelompok.toLowerCase());
+    const targetGroup = targetGenerus.filter(g => (g.kelompok || '').toLowerCase() === kelompok.toLowerCase());
+    const targetPutra = targetGroup.filter(g => g.jenis_kelamin === 'L').length;
+    const targetPutri = targetGroup.filter(g => g.jenis_kelamin === 'P').length;
+    const targetTotal = targetGroup.length;
+
+    const attendGroup = attendances.filter(a => (a.generus?.kelompok || '').toLowerCase() === kelompok.toLowerCase());
+      const hadirGroup = attendGroup.filter(a => a.status === 'hadir');
+      
+      const hadirPutra = hadirGroup.filter(a => a.generus?.jenis_kelamin === 'L').length;
+      const hadirPutri = hadirGroup.filter(a => a.generus?.jenis_kelamin === 'P').length;
+      const hadirTotal = hadirGroup.length;
+      
+      const izinSakitTotal = attendGroup.filter(a => a.status === 'izin' || a.status === 'sakit').length;
+      const alpaTotal = targetTotal - hadirTotal - izinSakitTotal;
+
+    const percentage = targetTotal > 0 ? Math.round((hadirTotal / targetTotal) * 100) : 0;
+
     return {
       name: kelompok,
-      total: groupData.length,
-      hadir: groupData.filter(a => a.status === 'hadir').length,
-      izin: groupData.filter(a => a.status === 'izin' || a.status === 'sakit').length,
-      alpa: groupData.filter(a => a.status === 'alpa').length,
+      targetPutra, targetPutri, targetTotal,
+      hadirPutra, hadirPutri, hadirTotal,
+        izinSakitTotal, alpaTotal,
+        percentage
     };
-  }).filter(g => g.total > 0);
+  }).filter(g => g.targetTotal > 0);
+  
+  const totalStats = {
+    targetPutra: groupStats.reduce((sum, g) => sum + g.targetPutra, 0),
+    targetPutri: groupStats.reduce((sum, g) => sum + g.targetPutri, 0),
+    targetTotal: groupStats.reduce((sum, g) => sum + g.targetTotal, 0),
+    hadirPutra: groupStats.reduce((sum, g) => sum + g.hadirPutra, 0),
+    hadirPutri: groupStats.reduce((sum, g) => sum + g.hadirPutri, 0),
+    hadirTotal: groupStats.reduce((sum, g) => sum + g.hadirTotal, 0),
+  };
+  totalStats.percentage = totalStats.targetTotal > 0 ? Math.round((totalStats.hadirTotal / totalStats.targetTotal) * 100) : 0;
+
+  const handleSaveInfaq = async () => {
+    try {
+      setIsSavingInfaq(true);
+      await api.patch(`/admin/events/${eventId}/infaq`, { infaq: infaqAmount });
+      alert('Infaq berhasil disimpan');
+    } catch (error) {
+      console.error('Gagal menyimpan infaq:', error);
+      alert('Gagal menyimpan infaq');
+    } finally {
+      setIsSavingInfaq(false);
+    }
+  };
 
   if (loading) return (
     <div className="h-64 flex items-center justify-center">
@@ -218,37 +295,150 @@ export default function EventSummary() {
         </div>
       </div>
 
-      {/* PER KELOMPOK */}
-      <div className="mb-8">
-        <div className="flex items-center gap-2 mb-4">
-          <MapPin size={16} className="text-teal-500" />
-          <h2 className="text-base font-bold text-slate-800">Rekapan per Kelompok</h2>
+      {/* REKAPAN KEHADIRAN & INFAQ */}
+      <div className="mb-8 bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm">
+        <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+          <div className="flex items-center gap-2">
+            <MapPin size={18} className="text-teal-500" />
+            <h2 className="text-base font-bold text-slate-800 uppercase tracking-wide">Rekapan Kehadiran & Infaq</h2>
+          </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {groupStats.map((stat, index) => (
-            <div key={index} className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-all">
-              <div className="flex justify-between items-center mb-4">
-                <h4 className="font-bold text-slate-800 text-base">{stat.name}</h4>
-                <span className="text-[10px] font-bold bg-slate-100 text-slate-600 px-2.5 py-1 rounded-lg">{stat.total} Peserta</span>
-              </div>
-              <div className="flex gap-2">
-                <div className="flex-1 bg-emerald-50 rounded-xl py-2 flex flex-col items-center justify-center">
-                  <span className="text-[9px] font-bold uppercase text-emerald-600 mb-0.5">Hadir</span>
-                  <span className="text-lg font-black text-emerald-700">{stat.hadir}</span>
-                </div>
-                <div className="flex-1 bg-amber-50 rounded-xl py-2 flex flex-col items-center justify-center">
-                  <span className="text-[9px] font-bold uppercase text-amber-600 mb-0.5">Izin</span>
-                  <span className="text-lg font-black text-amber-700">{stat.izin}</span>
-                </div>
-                <div className="flex-1 bg-rose-50 rounded-xl py-2 flex flex-col items-center justify-center">
-                  <span className="text-[9px] font-bold uppercase text-rose-600 mb-0.5">Alpa</span>
-                  <span className="text-lg font-black text-rose-700">{stat.alpa}</span>
-                </div>
-              </div>
+        
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse text-sm">
+            <thead>
+              <tr className="bg-slate-50 text-slate-500 border-b border-slate-200">
+                <th rowSpan="2" className="px-4 py-3 font-bold uppercase text-center border-r border-slate-200">No</th>
+                <th rowSpan="2" className="px-4 py-3 font-bold uppercase text-center border-r border-slate-200">Kelompok</th>
+                <th colSpan="3" className="px-4 py-2 font-bold uppercase text-center border-r border-slate-200 border-b border-slate-200">Jumlah Jamaah</th>
+                <th colSpan="3" className="px-4 py-2 font-bold uppercase text-center border-r border-slate-200 border-b border-slate-200">Kehadiran {new Date(event.event_date).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }).toUpperCase()}</th>
+                <th rowSpan="2" className="px-4 py-3 font-bold uppercase text-center">%</th>
+              </tr>
+              <tr className="bg-slate-50 text-slate-500 border-b border-slate-200">
+                <th className="px-4 py-2 font-bold text-center border-r border-slate-200">Putra</th>
+                <th className="px-4 py-2 font-bold text-center border-r border-slate-200">Putri</th>
+                <th className="px-4 py-2 font-bold text-center border-r border-slate-200">Jumlah</th>
+                <th className="px-4 py-2 font-bold text-center border-r border-slate-200">Putra</th>
+                <th className="px-4 py-2 font-bold text-center border-r border-slate-200">Putri</th>
+                <th className="px-4 py-2 font-bold text-center border-r border-slate-200">Jumlah</th>
+              </tr>
+            </thead>
+            <tbody>
+              {groupStats.map((stat, index) => (
+                <tr key={index} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                  <td className="px-4 py-3 text-center border-r border-slate-100">{index + 1}</td>
+                  <td className="px-4 py-3 font-semibold text-slate-700 uppercase border-r border-slate-100">{stat.name}</td>
+                  <td className="px-4 py-3 text-center border-r border-slate-100">{stat.targetPutra}</td>
+                  <td className="px-4 py-3 text-center border-r border-slate-100">{stat.targetPutri}</td>
+                  <td className="px-4 py-3 font-bold text-center border-r border-slate-100">{stat.targetTotal}</td>
+                  <td className="px-4 py-3 text-center border-r border-slate-100">{stat.hadirPutra}</td>
+                  <td className="px-4 py-3 text-center border-r border-slate-100">{stat.hadirPutri}</td>
+                  <td className="px-4 py-3 font-bold text-center border-r border-slate-100">{stat.hadirTotal}</td>
+                  <td className="px-4 py-3 font-bold text-center">{stat.percentage}%</td>
+                </tr>
+              ))}
+              
+              {/* Total Row */}
+              <tr className="bg-slate-50 border-b border-slate-200">
+                <td colSpan="2" className="px-4 py-3 font-black text-center text-slate-800 uppercase border-r border-slate-200">Jumlah</td>
+                <td className="px-4 py-3 font-bold text-center text-slate-800 border-r border-slate-200">{totalStats.targetPutra}</td>
+                <td className="px-4 py-3 font-bold text-center text-slate-800 border-r border-slate-200">{totalStats.targetPutri}</td>
+                <td className="px-4 py-3 font-black text-center text-slate-800 border-r border-slate-200">{totalStats.targetTotal}</td>
+                <td className="px-4 py-3 font-bold text-center text-slate-800 border-r border-slate-200">{totalStats.hadirPutra}</td>
+                <td className="px-4 py-3 font-bold text-center text-slate-800 border-r border-slate-200">{totalStats.hadirPutri}</td>
+                <td className="px-4 py-3 font-black text-center text-slate-800 border-r border-slate-200">{totalStats.hadirTotal}</td>
+                <td className="px-4 py-3 font-black text-center text-slate-800">{totalStats.percentage}%</td>
+              </tr>
+
+              {/* Infaq Row */}
+              <tr className="bg-amber-50">
+                <td colSpan="2" className="px-4 py-3 font-black text-slate-800 uppercase flex items-center gap-2">
+                  <div className="w-5 h-5 rounded-full border-2 border-slate-800 flex items-center justify-center text-[10px] font-bold">R</div>
+                  INFAQ
+                </td>
+                <td colSpan="7" className="px-4 py-3 font-black text-slate-800">
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1 max-w-xs relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">Rp</span>
+                      <input 
+                        type="number" 
+                        value={infaqAmount} 
+                        onChange={(e) => setInfaqAmount(e.target.value)} 
+                        className="w-full pl-9 pr-3 py-1.5 rounded-lg border border-slate-300 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none"
+                        placeholder="0"
+                      />
+                    </div>
+                    <button 
+                      onClick={handleSaveInfaq}
+                      disabled={isSavingInfaq}
+                      className="px-4 py-1.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-lg transition-colors disabled:opacity-50"
+                    >
+                      {isSavingInfaq ? 'Menyimpan...' : 'Simpan'}
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
+
+        
+
+        {/* GRAFIK PIE PER KELOMPOK */}
+        {groupStats.length > 0 && (
+          <div className="mb-8 bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm">
+            <div className="p-4 border-b border-slate-100 flex items-center gap-2 bg-slate-50">
+              <svg className="w-5 h-5 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
+              <h2 className="text-base font-bold text-slate-800 uppercase tracking-wide">Rasio Kehadiran per Kelompok</h2>
             </div>
-          ))}
-        </div>
-      </div>
+            <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {groupStats.map((stat, idx) => {
+                const pieData = [
+                  { name: 'Hadir', value: stat.hadirTotal, color: '#14b8a6' },
+                  { name: 'Izin/Sakit', value: stat.izinSakitTotal, color: '#f59e0b' },
+                  { name: 'Alpa', value: stat.alpaTotal < 0 ? 0 : stat.alpaTotal, color: '#ef4444' }
+                ].filter(d => d.value > 0);
+
+                return (
+                  <div key={idx} className="flex flex-col items-center bg-slate-50/50 p-4 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+                    <h3 className="font-extrabold text-slate-700 mb-2 uppercase tracking-wide">{stat.name}</h3>
+                    <div className="w-full h-[180px]">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                          <Pie
+                            data={pieData}
+                            cx="50%"
+                            cy="50%"
+                            dataKey="value"
+                            stroke="none"
+                            activeIndex={pieData.map((_, i) => i)}
+                            activeShape={renderRoseShape}
+                            labelLine={false}
+                            label={renderCustomizedLabel}
+                          >
+                            {pieData.map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={entry.color} />
+                            ))}
+                          </Pie>
+                          <Tooltip 
+                            contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
+                            itemStyle={{ fontWeight: 'bold' }}
+                          />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    </div>
+                    <div className="flex flex-wrap justify-center gap-3 mt-4 w-full text-[10px] font-bold">
+                      <div className="flex items-center gap-1.5 px-2 py-1 bg-teal-50 text-teal-700 rounded-lg"><div className="w-2 h-2 rounded-full bg-teal-500"></div>Hadir: {stat.hadirTotal}</div>
+                      <div className="flex items-center gap-1.5 px-2 py-1 bg-amber-50 text-amber-700 rounded-lg"><div className="w-2 h-2 rounded-full bg-amber-500"></div>Izin: {stat.izinSakitTotal}</div>
+                      <div className="flex items-center gap-1.5 px-2 py-1 bg-red-50 text-red-700 rounded-lg"><div className="w-2 h-2 rounded-full bg-red-500"></div>Alpa: {stat.alpaTotal}</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
       {/* FILTERS */}
       <div className="grid grid-cols-2 sm:flex sm:flex-row gap-2 sm:gap-3 mb-4">

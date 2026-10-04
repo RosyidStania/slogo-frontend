@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import api from '../api/axios';
+import TimeSelect from '../components/TimeSelect';
 import { Plus, Edit, Trash2, X, Clock, Users, HelpCircle, Layers, LayoutGrid } from 'lucide-react';
+
 
 const kategoriList = [
   'PAUD', 'TK',
@@ -30,7 +32,7 @@ export default function ManageEventTypes() {
 
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState('add');
-  const [formData, setFormData] = useState({ id: '', name: '', code: '', description: '', start_time: '', target_kategori: [] });
+  const [formData, setFormData] = useState({ id: '', name: '', code: '', description: '', start_time: '', target_kategori: [], is_group_attendance: false });
 
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, id: '', name: '' });
 
@@ -67,7 +69,7 @@ export default function ManageEventTypes() {
 
   const openAddModal = () => {
     setModalMode('add');
-    setFormData({ id: '', name: '', code: '', description: '', start_time: '', target_kategori: [] });
+    setFormData({ id: '', name: '', code: '', description: '', start_time: '', target_kategori: [], is_group_attendance: false });
     setShowModal(true);
   };
 
@@ -84,6 +86,7 @@ export default function ManageEventTypes() {
       description: data.description || '',
       start_time: data.start_time?.substring(0, 5) || '',
       target_kategori: parsedKategori,
+      is_group_attendance: !!data.is_group_attendance,
     });
     setShowModal(true);
   };
@@ -283,14 +286,11 @@ export default function ManageEventTypes() {
                 <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
                   Batas Jam Hadir Default
                 </label>
-                <input
-                  type="time"
-                  name="start_time"
-                  value={formData.start_time}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 text-slate-800 cursor-pointer"
-                />
+                <TimeSelect
+                    name="start_time"
+                    value={formData.start_time}
+                    onChange={handleInputChange}
+                  />
               </div>
             </div>
 
@@ -358,9 +358,24 @@ export default function ManageEventTypes() {
               </div>
             </div>
 
-            <div>
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
-                Keterangan Tambahan
+                          <div>
+                <label className="flex items-start sm:items-center gap-3 cursor-pointer p-3 sm:p-4 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100 transition-colors mb-5">
+                  <input
+                    type="checkbox"
+                    checked={formData.is_group_attendance}
+                    onChange={(e) => setFormData({ ...formData, is_group_attendance: e.target.checked })}
+                    className="mt-0.5 sm:mt-0 w-5 h-5 rounded border-slate-300 text-teal-500 focus:ring-teal-500 cursor-pointer shrink-0"
+                  />
+                  <div>
+                    <span className="block text-sm font-bold text-slate-700">Gunakan untuk Absensi Perkelompok</span>
+                    <span className="block text-xs text-slate-500 mt-0.5">Jika dicentang, kategori ini akan muncul saat Operator Absensi Kelompok membuat acara untuk kelompoknya.</span>
+                  </div>
+                </label>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+                  Keterangan Tambahan
               </label>
               <textarea
                 name="description"

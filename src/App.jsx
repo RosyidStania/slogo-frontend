@@ -30,6 +30,7 @@ const PrivateRoute = ({ children, allowedRole, allowedRoles }) => {
 
   if (!isAllowed) {
     if (role === 'mt') return <Navigate to="/mt" replace />;
+    if (role === 'absen_kelompok') return <Navigate to="/admin/events" replace />;
     if (role === 'operator_absensi') return <Navigate to="/admin/events" replace />;
     return <Navigate to={role === 'admin' ? '/admin' : '/users'} replace />;
   }
@@ -54,12 +55,14 @@ function App() {
         {/* Semua rute di dalam elemen ini otomatis terbungkus Sidebar Layout dan wajib Login */}
         <Route element={<PrivateRoute><Layout /></PrivateRoute>}>
           
-          {/* Rute Khusus Admin & Operator Absensi */}
-          <Route path="/admin/events" element={<PrivateRoute allowedRoles={['admin', 'operator_absensi']}><ManageEvents /></PrivateRoute>} />
-          <Route path="/admin/attendance/:eventId" element={<PrivateRoute allowedRoles={['admin', 'operator_absensi']}><ManageAttendance /></PrivateRoute>} />
+          {/* Rute Khusus Admin, Operator Absensi & MT */}
+          <Route path="/admin/events" element={<PrivateRoute allowedRoles={['admin', 'operator_absensi', 'absen_kelompok']}><ManageEvents /></PrivateRoute>} />
+          <Route path="/admin/attendance/:eventId" element={<PrivateRoute allowedRoles={['admin', 'operator_absensi', 'absen_kelompok']}><ManageAttendance /></PrivateRoute>} />
 
+          {/* Rute Khusus Admin & MT */}
+          <Route path="/admin/events/:eventId/summary" element={<PrivateRoute allowedRoles={['admin', 'absen_kelompok']}><EventSummary /></PrivateRoute>} />
+          
           {/* Rute Khusus Admin Saja */}
-          <Route path="/admin/events/:eventId/summary" element={<PrivateRoute allowedRole="admin"><EventSummary /></PrivateRoute>} />
           <Route path="/admin" element={<PrivateRoute allowedRole="admin"><Dashboard /></PrivateRoute>} />
           <Route path="/admin/users" element={<PrivateRoute allowedRole="admin"><ManageUsers /></PrivateRoute>} />
           <Route path="/admin/generus" element={<PrivateRoute allowedRole="admin"><ManageGenerus /></PrivateRoute>} />
@@ -73,9 +76,9 @@ function App() {
 
           {/* Rute Khusus MT */}
           <Route path="/mt" element={<PrivateRoute allowedRole="mt"><UserDashboard /></PrivateRoute>} />
-          <Route path="/mt/members" element={<PrivateRoute allowedRole="mt"><MtMembers /></PrivateRoute>} />
-          <Route path="/mt/statistics" element={<PrivateRoute allowedRole="mt"><MtStatistics /></PrivateRoute>} />
-          <Route path="/mt/attendance" element={<PrivateRoute allowedRole="mt"><MtAttendance /></PrivateRoute>} />
+          <Route path="/mt/members" element={<PrivateRoute allowedRoles={['mt', 'absen_kelompok']}><MtMembers /></PrivateRoute>} />
+          <Route path="/mt/statistics" element={<PrivateRoute allowedRoles={['mt', 'absen_kelompok']}><MtStatistics /></PrivateRoute>} />
+          <Route path="/mt/attendance" element={<PrivateRoute allowedRoles={['mt', 'absen_kelompok']}><MtAttendance /></PrivateRoute>} />
           <Route path="/mt/qr" element={<PrivateRoute allowedRole="mt"><UserQR /></PrivateRoute>} />
           <Route path="/mt/profile" element={<PrivateRoute allowedRole="mt"><UserProfile /></PrivateRoute>} />
 

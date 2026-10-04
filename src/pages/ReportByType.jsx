@@ -91,6 +91,9 @@ export default function ReportByType() {
   const [filterKelompok, setFilterKelompok] = useState([]);
   const [filterJenjang, setFilterJenjang] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
+  const [mainKelompok, setMainKelompok] = useState('');
+  
+  const hasGroupCategory = eventTypes.some(t => selectedType.includes(t.id.toString()) && (t.is_group_attendance === 1 || t.is_group_attendance === true));
   
   const formatDate = (dateString) => {
     const d = new Date(dateString);
@@ -206,16 +209,22 @@ export default function ReportByType() {
   if (reportData.some(g => g.is_pengurus_muda_mudi)) uniqueJenjang.push('PENGURUS MUDA MUDI');
   if (reportData.some(g => g.is_ketua_wakil_kelompok)) uniqueJenjang.push('KETUA/WAKIL KELOMPOK');
 
+  const filteredEventsList = eventsList.filter(e => {
+    if (mainKelompok && e.kelompok) return e.kelompok === mainKelompok;
+    return true;
+  });
+
   const filteredData = reportData.filter(g => {
     const matchName = g.nama_lengkap.toLowerCase().includes(searchTerm.toLowerCase());
     const matchKelompok = filterKelompok.length === 0 ? true : filterKelompok.includes(g.kelompok);
+    const matchMainKelompok = mainKelompok ? g.kelompok === mainKelompok : true;
     const matchJenjang = filterJenjang.length === 0 ? true : filterJenjang.some(f => {
       if (f === 'PENGURUS USMAN') return !!g.is_pengurus;
       if (f === 'PENGURUS MUDA MUDI') return !!g.is_pengurus_muda_mudi;
       if (f === 'KETUA/WAKIL KELOMPOK') return !!g.is_ketua_wakil_kelompok;
       return g.jenjang === f;
     });
-    return matchName && matchKelompok && matchJenjang;
+    return matchName && matchKelompok && matchMainKelompok && matchJenjang;
   });
 
   const toggleKelompok = (k) => {
@@ -250,7 +259,7 @@ export default function ReportByType() {
       { header: 'RECAP', key: 'recap', width: 10 },
     ];
 
-    eventsList.forEach(e => {
+    filteredEventsList.forEach(e => {
       columns.push({
         header: formatDate(e.event_date).toUpperCase(),
         key: `event_${e.id}`,
@@ -283,7 +292,7 @@ export default function ReportByType() {
     filteredData.forEach((g, index) => {
       let present = 0;
       let totalParticipant = 0;
-      eventsList.forEach(e => {
+      filteredEventsList.forEach(e => {
         const stat = g.events_attendance[e.id];
         if (stat && stat !== '-') {
           totalParticipant++;
@@ -301,7 +310,7 @@ export default function ReportByType() {
         recap: totalParticipant === 0 ? '-' : `${present}/${totalParticipant}`
       };
 
-      eventsList.forEach(e => {
+      filteredEventsList.forEach(e => {
         rowData[`event_${e.id}`] = g.events_attendance[e.id] === '-' ? '' : (g.events_attendance[e.id] || '');
       });
 
@@ -390,7 +399,7 @@ export default function ReportByType() {
           </div>
           
           <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto mt-3 sm:mt-0">
-            <div className="grid grid-cols-2 gap-2 sm:gap-3 w-full sm:w-auto">
+            <div className={`grid ${hasGroupCategory ? 'grid-cols-3' : 'grid-cols-2'} gap-2 sm:gap-3 w-full sm:w-auto`}>
               {/* Filter Year */}
               <CustomSelect 
                 options={availableYears.map(y => ({ value: y.toString(), label: y.toString() }))}
@@ -400,13 +409,24 @@ export default function ReportByType() {
               />
 
               {/* Filter Kategori */}
-              <CustomSelect 
-                multiple
-                options={eventTypes.map(t => ({ value: t.id.toString(), label: t.name }))}
-                value={selectedType}
-                onChange={setSelectedType}
-                placeholder="Pilih Kategori Acara"
-              />
+                <CustomSelect 
+                  multiple
+                  options={eventTypes.map(t => ({ value: t.id.toString(), label: t.name }))}
+                  value={selectedType}
+                  onChange={setSelectedType}
+                  placeholder="Pilih Kategori Acara"
+                />
+                {hasGroupCategory && (
+                  <CustomSelect
+                    options={[
+                      { value: '', label: 'Semua Kelompok' },
+                      ...uniqueKelompok.map(k => ({ value: k, label: k }))
+                    ]}
+                    value={mainKelompok}
+                    onChange={setMainKelompok}
+                    placeholder="Pilih Kelompok"
+                  />
+                )}
             </div>
 
             {/* Export Button */}
@@ -552,7 +572,7 @@ export default function ReportByType() {
                     <th className="px-2 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 text-center bg-slate-100 lg:sticky lg:left-[620px] z-30 w-[70px] min-w-[70px] lg:shadow-[2px_0_5px_-2px_rgba(0,0,0,0.2)]">Recap</th>
                     
                     {/* Kolom Acara Dinamis */}
-                    {eventsList.map(e => (
+                    {filteredEventsList.map(e => (
                       <th key={e.id} className={`px-2 py-4 text-[10px] font-black uppercase tracking-widest border text-center min-w-[70px] w-[70px] ${getEventTypeColor(e.event_type_id)}`}>
                         <div className="flex flex-col items-center gap-1">
                           <span>{formatDate(e.event_date)}</span>
@@ -593,7 +613,7 @@ export default function ReportByType() {
                         {(() => {
                           let present = 0;
                           let totalParticipant = 0;
-                          eventsList.forEach(e => {
+                          filteredEventsList.forEach(e => {
                             const stat = g.events_attendance[e.id];
                             if (stat && stat !== '-') {
                               totalParticipant++;
@@ -605,7 +625,7 @@ export default function ReportByType() {
                       </td>
                       
                       {/* Sel Acara Dinamis */}
-                      {eventsList.map(e => {
+                      {filteredEventsList.map(e => {
                         const mStatus = g.events_attendance[e.id];
                         const cellClass = mStatus && mStatus !== '-' ? getStatusCellClass(mStatus) : 'bg-white text-slate-200';
                         return (

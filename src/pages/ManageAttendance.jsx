@@ -105,6 +105,7 @@ export default function ManageAttendance() {
 
       const currentEvent = eventRes.data.data.find(e => e.id.toString() === eventId);
       setEvent(currentEvent);
+      if (currentEvent?.kelompok) setFilterKelompok('Semua');
 
       let targetKategori = [];
       if (currentEvent?.target_kategori) {
@@ -125,6 +126,7 @@ export default function ManageAttendance() {
       setAllGenerusList(allG);
 
       const filtered = allG.filter(g => {
+          if (currentEvent?.kelompok && (g.kelompok || '').toLowerCase() !== currentEvent?.kelompok.toLowerCase()) return false;
         const j = (g.jenjang || '').toLowerCase();
         return (
           (targetKategori.length === 0 || targetKategori.some(t => {
@@ -406,30 +408,32 @@ export default function ManageAttendance() {
             </div>
 
             {/* Pill filter: Kelompok */}
-            <div className="bg-white border border-slate-200 rounded-2xl px-3 py-2.5 shadow-sm">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 px-1 flex items-center gap-1.5">
-                <MapPin size={10} className="text-teal-500" /> Kelompok
-              </p>
-              <div className="flex flex-wrap gap-1.5">
-                {KELOMPOK_LIST.map(k => {
-                  const cnt = k === 'Semua'
-                    ? generusList.length
-                    : generusList.filter(g => g.kelompok?.toLowerCase() === k.toLowerCase()).length;
-                  const active = filterKelompok === k;
-                  return (
-                    <button key={k} onClick={() => setFilterKelompok(k)}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-                        active ? 'bg-teal-600 text-white shadow-sm' : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200'
-                      }`}>
-                      {k === 'Semua' ? 'Semua' : k}
-                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${active ? 'bg-teal-500/50 text-white' : 'bg-slate-200 text-slate-500'}`}>
-                        {cnt}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+              {!event?.kelompok && (
+                <div className="bg-white border border-slate-200 rounded-2xl px-3 py-2.5 shadow-sm">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 px-1 flex items-center gap-1.5">
+                    <MapPin size={10} className="text-teal-500" /> Kelompok
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {KELOMPOK_LIST.map(k => {
+                      const cnt = k === 'Semua'
+                        ? generusList.length
+                        : generusList.filter(g => g.kelompok?.toLowerCase() === k.toLowerCase()).length;
+                      const active = filterKelompok === k;
+                      return (
+                        <button key={k} onClick={() => setFilterKelompok(k)}
+                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                            active ? 'bg-teal-600 text-white shadow-sm' : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200'
+                          }`}>
+                          {k === 'Semua' ? 'Semua' : k}
+                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${active ? 'bg-teal-500/50 text-white' : 'bg-slate-200 text-slate-500'}`}>
+                            {cnt}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
             {/* Pill filter: Jenjang */}
             <div className="bg-white border border-slate-200 rounded-2xl px-3 py-2.5 shadow-sm">
