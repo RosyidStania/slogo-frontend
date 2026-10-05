@@ -48,6 +48,7 @@ export default function EventSummary() {
   const [previousAttendances, setPreviousAttendances] = useState([]);
   const [previousTargetGenerus, setPreviousTargetGenerus] = useState([]);
   const [infaqAmount, setInfaqAmount] = useState("");
+  const [originalInfaqAmount, setOriginalInfaqAmount] = useState("");
   const [isSavingInfaq, setIsSavingInfaq] = useState(false);
   const [loading, setLoading] = useState(true);
   
@@ -161,6 +162,7 @@ export default function EventSummary() {
       setPreviousAttendances(response.data.previous_attendances || []);
       setPreviousTargetGenerus(response.data.previous_target_generus || []);
       setInfaqAmount(response.data.event.infaq || "");
+      setOriginalInfaqAmount(response.data.event.infaq || "");
     } catch (error) {
       console.error('Gagal mengambil data rekapan:', error);
     } finally {
@@ -320,6 +322,7 @@ export default function EventSummary() {
     try {
       setIsSavingInfaq(true);
       await api.patch(`/admin/events/${eventId}/infaq`, { infaq: infaqAmount });
+      setOriginalInfaqAmount(infaqAmount);
       alert('Infaq berhasil disimpan');
     } catch (error) {
       console.error('Gagal menyimpan infaq:', error);
@@ -466,10 +469,10 @@ export default function EventSummary() {
                     </div>
                     <button 
                       onClick={handleSaveInfaq}
-                      disabled={isSavingInfaq}
-                      className="px-4 py-1.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-lg transition-colors disabled:opacity-50"
+                      disabled={isSavingInfaq || String(infaqAmount) === String(originalInfaqAmount)}
+                      className="px-4 py-1.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      {isSavingInfaq ? 'Menyimpan...' : 'Simpan'}
+                      {isSavingInfaq ? 'Menyimpan...' : (String(infaqAmount) === String(originalInfaqAmount) ? 'Tersimpan' : 'Simpan')}
                     </button>
                   </div>
                 </td>
