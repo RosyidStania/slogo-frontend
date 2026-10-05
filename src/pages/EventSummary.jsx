@@ -517,70 +517,82 @@ export default function EventSummary() {
                 <svg className="w-5 h-5 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                 <h2 className="text-base font-bold text-slate-800 uppercase tracking-wide">Komposisi Kehadiran (Putra vs Putri)</h2>
               </div>
-              <div className="p-6 h-[350px] flex-grow grid grid-cols-1 sm:grid-cols-2 gap-4">
-                
-                {/* BULAN LALU */}
-                {previousEvent && prevGenderData.length > 0 ? (
-                  <div className="flex flex-col items-center h-full w-full">
-                    <div className="text-sm font-bold text-slate-500 mb-2">{prevMonthName}</div>
-                    <div className="w-full flex-grow relative">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                          <Pie
-                            data={prevGenderData}
-                            cx="50%" cy="50%" innerRadius={60} outerRadius={90} paddingAngle={5} dataKey="value"
-                            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                            labelLine={false}
-                          >
-                            {prevGenderData.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={entry.color} />
-                            ))}
-                          </Pie>
-                          <Tooltip formatter={(value) => [value, 'Peserta']} contentStyle={{ borderRadius: '12px', border: 'none' }} />
-                          <Legend iconType="circle" wrapperStyle={{ paddingTop: '10px' }} />
-                        </PieChart>
-                      </ResponsiveContainer>
-                      <div className="absolute flex flex-col items-center justify-center pointer-events-none" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)', marginTop: '-15px' }}>
-                        <span className="text-2xl font-black text-slate-800">{prevTotalHadir}</span>
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Hadir</span>
+              <div className="p-6 flex flex-col items-center flex-grow">
+                <div className="w-full h-[300px] grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  
+                  {/* BULAN LALU */}
+                  {previousEvent && prevGenderData.length > 0 ? (
+                    <div className="flex flex-col items-center h-full w-full">
+                      <div className="text-sm font-bold text-slate-500 mb-2">{prevMonthName}</div>
+                      <div className="w-full flex-grow relative">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <PieChart>
+                            <Pie
+                              data={prevGenderData}
+                              cx="50%" cy="50%" innerRadius={50} outerRadius={75} paddingAngle={5} dataKey="value"
+                              label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                              labelLine={false}
+                            >
+                              {prevGenderData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={entry.color} />
+                              ))}
+                            </Pie>
+                            <Tooltip formatter={(value) => [value, 'Peserta']} contentStyle={{ borderRadius: '12px', border: 'none' }} />
+                          </PieChart>
+                        </ResponsiveContainer>
+                        <div className="absolute flex flex-col items-center justify-center pointer-events-none" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+                          <span className="text-2xl font-black text-slate-800">{prevTotalHadir}</span>
+                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Hadir</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center justify-center h-full w-full text-slate-400 italic text-sm">Belum ada data bulan lalu</div>
-                )}
+                  ) : (
+                    <div className="flex flex-col items-center justify-center h-full w-full text-slate-400 italic text-sm">Belum ada data bulan lalu</div>
+                  )}
 
-                {/* BULAN INI */}
-                {genderData.length > 0 ? (
-                  <div className="flex flex-col items-center h-full w-full">
-                    <div className="text-sm font-bold text-slate-700 mb-2">{currentMonthName}</div>
-                    <div className="w-full flex-grow relative">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                          <Pie
-                            data={genderData}
-                            cx="50%" cy="50%" innerRadius={60} outerRadius={90} paddingAngle={5} dataKey="value"
-                            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                            labelLine={false}
-                          >
-                            {genderData.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={entry.color} />
-                            ))}
-                          </Pie>
-                          <Tooltip formatter={(value) => [value, 'Peserta']} contentStyle={{ borderRadius: '12px', border: 'none' }} />
-                          <Legend iconType="circle" wrapperStyle={{ paddingTop: '10px' }} />
-                        </PieChart>
-                      </ResponsiveContainer>
-                      <div className="absolute flex flex-col items-center justify-center pointer-events-none" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)', marginTop: '-15px' }}>
-                        <span className="text-2xl font-black text-slate-800">{totalStats.hadirTotal}</span>
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Hadir</span>
+                  {/* BULAN INI */}
+                  {genderData.length > 0 ? (
+                    <div className="flex flex-col items-center h-full w-full">
+                      <div className="text-sm font-bold text-slate-700 mb-2">{currentMonthName}</div>
+                      <div className="w-full flex-grow relative">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <PieChart>
+                            <Pie
+                              data={genderData}
+                              cx="50%" cy="50%" innerRadius={50} outerRadius={75} paddingAngle={5} dataKey="value"
+                              label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                              labelLine={false}
+                            >
+                              {genderData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={entry.color} />
+                              ))}
+                            </Pie>
+                            <Tooltip formatter={(value) => [value, 'Peserta']} contentStyle={{ borderRadius: '12px', border: 'none' }} />
+                          </PieChart>
+                        </ResponsiveContainer>
+                        <div className="absolute flex flex-col items-center justify-center pointer-events-none" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+                          <span className="text-2xl font-black text-slate-800">{totalStats.hadirTotal}</span>
+                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Hadir</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center justify-center h-full w-full text-slate-400 italic text-sm">Belum ada data bulan ini</div>
-                )}
+                  ) : (
+                    <div className="flex flex-col items-center justify-center h-full w-full text-slate-400 italic text-sm">Belum ada data bulan ini</div>
+                  )}
 
+                </div>
+
+                {/* SINGLE LEGEND */}
+                <div className="flex items-center justify-center gap-6 mt-4">
+                  <div className="flex items-center gap-2">
+                    <span className="w-3 h-3 rounded-full bg-[#3b82f6]"></span>
+                    <span className="text-sm font-medium text-slate-600">Putra</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-3 h-3 rounded-full bg-[#ec4899]"></span>
+                    <span className="text-sm font-medium text-slate-600">Putri</span>
+                  </div>
+                </div>
               </div>
             </div>
           ) : (
