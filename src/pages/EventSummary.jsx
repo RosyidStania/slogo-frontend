@@ -266,6 +266,11 @@ export default function EventSummary() {
       { name: 'Bulan Ini', Hadir: globalStats.hadir, Izin: globalStats.izin, Alpa: globalStats.alpa },
   ];
 
+  const genderData = [
+    { name: 'Putra', value: totalStats.hadirPutra, color: '#3b82f6' },
+    { name: 'Putri', value: totalStats.hadirPutri, color: '#ec4899' }
+  ].filter(d => d.value > 0);
+
   const handleSaveInfaq = async () => {
     try {
       setIsSavingInfaq(true);
@@ -462,17 +467,17 @@ export default function EventSummary() {
           </div>
         )}
 
-        {/* GRAFIK PERBANDINGAN TOTAL STATUS */}
-        {previousEvent && globalComparisonData.length > 0 && (
-          <div className="mb-8 bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm">
-            <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
-              <div className="flex items-center gap-2">
-                <svg className="w-5 h-5 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                <h2 className="text-base font-bold text-slate-800 uppercase tracking-wide">Perbandingan Total Status Kehadiran</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* GRAFIK PERBANDINGAN TOTAL STATUS */}
+          {previousEvent && globalComparisonData.length > 0 ? (
+            <div className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm flex flex-col">
+              <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                  <h2 className="text-base font-bold text-slate-800 uppercase tracking-wide">Perbandingan Total Status</h2>
+                </div>
               </div>
-            </div>
-            <div className="p-6 h-[350px]">
-              <div className="w-full md:w-3/4 lg:w-1/2 mx-auto h-full">
+              <div className="p-6 h-[350px] w-full flex-grow">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={globalComparisonData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
@@ -489,8 +494,52 @@ export default function EventSummary() {
                 </ResponsiveContainer>
               </div>
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="hidden lg:block"></div>
+          )}
+
+          {/* GRAFIK KOMPOSISI GENDER */}
+          {genderData.length > 0 ? (
+            <div className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm flex flex-col">
+              <div className="p-4 border-b border-slate-100 flex items-center gap-2 bg-slate-50">
+                <svg className="w-5 h-5 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                <h2 className="text-base font-bold text-slate-800 uppercase tracking-wide">Komposisi Kehadiran (Putra vs Putri)</h2>
+              </div>
+              <div className="p-6 h-[350px] flex-grow flex items-center justify-center relative">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={genderData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={80}
+                      outerRadius={110}
+                      paddingAngle={5}
+                      dataKey="value"
+                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    >
+                      {genderData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip 
+                      formatter={(value) => [value, 'Peserta']}
+                      contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)' }}
+                    />
+                    <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
+                  </PieChart>
+                </ResponsiveContainer>
+                {/* Center text */}
+                <div className="absolute flex flex-col items-center justify-center pointer-events-none" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)', marginTop: '-15px' }}>
+                  <span className="text-3xl font-black text-slate-800">{totalStats.hadirTotal}</span>
+                  <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Hadir</span>
+                </div>
+              </div>
+            </div>
+          ) : (
+             <div className="hidden lg:block"></div>
+          )}
+        </div>
 
         {/* GRAFIK PIE PER KELOMPOK */}
         {groupStats.length > 0 && (
