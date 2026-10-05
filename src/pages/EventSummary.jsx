@@ -265,9 +265,12 @@ export default function EventSummary() {
       prevHadirPutri = previousAttendances.filter(a => a.status === 'hadir' && a.generus?.jenis_kelamin === 'P').length;
   }
 
+  const currentMonthName = event ? new Date(event.event_date).toLocaleDateString('id-ID', { month: 'long' }) : 'Bulan Ini';
+  const prevMonthName = previousEvent ? new Date(previousEvent.event_date).toLocaleDateString('id-ID', { month: 'long' }) : 'Bulan Lalu';
+
   const globalComparisonData = [
-      { name: 'Bulan Lalu', Hadir: prevTotalHadir, Izin: prevTotalIzin, Alpa: prevTotalAlpa },
-      { name: 'Bulan Ini', Hadir: globalStats.hadir, Izin: globalStats.izin, Alpa: globalStats.alpa },
+      { name: prevMonthName, Hadir: prevTotalHadir, Izin: prevTotalIzin, Alpa: prevTotalAlpa },
+      { name: currentMonthName, Hadir: globalStats.hadir, Izin: globalStats.izin, Alpa: globalStats.alpa },
   ];
 
   const genderData = [
@@ -464,10 +467,10 @@ export default function EventSummary() {
                     formatter={(value) => [`${value}%`, '']}
                   />
                   <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
-                  <Bar dataKey="Sekarang" name="Bulan Ini" fill="#14b8a6" radius={[4, 4, 0, 0]} barSize={32}>
+                  <Bar dataKey="Sekarang" name={currentMonthName} fill="#14b8a6" radius={[4, 4, 0, 0]} barSize={32}>
                     <LabelList dataKey="Sekarang" position="top" formatter={(value) => `${value}%`} style={{ fill: '#14b8a6', fontSize: 11, fontWeight: 'bold' }} />
                   </Bar>
-                  <Bar dataKey="BulanLalu" name="Bulan Lalu" fill="#94a3b8" radius={[4, 4, 0, 0]} barSize={32}>
+                  <Bar dataKey="BulanLalu" name={prevMonthName} fill="#94a3b8" radius={[4, 4, 0, 0]} barSize={32}>
                     <LabelList dataKey="BulanLalu" position="top" formatter={(value) => `${value}%`} style={{ fill: '#94a3b8', fontSize: 11, fontWeight: 'bold' }} />
                   </Bar>
                 </BarChart>
@@ -519,7 +522,7 @@ export default function EventSummary() {
                 {/* BULAN LALU */}
                 {previousEvent && prevGenderData.length > 0 ? (
                   <div className="flex flex-col items-center h-full w-full">
-                    <div className="text-sm font-bold text-slate-500 mb-2">Bulan Lalu</div>
+                    <div className="text-sm font-bold text-slate-500 mb-2">{prevMonthName}</div>
                     <div className="w-full flex-grow relative">
                       <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
@@ -550,7 +553,7 @@ export default function EventSummary() {
                 {/* BULAN INI */}
                 {genderData.length > 0 ? (
                   <div className="flex flex-col items-center h-full w-full">
-                    <div className="text-sm font-bold text-slate-700 mb-2">Bulan Ini</div>
+                    <div className="text-sm font-bold text-slate-700 mb-2">{currentMonthName}</div>
                     <div className="w-full flex-grow relative">
                       <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
