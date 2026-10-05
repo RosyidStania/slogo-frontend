@@ -283,6 +283,39 @@ export default function EventSummary() {
     { name: 'Putri', value: prevHadirPutri, color: '#ec4899' }
   ].filter(d => d.value > 0);
 
+  const getChangeStats = (current, prev, type) => {
+    let percent = 0;
+    let sign = '';
+    let colorClass = 'text-slate-500 bg-slate-100';
+    let icon = <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14" /></svg>;
+
+    if (prev === 0) {
+        if (current === 0) return { text: '0%', colorClass, icon };
+        percent = 100;
+    } else {
+        percent = Math.round(((current - prev) / prev) * 100);
+    }
+
+    if (percent > 0) {
+        sign = '+';
+        if (type === 'hadir') colorClass = 'text-teal-700 bg-teal-100';
+        else if (type === 'izin') colorClass = 'text-amber-700 bg-amber-100';
+        else colorClass = 'text-rose-700 bg-rose-100';
+        icon = <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 15l7-7 7 7" /></svg>;
+    } else if (percent < 0) {
+        if (type === 'hadir') colorClass = 'text-rose-700 bg-rose-100';
+        else colorClass = 'text-teal-700 bg-teal-100';
+        icon = <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" /></svg>;
+    } else {
+        return { text: '0%', colorClass, icon };
+    }
+    return { text: `${sign}${Math.abs(percent)}%`, colorClass, icon };
+  };
+
+  const hadirChange = previousEvent ? getChangeStats(globalStats.hadir, prevTotalHadir, 'hadir') : null;
+  const izinChange = previousEvent ? getChangeStats(globalStats.izin, prevTotalIzin, 'izin') : null;
+  const alpaChange = previousEvent ? getChangeStats(globalStats.alpa, prevTotalAlpa, 'alpa') : null;
+
   const handleSaveInfaq = async () => {
     try {
       setIsSavingInfaq(true);
@@ -489,21 +522,45 @@ export default function EventSummary() {
                   <h2 className="text-base font-bold text-slate-800 uppercase tracking-wide">Perbandingan Total Status</h2>
                 </div>
               </div>
-              <div className="p-6 h-[350px] w-full flex-grow">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={globalComparisonData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12, fontWeight: 600 }} dy={10} />
-                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} dx={-10} />
-                    <Tooltip 
-                      contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)' }}
-                    />
-                    <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
-                    <Line type="monotone" dataKey="Hadir" stroke="#14b8a6" strokeWidth={3} activeDot={{ r: 6 }} />
-                    <Line type="monotone" dataKey="Izin" name="Izin/Sakit" stroke="#f59e0b" strokeWidth={3} activeDot={{ r: 6 }} />
-                    <Line type="monotone" dataKey="Alpa" stroke="#ef4444" strokeWidth={3} activeDot={{ r: 6 }} />
-                  </LineChart>
-                </ResponsiveContainer>
+              <div className="p-6 w-full flex-grow flex flex-col">
+                {/* BADGES PERSENTASE PERUBAHAN */}
+                <div className="flex gap-6 mb-6 justify-center flex-wrap border-b border-slate-100 pb-4">
+                  <div className="flex flex-col items-center">
+                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Hadir</span>
+                    <div className={`flex items-center gap-1 text-xs font-bold px-2.5 py-0.5 rounded-full mt-1 ${hadirChange?.colorClass}`}>
+                      {hadirChange?.icon} {hadirChange?.text}
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Izin/Sakit</span>
+                    <div className={`flex items-center gap-1 text-xs font-bold px-2.5 py-0.5 rounded-full mt-1 ${izinChange?.colorClass}`}>
+                      {izinChange?.icon} {izinChange?.text}
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Alpa</span>
+                    <div className={`flex items-center gap-1 text-xs font-bold px-2.5 py-0.5 rounded-full mt-1 ${alpaChange?.colorClass}`}>
+                      {alpaChange?.icon} {alpaChange?.text}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="w-full h-[250px] flex-grow">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={globalComparisonData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                      <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12, fontWeight: 600 }} dy={10} />
+                      <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} dx={-10} />
+                      <Tooltip 
+                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)' }}
+                      />
+                      <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
+                      <Line type="monotone" dataKey="Hadir" stroke="#14b8a6" strokeWidth={3} activeDot={{ r: 6 }} />
+                      <Line type="monotone" dataKey="Izin" name="Izin/Sakit" stroke="#f59e0b" strokeWidth={3} activeDot={{ r: 6 }} />
+                      <Line type="monotone" dataKey="Alpa" stroke="#ef4444" strokeWidth={3} activeDot={{ r: 6 }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
               </div>
             </div>
           ) : (
