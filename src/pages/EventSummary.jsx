@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import { ArrowLeft, Users, CheckCircle, XCircle, AlertCircle, Clock, Filter, ChevronDown, Download, MapPin, Upload } from 'lucide-react';
-import { BarChart, Bar, PieChart, Pie, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LabelList, Cell, Sector } from 'recharts';
+import { BarChart, Bar, LineChart, Line, PieChart, Pie, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LabelList, Cell, Sector } from 'recharts';
 import { read, utils } from 'xlsx';
 
 const renderRoseShape = (props) => {
@@ -44,6 +44,9 @@ export default function EventSummary() {
   const [event, setEvent] = useState(null);
   const [attendances, setAttendances] = useState([]);
   const [targetGenerus, setTargetGenerus] = useState([]);
+  const [previousEvent, setPreviousEvent] = useState(null);
+  const [previousAttendances, setPreviousAttendances] = useState([]);
+  const [previousTargetGenerus, setPreviousTargetGenerus] = useState([]);
   const [infaqAmount, setInfaqAmount] = useState("");
   const [isSavingInfaq, setIsSavingInfaq] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -154,6 +157,9 @@ export default function EventSummary() {
       setEvent(response.data.event);
       setAttendances(response.data.attendances || []);
       setTargetGenerus(response.data.target_generus || []);
+      setPreviousEvent(response.data.previous_event || null);
+      setPreviousAttendances(response.data.previous_attendances || []);
+      setPreviousTargetGenerus(response.data.previous_target_generus || []);
       setInfaqAmount(response.data.event.infaq || "");
     } catch (error) {
       console.error('Gagal mengambil data rekapan:', error);
@@ -175,13 +181,6 @@ export default function EventSummary() {
     return matchKelompok && matchStatus;
   });
 
-  const globalStats = {
-    total: attendances.length,
-    hadir: attendances.filter(a => a.status === 'hadir').length,
-    terlambat: attendances.filter(a => Number(a.is_late) === 1).length,
-    izin: attendances.filter(a => a.status === 'izin' || a.status === 'sakit').length,
-    alpa: attendances.filter(a => a.status === 'alpa').length,
-  };
 
   const groupStats = kelompokList.filter(k => k !== 'Semua').map(kelompok => {
     const targetGroup = targetGenerus.filter(g => (g.kelompok || '').toLowerCase() === kelompok.toLowerCase());
@@ -217,8 +216,55 @@ export default function EventSummary() {
     hadirPutra: groupStats.reduce((sum, g) => sum + g.hadirPutra, 0),
     hadirPutri: groupStats.reduce((sum, g) => sum + g.hadirPutri, 0),
     hadirTotal: groupStats.reduce((sum, g) => sum + g.hadirTotal, 0),
+    izinSakitTotal: groupStats.reduce((sum, g) => sum + g.izinSakitTotal, 0),
+    alpaTotal: groupStats.reduce((sum, g) => sum + g.alpaTotal, 0),
   };
   totalStats.percentage = totalStats.targetTotal > 0 ? Math.round((totalStats.hadirTotal / totalStats.targetTotal) * 100) : 0;
+
+  const globalStats = {
+    total: attendances.length,
+    hadir: attendances.filter(a => a.status === 'hadir').length,
+    terlambat: attendances.filter(a => Number(a.is_late) === 1).length,
+    izin: attendances.filter(a => a.status === 'izin' || a.status === 'sakit').length,
+    alpa: attendances.filter(a => a.status === 'alpa').length,
+  };
+
+  const comparisonData = kelompokList.filter(k => k !== 'Semua').map(kelompok => {
+    const currentGroup = groupStats.find(g => g.name === kelompok);
+    let currentPercentage = currentGroup ? currentGroup.percentage : 0;
+
+    let previousPercentage = 0;
+    if (previousEvent) {
+        const prevTargetGroup = previousTargetGenerus.filter(g => (g.kelompok || '').toLowerCase() === kelompok.toLowerCase());
+        const prevTargetTotal = prevTargetGroup.length;
+
+        const prevAttendGroup = previousAttendances.filter(a => (a.generus?.kelompok || '').toLowerCase() === kelompok.toLowerCase());
+        const prevHadirTotal = prevAttendGroup.filter(a => a.status === 'hadir').length;
+
+        previousPercentage = prevTargetTotal > 0 ? Math.round((prevHadirTotal / prevTargetTotal) * 100) : 0;
+    }
+
+    return {
+      name: kelompok,
+      Sekarang: currentPercentage,
+      BulanLalu: previousPercentage,
+    };
+  }).filter(g => groupStats.some(cg => cg.name === g.name && cg.targetTotal > 0));
+
+  let prevTotalHadir = 0;
+  let prevTotalIzin = 0;
+  let prevTotalAlpa = 0;
+  
+  if (previousEvent) {
+      prevTotalHadir = previousAttendances.filter(a => a.status === 'hadir').length;
+      prevTotalIzin = previousAttendances.filter(a => a.status === 'izin' || a.status === 'sakit').length;
+      prevTotalAlpa = previousAttendances.filter(a => a.status === 'alpa').length;
+  }
+
+  const globalComparisonData = [
+      { name: 'Bulan Lalu', Hadir: prevTotalHadir, Izin: prevTotalIzin, Alpa: prevTotalAlpa },
+      { name: 'Bulan Ini', Hadir: globalStats.hadir, Izin: globalStats.izin, Alpa: globalStats.alpa },
+  ];
 
   const handleSaveInfaq = async () => {
     try {
@@ -310,7 +356,7 @@ export default function EventSummary() {
               <tr className="bg-slate-50 text-slate-500 border-b border-slate-200">
                 <th rowSpan="2" className="px-4 py-3 font-bold uppercase text-center border-r border-slate-200">No</th>
                 <th rowSpan="2" className="px-4 py-3 font-bold uppercase text-center border-r border-slate-200">Kelompok</th>
-                <th colSpan="3" className="px-4 py-2 font-bold uppercase text-center border-r border-slate-200 border-b border-slate-200">Jumlah Jamaah</th>
+                <th colSpan="3" className="px-4 py-2 font-bold uppercase text-center border-r border-slate-200 border-b border-slate-200">Jumlah Generus</th>
                 <th colSpan="3" className="px-4 py-2 font-bold uppercase text-center border-r border-slate-200 border-b border-slate-200">Kehadiran {new Date(event.event_date).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }).toUpperCase()}</th>
                 <th rowSpan="2" className="px-4 py-3 font-bold uppercase text-center">%</th>
               </tr>
@@ -383,7 +429,66 @@ export default function EventSummary() {
           </div>
         </div>
 
-        
+        {/* GRAFIK PERBANDINGAN BULAN LALU */}
+        {previousEvent && comparisonData.length > 0 && (
+          <div className="mb-8 bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm">
+            <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+              <div className="flex items-center gap-2">
+                <svg className="w-5 h-5 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                <h2 className="text-base font-bold text-slate-800 uppercase tracking-wide">Perbandingan Kehadiran dengan {new Date(previousEvent.event_date).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}</h2>
+              </div>
+            </div>
+            <div className="p-6 h-[350px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={comparisonData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12, fontWeight: 600 }} dy={10} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} dx={-10} domain={[0, 100]} tickFormatter={(value) => `${value}%`} />
+                  <Tooltip 
+                    cursor={{ fill: '#f1f5f9' }}
+                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)' }}
+                    formatter={(value) => [`${value}%`, '']}
+                  />
+                  <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
+                  <Bar dataKey="Sekarang" name="Bulan Ini" fill="#14b8a6" radius={[4, 4, 0, 0]} barSize={32}>
+                    <LabelList dataKey="Sekarang" position="top" formatter={(value) => `${value}%`} style={{ fill: '#14b8a6', fontSize: 11, fontWeight: 'bold' }} />
+                  </Bar>
+                  <Bar dataKey="BulanLalu" name="Bulan Lalu" fill="#94a3b8" radius={[4, 4, 0, 0]} barSize={32}>
+                    <LabelList dataKey="BulanLalu" position="top" formatter={(value) => `${value}%`} style={{ fill: '#94a3b8', fontSize: 11, fontWeight: 'bold' }} />
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        )}
+
+        {/* GRAFIK PERBANDINGAN TOTAL STATUS */}
+        {previousEvent && globalComparisonData.length > 0 && (
+          <div className="mb-8 bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm">
+            <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+              <div className="flex items-center gap-2">
+                <svg className="w-5 h-5 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                <h2 className="text-base font-bold text-slate-800 uppercase tracking-wide">Perbandingan Total Status Kehadiran</h2>
+              </div>
+            </div>
+            <div className="p-6 h-[350px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={globalComparisonData} margin={{ top: 20, right: 30, left: 30, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12, fontWeight: 600 }} dy={10} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} dx={-10} />
+                  <Tooltip 
+                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)' }}
+                  />
+                  <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
+                  <Line type="monotone" dataKey="Hadir" stroke="#14b8a6" strokeWidth={3} activeDot={{ r: 6 }} />
+                  <Line type="monotone" dataKey="Izin" name="Izin/Sakit" stroke="#f59e0b" strokeWidth={3} activeDot={{ r: 6 }} />
+                  <Line type="monotone" dataKey="Alpa" stroke="#ef4444" strokeWidth={3} activeDot={{ r: 6 }} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        )}
 
         {/* GRAFIK PIE PER KELOMPOK */}
         {groupStats.length > 0 && (
