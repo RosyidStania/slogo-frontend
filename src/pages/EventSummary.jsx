@@ -472,20 +472,22 @@ export default function EventSummary() {
               </div>
             </div>
             <div className="p-6 h-[350px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={globalComparisonData} margin={{ top: 20, right: 30, left: 30, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12, fontWeight: 600 }} dy={10} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} dx={-10} />
-                  <Tooltip 
-                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)' }}
-                  />
-                  <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
-                  <Line type="monotone" dataKey="Hadir" stroke="#14b8a6" strokeWidth={3} activeDot={{ r: 6 }} />
-                  <Line type="monotone" dataKey="Izin" name="Izin/Sakit" stroke="#f59e0b" strokeWidth={3} activeDot={{ r: 6 }} />
-                  <Line type="monotone" dataKey="Alpa" stroke="#ef4444" strokeWidth={3} activeDot={{ r: 6 }} />
-                </LineChart>
-              </ResponsiveContainer>
+              <div className="w-full md:w-3/4 lg:w-1/2 mx-auto h-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={globalComparisonData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12, fontWeight: 600 }} dy={10} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} dx={-10} />
+                    <Tooltip 
+                      contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)' }}
+                    />
+                    <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
+                    <Line type="monotone" dataKey="Hadir" stroke="#14b8a6" strokeWidth={3} activeDot={{ r: 6 }} />
+                    <Line type="monotone" dataKey="Izin" name="Izin/Sakit" stroke="#f59e0b" strokeWidth={3} activeDot={{ r: 6 }} />
+                    <Line type="monotone" dataKey="Alpa" stroke="#ef4444" strokeWidth={3} activeDot={{ r: 6 }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
             </div>
           </div>
         )}
