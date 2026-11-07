@@ -171,13 +171,13 @@ export default function EventSummary() {
   };
 
   const filteredData = attendances.filter(item => {
-    const matchKelompok = filterKelompok === 'Semua' || item.generus.kelompok.toLowerCase() === filterKelompok.toLowerCase();
+    const matchKelompok = filterKelompok === 'Semua' || (item.generus?.kelompok || '').toLowerCase() === filterKelompok.toLowerCase();
     let matchStatus = true;
     if (filterStatus !== 'Semua') {
       if (filterStatus === 'Terlambat') {
         matchStatus = (Number(item.is_late) === 1);
       } else {
-        matchStatus = item.status.toLowerCase() === filterStatus.toLowerCase();
+        matchStatus = (item.status || '').toLowerCase() === filterStatus.toLowerCase();
       }
     }
     return matchKelompok && matchStatus;
@@ -198,7 +198,7 @@ export default function EventSummary() {
       const hadirTotal = hadirGroup.length;
       
       const izinSakitTotal = attendGroup.filter(a => a.status === 'izin' || a.status === 'sakit').length;
-      const alpaTotal = targetTotal - hadirTotal - izinSakitTotal;
+      const alpaTotal = Math.max(0, targetTotal - hadirTotal - izinSakitTotal);
 
     const percentage = targetTotal > 0 ? Math.round((hadirTotal / targetTotal) * 100) : 0;
 
@@ -772,8 +772,8 @@ export default function EventSummary() {
                   <tr key={item.id} className="hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-0">
                     <td className="px-3 py-2.5 sm:px-6 sm:py-3.5 text-center font-medium text-slate-500 text-sm">{index + 1}</td>
                     <td className="px-3 py-2.5 sm:px-6 sm:py-3.5">
-                      <p className="font-bold text-slate-800 text-sm">{item.generus.nama_lengkap}</p>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase mt-0.5">{item.generus.kelompok} • {item.generus.kategori}</p>
+                      <p className="font-bold text-slate-800 text-sm">{item.generus?.nama_lengkap || '-'}</p>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase mt-0.5">{item.generus?.kelompok || '-'} • {item.generus?.jenjang || '-'}</p>
                     </td>
                     <td className="px-3 py-2.5 sm:px-6 sm:py-3.5">
                       <span className={`text-[11px] font-bold uppercase px-3 py-1.5 rounded-lg border flex w-fit items-center gap-1.5 ${

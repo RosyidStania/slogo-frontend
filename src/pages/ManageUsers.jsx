@@ -534,8 +534,8 @@ export default function ManageUsers() {
           </div>
           <h3 className="text-lg font-bold text-slate-800 mb-2">Hapus Semua User Biasa?</h3>
           <p className="text-slate-500 text-sm mb-7 leading-relaxed">
-            Yakin ingin menghapus <span className="font-bold text-slate-800">seluruh akun user biasa</span>?
-            Akun admin tidak akan terhapus. Tindakan ini tidak dapat dibatalkan.
+            Yakin ingin menghapus <span className="font-bold text-slate-800">seluruh akun user & MT</span>?
+            Akun Admin dan Operator tidak akan terhapus. Tindakan ini tidak dapat dibatalkan.
           </p>
           <div className="flex gap-3">
             <button

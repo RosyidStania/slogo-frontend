@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { User, Mail, Phone, MapPin, Calendar, Activity, Hash, Camera, Save, RefreshCw, Smartphone, Lock, Key, Edit2, X, Eye, EyeOff, Shield, Users, BookOpen } from 'lucide-react';
 import api from '../api/axios';
 import CustomSelect from '../components/CustomSelect';
+
+const KELOMPOK_OPTIONS = ['Slogo', 'Gabugan', 'Jekani', 'Gawan', 'Pengkruk', 'Sidomulyo', 'Karangasem'].map(k => ({ value: k, label: k }));
+const JENJANG_OPTIONS = ['PAUD', 'TK', '1 SD', '2 SD', '3 SD', '4 SD', '5 SD', '6 SD', '1 SMP', '2 SMP', '3 SMP', '1 SMA/SMK', '2 SMA/SMK', '3 SMA/SMK', 'USMAN', 'MT'].map(j => ({ value: j, label: j }));
+
 export default function UserProfile() {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -311,8 +315,8 @@ export default function UserProfile() {
               <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-4 sm:p-6 transition-all">
                 <h3 className="text-lg font-bold text-slate-800 mb-6 border-b pb-4">Kelompok & Jenjang</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {renderField({ label: 'Kelompok', name: 'kelompok', icon: Users, placeholder: 'Contoh: Slogo' })}
-                  {renderField({ label: 'Jenjang', name: 'jenjang', icon: BookOpen, placeholder: 'Contoh: USMAN / 6 SD' })}
+                  {renderField({ label: 'Kelompok', name: 'kelompok', icon: Users, type: 'select', options: [{ value: '', label: '- Pilih Kelompok -' }, ...KELOMPOK_OPTIONS] })}
+                  {renderField({ label: 'Jenjang', name: 'jenjang', icon: BookOpen, type: 'select', options: [{ value: '', label: '- Pilih Jenjang -' }, ...JENJANG_OPTIONS] })}
                 </div>
               </div>
 

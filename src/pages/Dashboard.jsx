@@ -302,10 +302,15 @@ export default function Dashboard() {
                       </div>
                     )}
                     <button
-                      onClick={() => navigate(`/admin/attendance/${ev.id}`)}
-                      className="w-full bg-slate-50 hover:bg-teal-500 text-teal-600 hover:text-white border border-teal-100 hover:border-teal-500 transition-all py-2 sm:py-1.5 rounded-lg text-xs sm:text-[10px] font-bold flex items-center justify-center gap-1 group">
-                      Buka Absensi
-                      <ChevronRight size={11} className="group-hover:translate-x-0.5 transition-transform" />
+                      disabled={ev.is_closed}
+                      onClick={() => !ev.is_closed && navigate(`/admin/attendance/${ev.id}`)}
+                      className={`w-full transition-all py-2 sm:py-1.5 rounded-lg text-xs sm:text-[10px] font-bold flex items-center justify-center gap-1 group ${
+                        ev.is_closed
+                          ? 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed'
+                          : 'bg-slate-50 hover:bg-teal-500 text-teal-600 hover:text-white border border-teal-100 hover:border-teal-500'
+                      }`}>
+                      {ev.is_closed ? 'Acara Ditutup' : 'Buka Absensi'}
+                      {!ev.is_closed && <ChevronRight size={11} className="group-hover:translate-x-0.5 transition-transform" />}
                     </button>
                   </div>
                 );

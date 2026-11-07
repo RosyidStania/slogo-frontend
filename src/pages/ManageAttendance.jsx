@@ -130,10 +130,11 @@ export default function ManageAttendance() {
         const j = (g.jenjang || '').toLowerCase();
         return (
           (targetKategori.length === 0 || targetKategori.some(t => {
-            if (t.toLowerCase() === 'pengurus usman') return !!g.is_pengurus;
-            if (t.toLowerCase() === 'pengurus muda mudi') return !!g.is_pengurus_muda_mudi;
-            if (t.toLowerCase() === 'ketua/wakil kelompok') return !!g.is_ketua_wakil_kelompok;
-            return j.includes(t.toLowerCase());
+            const tLower = t.toLowerCase();
+            if (tLower === 'pengurus' || tLower === 'pengurus usman') return !!g.is_pengurus;
+            if (tLower === 'pengurus muda mudi') return !!g.is_pengurus_muda_mudi;
+            if (tLower === 'ketua/wakil kelompok') return !!g.is_ketua_wakil_kelompok;
+            return j.includes(tLower);
           })) &&
           !attendedIds.includes(g.id) &&
           ['aktif', 'pasif'].includes(g.status?.toLowerCase())
@@ -297,6 +298,15 @@ export default function ManageAttendance() {
     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
       <AlertTriangle size={32} className="text-red-400" />
       <p className="text-slate-500">Acara tidak ditemukan.</p>
+    </div>
+  );
+  if (event.is_closed) return (
+    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
+      <AlertTriangle size={32} className="text-amber-500" />
+      <p className="text-slate-700 font-semibold">Acara ini sudah ditutup.</p>
+      <button onClick={() => navigate('/admin/events')} className="px-4 py-2 bg-teal-500 hover:bg-teal-600 text-white text-xs font-bold rounded-xl transition-colors">
+        Kembali ke Daftar Acara
+      </button>
     </div>
   );
 

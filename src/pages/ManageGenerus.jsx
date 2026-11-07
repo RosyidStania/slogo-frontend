@@ -141,6 +141,7 @@ export default function ManageGenerus() {
   const [importing, setImporting]         = useState(false);
   const [exporting, setExporting]         = useState(false);
   const [processing, setProcessing]       = useState(false);
+  const [saving, setSaving]               = useState(false);
   const [downloadingQrZip, setDownloadingQrZip] = useState(false);
 
   // Filters
@@ -247,13 +248,18 @@ export default function ManageGenerus() {
   // ─── CRUD ──────────────────────────────────────────────────────────────────
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (saving) return;
+    setSaving(true);
     try {
       if (modalMode === 'add') await api.post('/admin/generus', formData);
       else await api.put(`/admin/generus/${formData.id}`, formData);
       setShowForm(false);
       invalidateAndFetch();
     } catch (err) {
-      alert(err.response?.data?.message || 'Terjadi kesalahan.');
+      const msg = err.response?.data?.message;
+      alert(typeof msg === 'object' ? Object.values(msg).flat().join('\n') : (msg || 'Terjadi kesalahan.'));
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -388,7 +394,12 @@ export default function ManageGenerus() {
     let activeGenerus = generusList.filter(g => g.status?.toLowerCase() === 'aktif');
     
     if (!selectedQrZipJenjang.includes('Semua')) {
-      activeGenerus = activeGenerus.filter(g => selectedQrZipJenjang.includes(g.jenjang));
+      activeGenerus = activeGenerus.filter(g => selectedQrZipJenjang.some(j => {
+        if (j === 'PENGURUS USMAN') return g.is_pengurus === 1 || g.is_pengurus === true;
+        if (j === 'PENGURUS MUDA MUDI') return g.is_pengurus_muda_mudi === 1 || g.is_pengurus_muda_mudi === true;
+        if (j === 'KETUA/WAKIL KELOMPOK') return g.is_ketua_wakil_kelompok === 1 || g.is_ketua_wakil_kelompok === true;
+        return g.jenjang?.toLowerCase() === j.toLowerCase();
+      }));
     }
 
     if (activeGenerus.length === 0) {
@@ -464,10 +475,15 @@ export default function ManageGenerus() {
   // ─── Open modal helpers ───────────────────────────────────────────────────
   const openAdd = () => {
     setModalMode('add');
+    const nonEnumJenjang = ['Semua', 'PENGURUS USMAN', 'PENGURUS MUDA MUDI', 'KETUA/WAKIL KELOMPOK'];
+    const defaultJenjang = (filterJenjang.length === 1 && !nonEnumJenjang.includes(filterJenjang[0])) ? filterJenjang[0] : 'PAUD';
     setFormData({
       ...FORM_DEFAULT,
       kelompok: (filterKelompok.includes('Semua') || filterKelompok.length !== 1) ? 'Slogo' : filterKelompok[0],
-      jenjang:  (filterJenjang.includes('Semua') || filterJenjang.length !== 1) ? 'PAUD'  : filterJenjang[0],
+      jenjang:  defaultJenjang,
+      is_pengurus: filterJenjang.length === 1 && filterJenjang[0] === 'PENGURUS USMAN',
+      is_pengurus_muda_mudi: filterJenjang.length === 1 && filterJenjang[0] === 'PENGURUS MUDA MUDI',
+      is_ketua_wakil_kelompok: filterJenjang.length === 1 && filterJenjang[0] === 'KETUA/WAKIL KELOMPOK',
     });
     setShowForm(true);
   };
@@ -883,13 +899,14 @@ export default function ManageGenerus() {
           </div>
 
           <div className="flex gap-3 pt-2">
-            <button type="button" onClick={() => setShowForm(false)}
-              className="flex-1 py-3 rounded-xl bg-slate-100 text-slate-700 font-semibold text-sm hover:bg-slate-200 transition-colors">
+            <button type="button" onClick={() => setShowForm(false)} disabled={saving}
+              className="flex-1 py-3 rounded-xl bg-slate-100 text-slate-700 font-semibold text-sm hover:bg-slate-200 transition-colors disabled:opacity-50">
               Batal
             </button>
-            <button type="submit"
-              className="flex-1 py-3 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-semibold text-sm transition-colors shadow-sm">
-              {modalMode === 'add' ? 'Simpan Peserta' : 'Simpan Perubahan'}
+            <button type="submit" disabled={saving}
+              className="flex-1 py-3 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-semibold text-sm transition-colors shadow-sm disabled:opacity-50 flex items-center justify-center gap-2">
+              {saving && <Loader2 size={16} className="animate-spin" />}
+              {saving ? 'Menyimpan...' : (modalMode === 'add' ? 'Simpan Peserta' : 'Simpan Perubahan')}
             </button>
           </div>
         </form>
@@ -981,7 +998,7 @@ export default function ManageGenerus() {
                   <p className="font-black text-slate-800 text-sm uppercase leading-tight mb-0.5 max-w-full line-clamp-2 px-1">{selected.nama_lengkap}</p>
                   <p className="text-[9px] font-semibold text-teal-600 mb-3">{selected.kelompok}</p>
                   <div className="flex justify-center p-1.5 bg-slate-50 rounded-lg border border-slate-100">
-                    <QRCodeCanvas value={`SLOGO-GEN-${selected.id}`} size={110} level="H" includeMargin={false} />
+                    <QRCodeCanvas value={`SLOGO-${selected.kode_unik || `GEN-${selected.id}`}`} size={110} level="H" includeMargin={false} />
                   </div>
                 </div>
               </div>
@@ -1140,7 +1157,7 @@ export default function ManageGenerus() {
               <p className="font-black text-slate-800 text-sm uppercase leading-tight mb-0.5 max-w-full line-clamp-2 px-1">{g.nama_lengkap}</p>
               <p className="text-[9px] font-semibold text-teal-600 mb-3">{g.kelompok}</p>
               <div className="flex justify-center p-1.5 bg-slate-50 rounded-lg border border-slate-100">
-                <QRCodeCanvas value={`SLOGO-GEN-${g.id}`} size={110} level="H" includeMargin={false} />
+                <QRCodeCanvas value={`SLOGO-${g.kode_unik || `GEN-${g.id}`}`} size={110} level="H" includeMargin={false} />
               </div>
             </div>
           </div>
