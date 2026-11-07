@@ -213,7 +213,8 @@ export default function ManageEvents() {
   const getTypeName = (id) =>
     id ? (eventTypes.find(t => t.id === parseInt(id))?.name ?? null) : null;
     
-  const isGroupEvent = (id) => {
+  const isGroupEvent = (id, eventObj = null) => {
+    if (eventObj && (eventObj.group_schedule_id || eventObj.kelompok)) return true;
     if (!id) return false;
     const t = eventTypes.find(t => t.id === parseInt(id));
     return t ? (t.is_group_attendance === 1 || t.is_group_attendance === true) : false;
@@ -221,9 +222,9 @@ export default function ManageEvents() {
 
   const filteredEvents = events.filter(e => {
     if (activeTab === 'kelompok') {
-        if (!isGroupEvent(e.event_type_id)) return false;
+        if (!isGroupEvent(e.event_type_id, e)) return false;
     } else {
-        if (isGroupEvent(e.event_type_id)) return false;
+        if (isGroupEvent(e.event_type_id, e)) return false;
     }
     const matchSearch = e.name.toLowerCase().includes(search.toLowerCase());
     const eventDate = new Date(e.event_date);
@@ -422,6 +423,11 @@ export default function ManageEvents() {
                             <Layers size={12} /> {typeName}
                           </span>
                         )}
+                        {event.kelompok && (
+                          <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase border bg-teal-50 text-teal-700 border-teal-200 px-2 py-0.5 rounded-md">
+                            Kelompok {event.kelompok}
+                          </span>
+                        )}
                         {event.is_completed && (
                           <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
                             <CheckSquare size={12} /> Selesai Diabsen
@@ -437,7 +443,7 @@ export default function ManageEvents() {
                           })}
                         </span>
                         <span className="flex items-center gap-1.5 text-xs font-bold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-100">
-                          <Clock size={12} /> {event.start_time?.substring(0, 5)} WIB
+                          <Clock size={12} /> {event.start_time?.substring(0, 5)}{event.end_time ? ` – ${event.end_time.substring(0, 5)}` : ''} WIB
                         </span>
                       </div>
 

@@ -16,6 +16,7 @@ import UserProfile from './pages/UserProfile';
 import MtMembers from './pages/MtMembers';
 import MtStatistics from './pages/MtStatistics';
 import MtAttendance from './pages/MtAttendance';
+import ManageSchedules from './pages/ManageSchedules';
 // PrivateRoute untuk menjaga keamanan rute
 const PrivateRoute = ({ children, allowedRole, allowedRoles }) => {
   const token = localStorage.getItem('token');
@@ -61,6 +62,7 @@ function App() {
 
           {/* Rute Khusus Admin & MT */}
           <Route path="/admin/events/:eventId/summary" element={<PrivateRoute allowedRoles={['admin', 'absen_kelompok']}><EventSummary /></PrivateRoute>} />
+          <Route path="/admin/schedules" element={<PrivateRoute allowedRoles={['admin', 'absen_kelompok']}><ManageSchedules /></PrivateRoute>} />
           
           {/* Rute Khusus Admin Saja */}
           <Route path="/admin" element={<PrivateRoute allowedRole="admin"><Dashboard /></PrivateRoute>} />

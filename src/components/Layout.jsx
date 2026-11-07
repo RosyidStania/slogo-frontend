@@ -62,6 +62,7 @@ export default function Layout() {
     ? [
         { name: 'Dashboard', path: '/admin', icon: <Home size={18} strokeWidth={2} /> },
         { name: 'Acara', path: '/admin/events', icon: <CalendarDays size={18} strokeWidth={2} /> },
+        { name: 'Acara Kelompok', path: '/admin/schedules', icon: <Calendar size={18} strokeWidth={2} /> },
         { name: 'Generus', path: '/admin/generus', icon: <UsersRound size={18} strokeWidth={2} /> },
         { name: 'Kategori Acara', path: '/admin/event-types', icon: <Layers size={18} strokeWidth={2} /> },
         { name: 'Rekapan Absensi', path: '/admin/reports', icon: <Library size={18} strokeWidth={2} /> },
@@ -74,6 +75,7 @@ export default function Layout() {
     : role === 'absen_kelompok'
     ? [
         { name: 'Acara', path: '/admin/events', icon: <CalendarDays size={18} strokeWidth={2} /> },
+        { name: 'Acara Kelompok', path: '/admin/schedules', icon: <Calendar size={18} strokeWidth={2} /> },
         { name: 'Data Anggota', path: '/mt/members', icon: <UsersRound size={18} strokeWidth={2} /> },
         { name: 'Statistik', path: '/mt/statistics', icon: <Activity size={18} strokeWidth={2} /> },
         { name: 'Rekapan Absensi', path: '/mt/attendance', icon: <Library size={18} strokeWidth={2} /> },
@@ -96,7 +98,7 @@ export default function Layout() {
   const pageTitle = (() => {
     if (location.pathname.match(/\/admin\/attendance\//)) return 'Live Absensi';
     const seg = location.pathname.split('/').filter(Boolean).pop() || 'dashboard';
-    const map = { admin: 'Dashboard', mt: 'Dashboard', events: 'Acara', generus: 'Data Generus', 'event-types': 'Kategori Acara', users: 'Users', members: 'Data Anggota', statistics: 'Statistik Kelompok', attendance: 'Rekapan Absensi' };
+    const map = { admin: 'Dashboard', mt: 'Dashboard', events: 'Acara', schedules: 'Acara Kelompok', generus: 'Data Generus', 'event-types': 'Kategori Acara', users: 'Users', members: 'Data Anggota', statistics: 'Statistik Kelompok', attendance: 'Rekapan Absensi' };
     return map[seg] || seg.replace(/-/g, ' ');
   })();
 
