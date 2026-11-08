@@ -5,7 +5,7 @@ import {
   ChevronLeft, Users, CheckCircle2, XCircle, AlertCircle, Clock,
   Filter, ChevronDown, Download, MapPin, BarChart3, TrendingUp,
   PieChart as PieChartIcon, Coins, Check, Loader2,
-  ArrowUpRight, ArrowDownRight
+  ArrowUpRight, ArrowDownRight, ArrowLeftRight
 } from 'lucide-react';
 import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, XAxis, YAxis,
@@ -16,12 +16,12 @@ import {
 
 const renderRoseShape = (props) => {
   const { cx, cy, startAngle, endAngle, fill, percent } = props;
-  const dynamicOuterRadius = 45 + (percent * 35);
+  const dynamicOuterRadius = 38 + (percent * 30);
   return (
     <Sector
       cx={cx}
       cy={cy}
-      innerRadius={10}
+      innerRadius={8}
       outerRadius={dynamicOuterRadius}
       startAngle={startAngle}
       endAngle={endAngle}
@@ -35,8 +35,8 @@ const renderCustomizedLabel = (props) => {
   const { cx, cy, midAngle, percent } = props;
   if (percent < 0.05) return null;
   const RADIAN = Math.PI / 180;
-  const dynamicOuterRadius = 45 + (percent * 35);
-  const radius = 10 + (dynamicOuterRadius - 10) * 0.65;
+  const dynamicOuterRadius = 38 + (percent * 30);
+  const radius = 8 + (dynamicOuterRadius - 8) * 0.62;
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
   const y = cy + radius * Math.sin(-midAngle * RADIAN);
   return (
@@ -46,7 +46,7 @@ const renderCustomizedLabel = (props) => {
       fill="white"
       textAnchor="middle"
       dominantBaseline="central"
-      fontSize="12"
+      fontSize="11"
       fontWeight="800"
       style={{ textShadow: '0px 1px 3px rgba(0,0,0,0.45)' }}
     >
@@ -407,85 +407,85 @@ export default function EventSummary() {
       </div>
 
       {/* ── 2. iOS Widget Stat Tiles (5 Summary Cards) ───────────────────────── */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-3.5">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3.5">
         
         {/* TOTAL */}
-        <div className="bg-white border border-slate-200/80 rounded-2xl sm:rounded-[22px] p-3.5 sm:p-4 shadow-[0_2px_8px_rgba(0,0,0,0.02)] flex flex-col justify-between hover:shadow-sm transition-shadow">
+        <div className="bg-white border border-slate-200/80 rounded-2xl sm:rounded-[22px] p-3 sm:p-4 shadow-[0_2px_8px_rgba(0,0,0,0.02)] flex flex-col justify-between hover:shadow-sm transition-shadow">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total</span>
-            <div className="w-8 h-8 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center">
-              <Users size={16} strokeWidth={2.2} />
+            <span className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total</span>
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center">
+              <Users size={15} strokeWidth={2.2} />
             </div>
           </div>
-          <div className="mt-2.5">
+          <div className="mt-2 sm:mt-2.5">
             <h3 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight tabular-nums">
               {globalStats.total}
             </h3>
-            <p className="text-[11px] font-medium text-slate-400 mt-0.5">Peserta tercatat</p>
+            <p className="text-[10px] sm:text-[11px] font-medium text-slate-400 mt-0.5">Peserta tercatat</p>
           </div>
         </div>
 
         {/* HADIR */}
-        <div className="bg-white border border-emerald-100/80 rounded-2xl sm:rounded-[22px] p-3.5 sm:p-4 shadow-[0_2px_8px_rgba(0,0,0,0.02)] flex flex-col justify-between hover:shadow-sm transition-shadow">
+        <div className="bg-white border border-emerald-100/80 rounded-2xl sm:rounded-[22px] p-3 sm:p-4 shadow-[0_2px_8px_rgba(0,0,0,0.02)] flex flex-col justify-between hover:shadow-sm transition-shadow">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider">Hadir</span>
-            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-[#168a53] flex items-center justify-center border border-emerald-100/60">
-              <CheckCircle2 size={16} strokeWidth={2.2} />
+            <span className="text-[10px] sm:text-[11px] font-bold text-emerald-600 uppercase tracking-wider">Hadir</span>
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-emerald-50 text-[#168a53] flex items-center justify-center border border-emerald-100/60">
+              <CheckCircle2 size={15} strokeWidth={2.2} />
             </div>
           </div>
-          <div className="mt-2.5">
+          <div className="mt-2 sm:mt-2.5">
             <h3 className="text-2xl sm:text-3xl font-black text-[#168a53] tracking-tight tabular-nums">
               {globalStats.hadir}
             </h3>
-            <p className="text-[11px] font-medium text-emerald-600/80 mt-0.5">{totalStats.percentage}% dari target</p>
+            <p className="text-[10px] sm:text-[11px] font-medium text-emerald-600/80 mt-0.5">{totalStats.percentage}% dari target</p>
           </div>
         </div>
 
         {/* TERLAMBAT */}
-        <div className="bg-white border border-amber-100/80 rounded-2xl sm:rounded-[22px] p-3.5 sm:p-4 shadow-[0_2px_8px_rgba(0,0,0,0.02)] flex flex-col justify-between hover:shadow-sm transition-shadow">
+        <div className="bg-white border border-amber-100/80 rounded-2xl sm:rounded-[22px] p-3 sm:p-4 shadow-[0_2px_8px_rgba(0,0,0,0.02)] flex flex-col justify-between hover:shadow-sm transition-shadow">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-amber-600 uppercase tracking-wider">Terlambat</span>
-            <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center border border-amber-100/60">
-              <Clock size={16} strokeWidth={2.2} />
+            <span className="text-[10px] sm:text-[11px] font-bold text-amber-600 uppercase tracking-wider">Terlambat</span>
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center border border-amber-100/60">
+              <Clock size={15} strokeWidth={2.2} />
             </div>
           </div>
-          <div className="mt-2.5">
+          <div className="mt-2 sm:mt-2.5">
             <h3 className="text-2xl sm:text-3xl font-black text-amber-600 tracking-tight tabular-nums">
               {globalStats.terlambat}
             </h3>
-            <p className="text-[11px] font-medium text-amber-600/80 mt-0.5">Melewati jadwal</p>
+            <p className="text-[10px] sm:text-[11px] font-medium text-amber-600/80 mt-0.5">Melewati jadwal</p>
           </div>
         </div>
 
         {/* IZIN/SAKIT */}
-        <div className="bg-white border border-blue-100/80 rounded-2xl sm:rounded-[22px] p-3.5 sm:p-4 shadow-[0_2px_8px_rgba(0,0,0,0.02)] flex flex-col justify-between hover:shadow-sm transition-shadow">
+        <div className="bg-white border border-blue-100/80 rounded-2xl sm:rounded-[22px] p-3 sm:p-4 shadow-[0_2px_8px_rgba(0,0,0,0.02)] flex flex-col justify-between hover:shadow-sm transition-shadow">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-blue-600 uppercase tracking-wider">Izin/Sakit</span>
-            <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100/60">
-              <AlertCircle size={16} strokeWidth={2.2} />
+            <span className="text-[10px] sm:text-[11px] font-bold text-blue-600 uppercase tracking-wider">Izin/Sakit</span>
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100/60">
+              <AlertCircle size={15} strokeWidth={2.2} />
             </div>
           </div>
-          <div className="mt-2.5">
+          <div className="mt-2 sm:mt-2.5">
             <h3 className="text-2xl sm:text-3xl font-black text-blue-600 tracking-tight tabular-nums">
               {globalStats.izin}
             </h3>
-            <p className="text-[11px] font-medium text-blue-500 mt-0.5">Izin atau sakit</p>
+            <p className="text-[10px] sm:text-[11px] font-medium text-blue-500 mt-0.5">Izin atau sakit</p>
           </div>
         </div>
 
         {/* ALPA */}
-        <div className="col-span-2 sm:col-span-1 bg-white border border-rose-100/80 rounded-2xl sm:rounded-[22px] p-3.5 sm:p-4 shadow-[0_2px_8px_rgba(0,0,0,0.02)] flex flex-col justify-between hover:shadow-sm transition-shadow">
+        <div className="col-span-2 sm:col-span-1 bg-white border border-rose-100/80 rounded-2xl sm:rounded-[22px] p-3 sm:p-4 shadow-[0_2px_8px_rgba(0,0,0,0.02)] flex flex-col justify-between hover:shadow-sm transition-shadow">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-rose-600 uppercase tracking-wider">Alpa</span>
-            <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center border border-rose-100/60">
-              <XCircle size={16} strokeWidth={2.2} />
+            <span className="text-[10px] sm:text-[11px] font-bold text-rose-600 uppercase tracking-wider">Alpa</span>
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center border border-rose-100/60">
+              <XCircle size={15} strokeWidth={2.2} />
             </div>
           </div>
-          <div className="mt-2.5">
+          <div className="mt-2 sm:mt-2.5">
             <h3 className="text-2xl sm:text-3xl font-black text-rose-600 tracking-tight tabular-nums">
               {globalStats.alpa}
             </h3>
-            <p className="text-[11px] font-medium text-rose-500 mt-0.5">Tanpa keterangan</p>
+            <p className="text-[10px] sm:text-[11px] font-medium text-rose-500 mt-0.5">Tanpa keterangan</p>
           </div>
         </div>
 
@@ -495,7 +495,7 @@ export default function EventSummary() {
       <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-[0_2px_12px_rgba(0,0,0,0.03)] overflow-hidden">
         
         {/* Card Header */}
-        <div className="px-5 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-slate-50/60">
+        <div className="px-4 sm:px-5 py-3.5 sm:py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-slate-50/60">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl bg-emerald-50 text-[#168a53] flex items-center justify-center shrink-0 border border-emerald-100/60">
               <MapPin size={17} strokeWidth={2.2} />
@@ -510,19 +510,22 @@ export default function EventSummary() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 self-start sm:self-center">
-            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 text-slate-600 border border-slate-200/70">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 self-start sm:self-center">
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] sm:text-[11px] font-bold bg-slate-100 text-slate-600 border border-slate-200/70">
               Target: {totalStats.targetTotal} Generus
             </span>
-            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-[#168a53] border border-emerald-200/70">
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] sm:text-[11px] font-bold bg-emerald-50 text-[#168a53] border border-emerald-200/70">
               Hadir: {totalStats.hadirTotal} ({totalStats.percentage}%)
+            </span>
+            <span className="text-[10px] font-semibold text-slate-400 sm:hidden flex items-center gap-1 bg-slate-100/80 px-2 py-0.5 rounded-full border border-slate-200/60 select-none">
+              <ArrowLeftRight size={10} /> Geser
             </span>
           </div>
         </div>
 
         {/* Table View */}
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-left border-collapse min-w-[620px] sm:min-w-full">
             <thead>
               {/* Header Level 1 */}
               <tr className="bg-slate-50/80 text-slate-500 text-[11px] font-bold uppercase tracking-wider border-b border-slate-200/80">
@@ -615,25 +618,25 @@ export default function EventSummary() {
         </div>
 
         {/* ── iOS Inset Wallet / Infaq Card Section ────────────────────────── */}
-        <div className="border-t border-slate-200/80 bg-amber-50/40 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="border-t border-slate-200/80 bg-amber-50/40 p-3.5 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 sm:gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 border border-amber-200/60 shadow-2xs">
-              <Coins size={20} strokeWidth={2.2} />
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 border border-amber-200/60 shadow-2xs">
+              <Coins size={19} strokeWidth={2.2} />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-sm font-extrabold text-slate-900 tracking-tight uppercase">Infaq Acara</h3>
+                <h3 className="text-xs sm:text-sm font-extrabold text-slate-900 tracking-tight uppercase">Infaq Acara</h3>
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100/80 text-amber-800 border border-amber-200/60">
                   Kas Kegiatan
                 </span>
               </div>
-              <p className="text-xs text-slate-500 font-medium mt-0.5">
+              <p className="text-[11px] sm:text-xs text-slate-500 font-medium mt-0.5">
                 Total penerimaan infaq sukarela dari peserta pada kegiatan ini
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2.5 w-full sm:w-auto">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             <div className="relative flex-1 sm:w-56">
               <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">
                 Rp
@@ -678,88 +681,98 @@ export default function EventSummary() {
       {/* ── 4. iOS Comparison Charts ─────────────────────────────────────────── */}
       {previousEvent && comparisonData.length > 0 && (
         <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-[0_2px_12px_rgba(0,0,0,0.03)] overflow-hidden">
-          <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/60">
-            <div className="flex items-center gap-2.5">
+          <div className="px-4 sm:px-5 py-3.5 sm:py-4 border-b border-slate-100 flex items-center justify-between gap-2 bg-slate-50/60">
+            <div className="flex items-center gap-2.5 min-w-0">
               <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100/60">
                 <BarChart3 size={17} strokeWidth={2.2} />
               </div>
-              <div>
-                <h2 className="text-sm sm:text-base font-extrabold text-slate-900 tracking-tight uppercase">
+              <div className="min-w-0">
+                <h2 className="text-xs sm:text-base font-extrabold text-slate-900 tracking-tight uppercase truncate sm:whitespace-normal">
                   Perbandingan Kehadiran dengan {new Date(previousEvent.event_date).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}
                 </h2>
-                <p className="text-[11px] sm:text-xs text-slate-500 font-medium">
+                <p className="text-[10px] sm:text-xs text-slate-500 font-medium truncate sm:whitespace-normal">
                   Persentase capaian kehadiran per kelompok dibandingkan bulan sebelumnya
                 </p>
               </div>
             </div>
+
+            <span className="text-[10px] font-semibold text-slate-400 sm:hidden flex items-center gap-1 shrink-0 bg-slate-100/80 px-2.5 py-1 rounded-full border border-slate-200/60 select-none">
+              <ArrowLeftRight size={11} className="text-slate-500" />
+              <span>Geser</span>
+            </span>
           </div>
 
-          <div className="p-4 sm:p-6 h-[340px] sm:h-[370px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={comparisonData} margin={{ top: 20, right: 20, left: -10, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis
-                  dataKey="name"
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: '#64748b', fontSize: 12, fontWeight: 700 }}
-                  dy={10}
-                />
-                <YAxis
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: '#94a3b8', fontSize: 11 }}
-                  dx={-5}
-                  domain={[0, 100]}
-                  tickFormatter={(val) => `${val}%`}
-                />
-                <Tooltip
-                  cursor={{ fill: '#f8fafc' }}
-                  content={({ active, payload, label }) => {
-                    if (active && payload && payload.length) {
-                      return (
-                        <div className="bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-2xl shadow-xl p-3 text-xs min-w-[140px]">
-                          <p className="font-extrabold text-slate-900 pb-1 mb-1.5 border-b border-slate-100">
-                            Kelompok {label}
-                          </p>
-                          <div className="space-y-1 font-semibold">
-                            <p className="text-[#168a53] flex items-center justify-between">
-                              <span>{currentMonthName}:</span>
-                              <span className="font-black tabular-nums">{payload[0]?.value}%</span>
+          <div className="p-3.5 sm:p-6 overflow-x-auto">
+            <div className="h-[320px] sm:h-[370px] min-w-[580px] sm:min-w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={comparisonData} margin={{ top: 25, right: 15, left: -15, bottom: 5 }} barGap={4}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                  <XAxis
+                    dataKey="name"
+                    axisLine={false}
+                    tickLine={false}
+                    interval={0}
+                    tick={{ fill: '#475569', fontSize: 11, fontWeight: 700 }}
+                    dy={10}
+                  />
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: '#94a3b8', fontSize: 11 }}
+                    dx={-5}
+                    domain={[0, 100]}
+                    tickFormatter={(val) => `${val}%`}
+                  />
+                  <Tooltip
+                    cursor={{ fill: '#f8fafc' }}
+                    content={({ active, payload, label }) => {
+                      if (active && payload && payload.length) {
+                        return (
+                          <div className="bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-2xl shadow-xl p-3 text-xs min-w-[140px]">
+                            <p className="font-extrabold text-slate-900 pb-1 mb-1.5 border-b border-slate-100">
+                              Kelompok {label}
                             </p>
-                            <p className="text-slate-500 flex items-center justify-between">
-                              <span>{prevMonthName}:</span>
-                              <span className="font-black tabular-nums">{payload[1]?.value}%</span>
-                            </p>
+                            <div className="space-y-1 font-semibold">
+                              <p className="text-[#168a53] flex items-center justify-between">
+                                <span>{currentMonthName}:</span>
+                                <span className="font-black tabular-nums">{payload[0]?.value}%</span>
+                              </p>
+                              <p className="text-slate-500 flex items-center justify-between">
+                                <span>{prevMonthName}:</span>
+                                <span className="font-black tabular-nums">{payload[1]?.value}%</span>
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      );
-                    }
-                    return null;
-                  }}
-                />
-                <Legend
-                  iconType="circle"
-                  wrapperStyle={{ paddingTop: '20px', fontSize: '12px', fontWeight: 600 }}
-                />
-                <Bar dataKey="Sekarang" name={currentMonthName} fill="#168a53" radius={[6, 6, 0, 0]} barSize={28}>
-                  <LabelList
-                    dataKey="Sekarang"
-                    position="top"
-                    formatter={(val) => `${val}%`}
-                    style={{ fill: '#168a53', fontSize: 11, fontWeight: '800' }}
+                        );
+                      }
+                      return null;
+                    }}
                   />
-                </Bar>
-                <Bar dataKey="BulanLalu" name={prevMonthName} fill="#cbd5e1" radius={[6, 6, 0, 0]} barSize={28}>
-                  <LabelList
-                    dataKey="BulanLalu"
-                    position="top"
-                    formatter={(val) => `${val}%`}
-                    style={{ fill: '#64748b', fontSize: 11, fontWeight: '700' }}
+                  <Legend
+                    iconType="circle"
+                    wrapperStyle={{ paddingTop: '15px', fontSize: '12px', fontWeight: 600 }}
                   />
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+                  <Bar dataKey="Sekarang" name={currentMonthName} fill="#168a53" radius={[5, 5, 0, 0]} maxBarSize={22}>
+                    <LabelList
+                      dataKey="Sekarang"
+                      position="top"
+                      formatter={(val) => `${val}%`}
+                      style={{ fill: '#168a53', fontSize: 10, fontWeight: '800' }}
+                      offset={4}
+                    />
+                  </Bar>
+                  <Bar dataKey="BulanLalu" name={prevMonthName} fill="#cbd5e1" radius={[5, 5, 0, 0]} maxBarSize={22}>
+                    <LabelList
+                      dataKey="BulanLalu"
+                      position="top"
+                      formatter={(val) => `${val}%`}
+                      style={{ fill: '#64748b', fontSize: 10, fontWeight: '700' }}
+                      offset={4}
+                    />
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         </div>
       )}
@@ -770,7 +783,7 @@ export default function EventSummary() {
         {/* Trend Status (Line Chart) */}
         {previousEvent && globalComparisonData.length > 0 ? (
           <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-[0_2px_12px_rgba(0,0,0,0.03)] overflow-hidden flex flex-col">
-            <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/60">
+            <div className="px-4 sm:px-5 py-3.5 sm:py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/60">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0 border border-purple-100/60">
                   <TrendingUp size={17} strokeWidth={2.2} />
@@ -786,35 +799,35 @@ export default function EventSummary() {
               </div>
             </div>
 
-            <div className="p-5 flex-grow flex flex-col justify-between">
+            <div className="p-3.5 sm:p-5 flex-grow flex flex-col justify-between">
               {/* iOS Trend Badges */}
-              <div className="flex gap-4 sm:gap-6 mb-4 justify-center flex-wrap pb-3 border-b border-slate-100">
+              <div className="flex gap-2 sm:gap-6 mb-3 sm:mb-4 justify-center flex-wrap pb-3 border-b border-slate-100">
                 <div className="flex flex-col items-center">
                   <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Hadir</span>
-                  <div className={`flex items-center gap-1 text-xs font-bold px-3 py-1 rounded-full mt-1 border ${hadirChange?.colorClass}`}>
+                  <div className={`flex items-center gap-1 text-[11px] sm:text-xs font-bold px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full mt-1 border ${hadirChange?.colorClass}`}>
                     {hadirChange?.icon}
                     <span>{hadirChange?.text}</span>
                   </div>
                 </div>
                 <div className="flex flex-col items-center">
                   <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Izin/Sakit</span>
-                  <div className={`flex items-center gap-1 text-xs font-bold px-3 py-1 rounded-full mt-1 border ${izinChange?.colorClass}`}>
+                  <div className={`flex items-center gap-1 text-[11px] sm:text-xs font-bold px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full mt-1 border ${izinChange?.colorClass}`}>
                     {izinChange?.icon}
                     <span>{izinChange?.text}</span>
                   </div>
                 </div>
                 <div className="flex flex-col items-center">
                   <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Alpa</span>
-                  <div className={`flex items-center gap-1 text-xs font-bold px-3 py-1 rounded-full mt-1 border ${alpaChange?.colorClass}`}>
+                  <div className={`flex items-center gap-1 text-[11px] sm:text-xs font-bold px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full mt-1 border ${alpaChange?.colorClass}`}>
                     {alpaChange?.icon}
                     <span>{alpaChange?.text}</span>
                   </div>
                 </div>
               </div>
 
-              <div className="w-full h-[240px]">
+              <div className="w-full h-[200px] sm:h-[240px]">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={globalComparisonData} margin={{ top: 20, right: 20, left: -10, bottom: 5 }}>
+                  <LineChart data={globalComparisonData} margin={{ top: 20, right: 15, left: -15, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                     <XAxis
                       dataKey="name"
@@ -868,7 +881,7 @@ export default function EventSummary() {
         {/* Komposisi Gender (Putra vs Putri) */}
         {(genderData.length > 0 || (previousEvent && prevGenderData.length > 0)) ? (
           <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-[0_2px_12px_rgba(0,0,0,0.03)] overflow-hidden flex flex-col">
-            <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/60">
+            <div className="px-4 sm:px-5 py-3.5 sm:py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/60">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center shrink-0 border border-pink-100/60">
                   <PieChartIcon size={17} strokeWidth={2.2} />
@@ -884,22 +897,22 @@ export default function EventSummary() {
               </div>
             </div>
 
-            <div className="p-5 flex flex-col items-center justify-between flex-grow">
-              <div className="w-full h-[230px] grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
+            <div className="p-3.5 sm:p-5 flex flex-col items-center justify-between flex-grow">
+              <div className="w-full min-h-[190px] sm:h-[220px] grid grid-cols-2 gap-2 sm:gap-6 items-center">
                 
                 {/* Previous Event Donut */}
                 {previousEvent && prevGenderData.length > 0 ? (
                   <div className="flex flex-col items-center h-full w-full">
-                    <span className="text-xs font-bold text-slate-500 mb-1">{prevMonthName}</span>
-                    <div className="w-full flex-grow relative">
+                    <span className="text-[11px] sm:text-xs font-bold text-slate-500 mb-1">{prevMonthName}</span>
+                    <div className="w-full h-[150px] sm:h-[180px] relative">
                       <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
                           <Pie
                             data={prevGenderData}
                             cx="50%"
                             cy="50%"
-                            innerRadius={46}
-                            outerRadius={68}
+                            innerRadius={36}
+                            outerRadius={56}
                             paddingAngle={4}
                             dataKey="value"
                             stroke="none"
@@ -923,8 +936,8 @@ export default function EventSummary() {
                         </PieChart>
                       </ResponsiveContainer>
                       <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                        <span className="text-xl font-black text-slate-800 tabular-nums">{prevTotalHadir}</span>
-                        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Hadir</span>
+                        <span className="text-lg sm:text-xl font-black text-slate-800 tabular-nums">{prevTotalHadir}</span>
+                        <span className="text-[8px] sm:text-[9px] font-bold text-slate-400 uppercase tracking-widest">Hadir</span>
                       </div>
                     </div>
                   </div>
@@ -937,16 +950,16 @@ export default function EventSummary() {
                 {/* Current Event Donut */}
                 {genderData.length > 0 ? (
                   <div className="flex flex-col items-center h-full w-full">
-                    <span className="text-xs font-bold text-slate-800 mb-1">{currentMonthName}</span>
-                    <div className="w-full flex-grow relative">
+                    <span className="text-[11px] sm:text-xs font-bold text-slate-800 mb-1">{currentMonthName}</span>
+                    <div className="w-full h-[150px] sm:h-[180px] relative">
                       <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
                           <Pie
                             data={genderData}
                             cx="50%"
                             cy="50%"
-                            innerRadius={46}
-                            outerRadius={68}
+                            innerRadius={36}
+                            outerRadius={56}
                             paddingAngle={4}
                             dataKey="value"
                             stroke="none"
@@ -970,8 +983,8 @@ export default function EventSummary() {
                         </PieChart>
                       </ResponsiveContainer>
                       <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                        <span className="text-xl font-black text-slate-800 tabular-nums">{totalStats.hadirTotal}</span>
-                        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Hadir</span>
+                        <span className="text-lg sm:text-xl font-black text-slate-800 tabular-nums">{totalStats.hadirTotal}</span>
+                        <span className="text-[8px] sm:text-[9px] font-bold text-slate-400 uppercase tracking-widest">Hadir</span>
                       </div>
                     </div>
                   </div>
@@ -984,13 +997,13 @@ export default function EventSummary() {
               </div>
 
               {/* Shared Legend */}
-              <div className="flex items-center justify-center gap-6 mt-3 pt-3 border-t border-slate-100 w-full">
+              <div className="flex items-center justify-center gap-6 mt-2 pt-2.5 border-t border-slate-100 w-full">
                 <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-full bg-[#3b82f6] shadow-2xs"></span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#3b82f6] shadow-2xs"></span>
                   <span className="text-xs font-bold text-slate-700">Putra</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-full bg-[#ec4899] shadow-2xs"></span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#ec4899] shadow-2xs"></span>
                   <span className="text-xs font-bold text-slate-700">Putri</span>
                 </div>
               </div>
@@ -1003,7 +1016,7 @@ export default function EventSummary() {
       {/* ── 6. Rasio Kehadiran per Kelompok ──────────────────────────────────── */}
       {groupStats.length > 0 && (
         <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-[0_2px_12px_rgba(0,0,0,0.03)] overflow-hidden">
-          <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/60">
+          <div className="px-4 sm:px-5 py-3.5 sm:py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/60">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 border border-amber-100/60">
                 <PieChartIcon size={17} strokeWidth={2.2} />
@@ -1019,7 +1032,7 @@ export default function EventSummary() {
             </div>
           </div>
 
-          <div className="p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+          <div className="p-3.5 sm:p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5 sm:gap-5">
             {groupStats.map((stat, idx) => {
               const pieData = [
                 { name: 'Hadir', value: stat.hadirTotal, color: '#168a53' },
@@ -1030,7 +1043,7 @@ export default function EventSummary() {
               return (
                 <div
                   key={idx}
-                  className="flex flex-col items-center bg-slate-50/70 border border-slate-200/70 rounded-2xl p-4 hover:shadow-sm transition-all"
+                  className="flex flex-col items-center bg-slate-50/70 border border-slate-200/70 rounded-2xl p-3.5 sm:p-4 hover:shadow-sm transition-all"
                 >
                   <div className="flex items-center justify-between w-full mb-1">
                     <h3 className="font-extrabold text-slate-800 text-xs sm:text-sm tracking-tight uppercase">
@@ -1041,7 +1054,7 @@ export default function EventSummary() {
                     </span>
                   </div>
 
-                  <div className="w-full h-[170px]">
+                  <div className="w-full h-[160px] sm:h-[170px]">
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
@@ -1073,7 +1086,7 @@ export default function EventSummary() {
                   </div>
 
                   {/* Status Pills */}
-                  <div className="flex flex-wrap justify-center gap-1.5 mt-3 w-full text-[10px] font-bold">
+                  <div className="flex flex-wrap justify-center gap-1 sm:gap-1.5 mt-2.5 w-full text-[10px] font-bold">
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-50 text-[#168a53] rounded-md border border-emerald-100">
                       <span className="w-1.5 h-1.5 rounded-full bg-[#168a53]"></span>
                       Hadir: {stat.hadirTotal}
@@ -1095,21 +1108,23 @@ export default function EventSummary() {
       )}
 
       {/* ── 7. iOS Inset Grouped Detail Attendee Table & Filters ─────────────── */}
-      <div className="space-y-3.5">
+      <div className="space-y-3 sm:space-y-3.5">
         
         {/* iOS Filter Buttons & Result Count */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3">
+          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
             {/* Kelompok Dropdown */}
-            <div className="relative shrink-0" ref={dropdownKelRef}>
+            <div className="relative flex-1 sm:flex-initial min-w-[135px]" ref={dropdownKelRef}>
               <button
                 type="button"
                 onClick={() => setIsDropdownKelompokOpen(!isDropdownKelompokOpen)}
-                className="flex items-center gap-2 px-3.5 sm:px-4 py-2 bg-white border border-slate-200/90 rounded-full shadow-2xs text-slate-700 font-bold text-xs sm:text-sm hover:bg-slate-50 active:scale-95 transition-all select-none cursor-pointer"
+                className="w-full flex items-center justify-between gap-1.5 px-3.5 py-2 bg-white border border-slate-200/90 rounded-full shadow-2xs text-slate-700 font-bold text-xs sm:text-sm hover:bg-slate-50 active:scale-95 transition-all select-none cursor-pointer"
               >
-                <Filter size={14} className="text-slate-400" />
-                <span>{filterKelompok === 'Semua' ? 'Semua Kelompok' : filterKelompok}</span>
-                <ChevronDown size={14} className={`text-slate-400 transition-transform ${isDropdownKelompokOpen ? 'rotate-180' : ''}`} />
+                <div className="flex items-center gap-1.5 truncate">
+                  <Filter size={13} className="text-slate-400 shrink-0" />
+                  <span className="truncate">{filterKelompok === 'Semua' ? 'Semua Kelompok' : filterKelompok}</span>
+                </div>
+                <ChevronDown size={13} className={`text-slate-400 shrink-0 transition-transform ${isDropdownKelompokOpen ? 'rotate-180' : ''}`} />
               </button>
 
               {isDropdownKelompokOpen && (
@@ -1133,15 +1148,17 @@ export default function EventSummary() {
             </div>
 
             {/* Status Dropdown */}
-            <div className="relative shrink-0" ref={dropdownStatusRef}>
+            <div className="relative flex-1 sm:flex-initial min-w-[125px]" ref={dropdownStatusRef}>
               <button
                 type="button"
                 onClick={() => setIsDropdownStatusOpen(!isDropdownStatusOpen)}
-                className="flex items-center gap-2 px-3.5 sm:px-4 py-2 bg-white border border-slate-200/90 rounded-full shadow-2xs text-slate-700 font-bold text-xs sm:text-sm hover:bg-slate-50 active:scale-95 transition-all select-none cursor-pointer"
+                className="w-full flex items-center justify-between gap-1.5 px-3.5 py-2 bg-white border border-slate-200/90 rounded-full shadow-2xs text-slate-700 font-bold text-xs sm:text-sm hover:bg-slate-50 active:scale-95 transition-all select-none cursor-pointer"
               >
-                <CheckCircle2 size={14} className="text-slate-400" />
-                <span>{filterStatus === 'Semua' ? 'Semua Status' : filterStatus}</span>
-                <ChevronDown size={14} className={`text-slate-400 transition-transform ${isDropdownStatusOpen ? 'rotate-180' : ''}`} />
+                <div className="flex items-center gap-1.5 truncate">
+                  <CheckCircle2 size={13} className="text-slate-400 shrink-0" />
+                  <span className="truncate">{filterStatus === 'Semua' ? 'Semua Status' : filterStatus}</span>
+                </div>
+                <ChevronDown size={13} className={`text-slate-400 shrink-0 transition-transform ${isDropdownStatusOpen ? 'rotate-180' : ''}`} />
               </button>
 
               {isDropdownStatusOpen && (
@@ -1165,21 +1182,26 @@ export default function EventSummary() {
             </div>
           </div>
 
-          <span className="text-xs font-medium text-slate-400 self-end sm:self-center">
-            Menampilkan <strong className="text-slate-700 font-bold">{filteredData.length}</strong> peserta
-          </span>
+          <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto">
+            <span className="text-xs font-medium text-slate-400">
+              Menampilkan <strong className="text-slate-700 font-bold">{filteredData.length}</strong> peserta
+            </span>
+            <span className="text-[10px] font-semibold text-slate-400 sm:hidden flex items-center gap-1 bg-slate-100/80 px-2 py-0.5 rounded-full border border-slate-200/60 select-none">
+              <ArrowLeftRight size={10} /> Geser
+            </span>
+          </div>
         </div>
 
         {/* Inset Grouped Detail Table */}
         <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-[0_2px_12px_rgba(0,0,0,0.03)] overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full text-left border-collapse min-w-[500px] sm:min-w-full">
               <thead>
-                <tr className="bg-slate-50/80 text-slate-500 text-xs font-bold uppercase tracking-wider border-b border-slate-100">
-                  <th className="px-4 py-3.5 text-center w-12">No</th>
-                  <th className="px-4 py-3.5">Biodata Peserta</th>
-                  <th className="px-4 py-3.5">Status Kehadiran</th>
-                  <th className="px-4 py-3.5">Waktu Kehadiran</th>
+                <tr className="bg-slate-50/80 text-slate-500 text-[11px] sm:text-xs font-bold uppercase tracking-wider border-b border-slate-100">
+                  <th className="px-3 sm:px-4 py-3 text-center w-12">No</th>
+                  <th className="px-3 sm:px-4 py-3">Biodata Peserta</th>
+                  <th className="px-3 sm:px-4 py-3">Status Kehadiran</th>
+                  <th className="px-3 sm:px-4 py-3">Waktu Kehadiran</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-xs sm:text-sm">
@@ -1197,11 +1219,11 @@ export default function EventSummary() {
                 ) : (
                   filteredData.map((item, index) => (
                     <tr key={item.id} className="hover:bg-slate-50/70 transition-colors">
-                      <td className="px-4 py-3 text-center font-semibold text-slate-400 tabular-nums">
+                      <td className="px-3 sm:px-4 py-2.5 sm:py-3 text-center font-semibold text-slate-400 tabular-nums">
                         {index + 1}
                       </td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-3">
+                      <td className="px-3 sm:px-4 py-2.5 sm:py-3">
+                        <div className="flex items-center gap-2.5 sm:gap-3">
                           <UserAvatar
                             name={item.generus?.nama_lengkap}
                             gender={item.generus?.jenis_kelamin}
@@ -1210,15 +1232,15 @@ export default function EventSummary() {
                             <p className="font-extrabold text-slate-900 truncate">
                               {item.generus?.nama_lengkap || '-'}
                             </p>
-                            <p className="text-[11px] font-medium text-slate-400 uppercase tracking-wide mt-0.5">
+                            <p className="text-[10px] sm:text-[11px] font-medium text-slate-400 uppercase tracking-wide mt-0.5">
                               {item.generus?.kelompok || '-'} • {item.generus?.jenjang || '-'}
                             </p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-3 sm:px-4 py-2.5 sm:py-3">
                         <span
-                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold capitalize border ${
+                          className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-[11px] sm:text-xs font-extrabold capitalize border ${
                             item.status === 'hadir'
                               ? 'bg-emerald-50 text-[#168a53] border-emerald-200/70'
                               : item.status === 'izin' || item.status === 'sakit'
@@ -1232,15 +1254,15 @@ export default function EventSummary() {
                           <span>{item.status}</span>
                         </span>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-3 sm:px-4 py-2.5 sm:py-3">
                         {item.status === 'hadir' ? (
                           <div className="flex items-center gap-2">
-                            <Clock size={14} className="text-slate-400 shrink-0" />
-                            <span className="font-bold text-slate-700 tabular-nums">
+                            <Clock size={13} className="text-slate-400 shrink-0" />
+                            <span className="font-bold text-slate-700 tabular-nums text-xs">
                               {item.time_arrived?.substring(0, 5)} WIB
                             </span>
                             {Number(item.is_late) === 1 && (
-                              <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-rose-50 text-rose-600 border border-rose-200/70">
+                              <span className="px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider bg-rose-50 text-rose-600 border border-rose-200/70">
                                 Terlambat
                               </span>
                             )}

@@ -1,6 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import ReactDOM from 'react-dom';
 import api from '../api/axios';
-import { Layers, Loader2, Download, Search, AlertCircle, Filter, ChevronDown, FileUp } from 'lucide-react';
+import {
+  Layers, Loader2, Search, AlertCircle, Filter,
+  ChevronDown, FileUp, X, Check, Users, Calendar, Activity
+} from 'lucide-react';
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 
@@ -32,21 +36,22 @@ function CustomSelect({ options, value, onChange, placeholder, multiple = false 
   };
 
   return (
-    <div className="relative w-full md:w-auto" ref={containerRef}>
-      <div 
+    <div className="relative w-full sm:w-auto" ref={containerRef}>
+      <button
+        type="button"
         onClick={() => setOpen(!open)}
-        className="flex items-center justify-between gap-2 md:gap-4 pl-3 md:pl-4 pr-2 md:pr-3 py-2.5 bg-white/80 border border-slate-200/80 rounded-xl text-xs md:text-sm font-bold text-slate-700 shadow-sm cursor-pointer hover:bg-white transition-colors select-none min-w-0 md:min-w-[150px]"
+        className="w-full sm:w-auto flex items-center justify-between gap-2.5 px-3.5 py-2 bg-white border border-slate-200/90 rounded-full text-xs font-bold text-slate-700 shadow-2xs hover:border-slate-300 transition-all select-none cursor-pointer min-w-0 sm:min-w-[140px]"
       >
         <span className="truncate">{getLabel()}</span>
-        <ChevronDown size={16} className={`text-slate-400 transition-transform duration-200 shrink-0 ${open ? 'rotate-180' : ''}`} />
-      </div>
+        <ChevronDown size={14} className={`text-slate-400 transition-transform duration-200 shrink-0 ${open ? 'rotate-180' : ''}`} />
+      </button>
 
       {open && (
-        <div className="absolute z-50 top-full right-0 md:left-0 md:right-auto mt-1.5 w-max min-w-full bg-white/95 backdrop-blur-xl border border-slate-200/80 rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] overflow-hidden py-1.5 max-h-64 overflow-y-auto thin-scrollbar">
+        <div className="absolute top-full right-0 sm:left-0 sm:right-auto mt-1.5 w-max min-w-full max-w-[280px] bg-white border border-slate-200/80 rounded-2xl shadow-xl overflow-hidden py-1.5 max-h-64 overflow-y-auto z-[100] animate-in fade-in zoom-in-95 duration-100">
           {options.map(opt => {
             const isSelected = multiple ? (value || []).includes(opt.value) : value == opt.value;
             return (
-              <div 
+              <div
                 key={opt.value}
                 onClick={() => {
                   if (multiple) {
@@ -61,11 +66,13 @@ function CustomSelect({ options, value, onChange, placeholder, multiple = false 
                     setOpen(false);
                   }
                 }}
-                className={`px-4 py-2.5 text-sm font-semibold cursor-pointer transition-colors flex justify-between items-center ${isSelected ? 'bg-teal-50 text-teal-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}
+                className={`px-3.5 py-2 text-xs font-semibold cursor-pointer transition-colors flex justify-between items-center gap-2 ${
+                  isSelected ? 'bg-emerald-50 text-[#168a53] font-bold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                }`}
               >
-                <span>{opt.label}</span>
+                <span className="truncate">{opt.label}</span>
                 {multiple && isSelected && (
-                  <svg className="w-4 h-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
+                  <Check size={14} className="text-[#168a53] shrink-0" strokeWidth={2.5} />
                 )}
               </div>
             );
@@ -78,17 +85,18 @@ function CustomSelect({ options, value, onChange, placeholder, multiple = false 
 
 export default function MtAttendance() {
   const [loading, setLoading] = useState(false);
-  
+  const [headerSlot, setHeaderSlot] = useState(() => document.getElementById('layout-header-actions'));
+
   const [eventTypes, setEventTypes] = useState([]);
   const [selectedType, setSelectedType] = useState([]);
-  
+
   const [availableYears, setAvailableYears] = useState([new Date().getFullYear()]);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
-  
+
   const [reportData, setReportData] = useState([]);
   const [eventsList, setEventsList] = useState([]);
   const [kelompok, setKelompok] = useState('');
-  
+
   const [searchTerm, setSearchTerm] = useState('');
   const [filterJenjang, setFilterJenjang] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
@@ -102,28 +110,28 @@ export default function MtAttendance() {
 
   const getEventTypeColor = (eventTypeId) => {
     const colors = [
-      'bg-blue-100 text-blue-800 border-blue-200',
-      'bg-orange-100 text-orange-800 border-orange-200',
-      'bg-emerald-100 text-emerald-800 border-emerald-200',
-      'bg-purple-100 text-purple-800 border-purple-200',
-      'bg-rose-100 text-rose-800 border-rose-200',
-      'bg-cyan-100 text-cyan-800 border-cyan-200',
-      'bg-amber-100 text-amber-800 border-amber-200',
-      'bg-indigo-100 text-indigo-800 border-indigo-200',
-      'bg-lime-100 text-lime-800 border-lime-200',
-      'bg-fuchsia-100 text-fuchsia-800 border-fuchsia-200',
-      'bg-sky-100 text-sky-800 border-sky-200',
-      'bg-pink-100 text-pink-800 border-pink-200',
-      'bg-teal-100 text-teal-800 border-teal-200',
-      'bg-red-100 text-red-800 border-red-200',
-      'bg-violet-100 text-violet-800 border-violet-200',
-      'bg-yellow-100 text-yellow-800 border-yellow-200'
+      'bg-blue-50 text-blue-700 border-blue-200/60',
+      'bg-orange-50 text-orange-700 border-orange-200/60',
+      'bg-emerald-50 text-emerald-700 border-emerald-200/60',
+      'bg-purple-50 text-purple-700 border-purple-200/60',
+      'bg-rose-50 text-rose-700 border-rose-200/60',
+      'bg-cyan-50 text-cyan-700 border-cyan-200/60',
+      'bg-amber-50 text-amber-700 border-amber-200/60',
+      'bg-indigo-50 text-indigo-700 border-indigo-200/60',
+      'bg-lime-50 text-lime-700 border-lime-200/60',
+      'bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200/60',
+      'bg-sky-50 text-sky-700 border-sky-200/60',
+      'bg-pink-50 text-pink-700 border-pink-200/60',
+      'bg-teal-50 text-teal-700 border-teal-200/60',
+      'bg-red-50 text-red-700 border-red-200/60',
+      'bg-violet-50 text-violet-700 border-violet-200/60',
+      'bg-yellow-50 text-yellow-700 border-yellow-200/60'
     ];
 
     const mapping = {};
-    let nextColorIdx = 3; 
+    let nextColorIdx = 3;
     const sortedTypes = [...eventTypes].sort((a, b) => a.id - b.id);
-    
+
     sortedTypes.forEach(type => {
       const name = type.name.toLowerCase();
       if (name.includes('bersih') && !Object.values(mapping).includes(colors[0])) {
@@ -138,22 +146,8 @@ export default function MtAttendance() {
       }
     });
 
-    return mapping[eventTypeId] || 'bg-slate-100 text-slate-500 border-slate-200';
+    return mapping[eventTypeId] || 'bg-slate-50 text-slate-600 border-slate-200/60';
   };
-
-  useEffect(() => {
-    if (selectedType.length > 0 && selectedYear) {
-      fetchReport();
-    } else {
-      if (eventTypes.length === 0) {
-        // First load, let's fetch to get event types and years
-        fetchReportInit();
-      } else {
-        setReportData([]);
-        setEventsList([]);
-      }
-    }
-  }, [selectedType, selectedYear]);
 
   const fetchReportInit = async () => {
     setLoading(true);
@@ -161,11 +155,11 @@ export default function MtAttendance() {
       const res = await api.get('/mt/group-attendance');
       if (res.data.success) {
         setEventTypes(res.data.eventTypes || []);
-        if (res.data.eventTypes?.length > 0) setSelectedType([res.data.eventTypes[0].id.toString()]);
-        
+        if (res.data.eventTypes?.length > 0) {
+          setSelectedType([res.data.eventTypes[0].id.toString()]);
+        }
         setAvailableYears(res.data.availableYears || [new Date().getFullYear()]);
         if (res.data.year) setSelectedYear(res.data.year.toString());
-        
         setReportData(res.data.data || []);
         setEventsList(res.data.events || []);
         setKelompok(res.data.kelompok || '');
@@ -197,27 +191,40 @@ export default function MtAttendance() {
     }
   };
 
-  const uniqueJenjang = [...new Set(reportData.map(d => d.jenjang))].filter(Boolean);
-  const hasPengurusUsman = reportData.some(d => d.is_pengurus);
-  const hasPengurusMudaMudi = reportData.some(d => d.is_pengurus_muda_mudi);
-  const hasKetuaWakilKelompok = reportData.some(d => d.is_ketua_wakil_kelompok);
-  if (hasPengurusUsman && !uniqueJenjang.includes('PENGURUS USMAN')) {
-    uniqueJenjang.push('PENGURUS USMAN');
-  }
-  if (hasPengurusMudaMudi && !uniqueJenjang.includes('PENGURUS MUDA MUDI')) {
-    uniqueJenjang.push('PENGURUS MUDA MUDI');
-  }
-  if (hasKetuaWakilKelompok && !uniqueJenjang.includes('KETUA/WAKIL KELOMPOK')) {
-    uniqueJenjang.push('KETUA/WAKIL KELOMPOK');
-  }
+  useEffect(() => {
+    const id = requestAnimationFrame(() => {
+      setHeaderSlot(document.getElementById('layout-header-actions'));
+    });
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+  useEffect(() => {
+    if (selectedType.length > 0 && selectedYear) {
+      fetchReport();
+    } else {
+      if (eventTypes.length === 0) {
+        fetchReportInit();
+      } else {
+        setReportData([]);
+        setEventsList([]);
+      }
+    }
+  }, [selectedType, selectedYear]);
+
+  const baseJenjang = ['MT', 'USMAN', '3 SMA/SMK', '2 SMA/SMK', '1 SMA/SMK', '3 SMP', '2 SMP', '1 SMP', '6 SD', '5 SD', '4 SD', '3 SD', '2 SD', '1 SD', 'TK', 'PAUD'];
+  const uniqueJenjang = baseJenjang.filter(j => reportData.some(g => g.jenjang === j));
+
+  if (reportData.some(g => g.is_pengurus)) uniqueJenjang.push('PENGURUS USMAN');
+  if (reportData.some(g => g.is_pengurus_muda_mudi)) uniqueJenjang.push('PENGURUS MUDA MUDI');
+  if (reportData.some(g => g.is_ketua_wakil_kelompok)) uniqueJenjang.push('KETUA/WAKIL KELOMPOK');
 
   const filteredData = reportData.filter(g => {
     const matchName = g.nama_lengkap.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchJenjang = filterJenjang.length === 0 ? true : filterJenjang.some(j => {
-      if (j === 'PENGURUS USMAN') return !!g.is_pengurus;
-      if (j === 'PENGURUS MUDA MUDI') return !!g.is_pengurus_muda_mudi;
-      if (j === 'KETUA/WAKIL KELOMPOK') return !!g.is_ketua_wakil_kelompok;
-      return g.jenjang === j;
+    const matchJenjang = filterJenjang.length === 0 ? true : filterJenjang.some(f => {
+      if (f === 'PENGURUS USMAN') return !!g.is_pengurus;
+      if (f === 'PENGURUS MUDA MUDI') return !!g.is_pengurus_muda_mudi;
+      if (f === 'KETUA/WAKIL KELOMPOK') return !!g.is_ketua_wakil_kelompok;
+      return g.jenjang === f;
     });
     return matchName && matchJenjang;
   });
@@ -227,6 +234,26 @@ export default function MtAttendance() {
     else setFilterJenjang(prev => prev.includes(j) ? prev.filter(x => x !== j) : [...prev, j]);
   };
 
+  // Metrics
+  const totalGenerus = filteredData.length;
+  let totalHadirCount = 0;
+  let totalRecordedCount = 0;
+
+  filteredData.forEach(g => {
+    eventsList.forEach(e => {
+      const stat = g.events_attendance[e.id];
+      if (stat && stat !== '-') {
+        totalRecordedCount++;
+        if (stat === 'H') totalHadirCount++;
+      }
+    });
+  });
+
+  const avgAttendancePercent = totalRecordedCount > 0
+    ? Math.round((totalHadirCount / totalRecordedCount) * 100)
+    : 0;
+
+  // Export to Excel matching ReportByType
   const exportToExcel = async () => {
     if (!filteredData.length) return;
 
@@ -236,7 +263,7 @@ export default function MtAttendance() {
     });
 
     const typeName = eventTypes.filter(t => selectedType.includes(t.id.toString())).map(t => t.name).join('_') || 'Kategori';
-    const titleText = `Rekapan_${kelompok}_${typeName.replace(/\s+/g, '_')}_Tahun_${selectedYear}.xlsx`;
+    const titleText = `Rekapan_${kelompok || 'Kelompok'}_${typeName.replace(/\s+/g, '_')}_Tahun_${selectedYear}.xlsx`;
 
     const columns = [
       { header: 'NO', key: 'no', width: 5 },
@@ -247,7 +274,11 @@ export default function MtAttendance() {
     ];
 
     eventsList.forEach(e => {
-      columns.push({ header: formatDate(e.event_date).toUpperCase(), key: `event_${e.id}`, width: 12 });
+      columns.push({
+        header: formatDate(e.event_date).toUpperCase(),
+        key: `event_${e.id}`,
+        width: 14
+      });
     });
 
     worksheet.columns = columns;
@@ -255,9 +286,18 @@ export default function MtAttendance() {
     const headerRow = worksheet.getRow(1);
     headerRow.eachCell((cell) => {
       cell.font = { name: 'Poppins', bold: true, color: { argb: 'FF334155' } };
-      cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF1F5F9' } };
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFF1F5F9' }
+      };
       cell.alignment = { vertical: 'middle', horizontal: 'center' };
-      cell.border = { top: { style: 'thin', color: { argb: 'FFCBD5E1' } }, left: { style: 'thin', color: { argb: 'FFCBD5E1' } }, bottom: { style: 'thin', color: { argb: 'FFCBD5E1' } }, right: { style: 'thin', color: { argb: 'FFCBD5E1' } } };
+      cell.border = {
+        top: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+        left: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+        bottom: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+        right: { style: 'thin', color: { argb: 'FFCBD5E1' } }
+      };
     });
     headerRow.height = 30;
 
@@ -276,7 +316,10 @@ export default function MtAttendance() {
         no: index + 1,
         status: g.status ? g.status.toUpperCase() : '',
         nama: g.nama_lengkap,
-        jenjang: (g.is_pengurus ? 'PENGURUS USMAN, ' : '') + (g.is_pengurus_muda_mudi ? 'PENGURUS MUDA MUDI, ' : '') + (g.is_ketua_wakil_kelompok ? 'KETUA/WAKIL KELOMPOK, ' : '') + (g.jenjang || ''),
+        jenjang: (g.is_pengurus ? 'PENGURUS USMAN, ' : '') + 
+                 (g.is_pengurus_muda_mudi ? 'PENGURUS MUDA MUDI, ' : '') + 
+                 (g.is_ketua_wakil_kelompok ? 'KETUA/WAKIL KELOMPOK, ' : '') + 
+                 (g.jenjang || ''),
         recap: totalParticipant === 0 ? '-' : `${present}/${totalParticipant}`
       };
 
@@ -285,36 +328,57 @@ export default function MtAttendance() {
       });
 
       const row = worksheet.addRow(rowData);
-      
+
       row.eachCell((cell, colNumber) => {
         cell.font = { name: 'Poppins' };
-        cell.border = { top: { style: 'thin', color: { argb: 'FFE2E8F0' } }, left: { style: 'thin', color: { argb: 'FFE2E8F0' } }, bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } }, right: { style: 'thin', color: { argb: 'FFE2E8F0' } } };
+        cell.border = {
+          top: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+          left: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+          bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+          right: { style: 'thin', color: { argb: 'FFE2E8F0' } }
+        };
         cell.alignment = { vertical: 'middle' };
 
-        if (colNumber === 1 || colNumber === 2 || colNumber === 4) cell.alignment = { vertical: 'middle', horizontal: 'center' };
+        if (colNumber === 1 || colNumber === 2 || colNumber === 4 || colNumber === 5) {
+          cell.alignment = { vertical: 'middle', horizontal: 'center' };
+        }
 
         if (colNumber === 2 && cell.value) {
           const val = cell.value.toString().replace(/\s+/g, '');
           if (val === 'AKTIF') {
             cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF10B981' } };
+          } else if (val === 'PASIF') {
+            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF59E0B' } };
           } else if (val === 'NONAKTIF' || val === 'TIDAKAKTIF') {
             cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEF4444' } };
           }
           cell.value = '';
         }
 
-        if (colNumber > 4 && cell.value) {
+        if (colNumber > 5 && cell.value) {
           cell.alignment = { vertical: 'middle', horizontal: 'center' };
           cell.font = { name: 'Poppins', bold: true };
-          if (cell.value === 'H') { cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF10B981' } }; cell.font.color = { argb: 'FFFFFFFF' }; }
-          else if (cell.value === 'A') { cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEF4444' } }; cell.font.color = { argb: 'FFFFFFFF' }; }
-          else if (cell.value === 'I') { cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF59E0B' } }; cell.font.color = { argb: 'FFFFFFFF' }; }
-          else if (cell.value === 'S') { cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF3B82F6' } }; cell.font.color = { argb: 'FFFFFFFF' }; }
+          if (cell.value === 'H') {
+            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF10B981' } };
+            cell.font.color = { argb: 'FFFFFFFF' };
+          } else if (cell.value === 'A') {
+            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEF4444' } };
+            cell.font.color = { argb: 'FFFFFFFF' };
+          } else if (cell.value === 'I') {
+            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF59E0B' } };
+            cell.font.color = { argb: 'FFFFFFFF' };
+          } else if (cell.value === 'S') {
+            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF3B82F6' } };
+            cell.font.color = { argb: 'FFFFFFFF' };
+          }
         }
       });
     });
 
-    worksheet.autoFilter = { from: { row: 1, column: 1 }, to: { row: 1, column: columns.length } };
+    worksheet.autoFilter = {
+      from: { row: 1, column: 1 },
+      to: { row: 1, column: columns.length }
+    };
 
     const buffer = await workbook.xlsx.writeBuffer();
     const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
@@ -331,210 +395,435 @@ export default function MtAttendance() {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-transparent">
-      <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
-        
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Rekapan Absensi Kelompok {kelompok}</h1>
-            <p className="text-slate-500 text-sm mt-0.5">Pantau absensi bulanan berdasarkan jenis kegiatan.</p>
-          </div>
-          
-          <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto mt-3 sm:mt-0">
-            <div className="grid grid-cols-2 gap-2 sm:gap-3 w-full sm:w-auto">
-              <CustomSelect 
-                options={availableYears.map(y => ({ value: y.toString(), label: y.toString() }))}
-                value={selectedYear}
-                onChange={setSelectedYear}
-                placeholder="Tahun"
-              />
+  // Header top action button portal
+  const topActions = (
+    <div className="flex items-center gap-2">
+      <button
+        type="button"
+        onClick={exportToExcel}
+        disabled={!filteredData.length}
+        className="flex items-center justify-center gap-1.5 px-4 py-1.5 bg-[#168a53] hover:bg-[#127344] active:scale-95 disabled:opacity-50 text-white rounded-full font-bold text-xs shadow-xs transition-all cursor-pointer whitespace-nowrap"
+      >
+        <FileUp size={13} strokeWidth={2.5} />
+        <span>Export Excel</span>
+      </button>
+    </div>
+  );
 
-              <CustomSelect 
-                multiple
-                options={eventTypes.map(t => ({ value: t.id.toString(), label: t.name }))}
-                value={selectedType}
-                onChange={setSelectedType}
-                placeholder="Pilih Kategori Acara"
-              />
+  return (
+    <div className="min-h-full font-sans">
+      {headerSlot && ReactDOM.createPortal(topActions, headerSlot)}
+
+      <div className="w-full py-4 sm:py-6 space-y-4 sm:space-y-5">
+
+        {/* Page Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h1 className="text-[26px] sm:text-2xl font-extrabold text-slate-900 tracking-tight leading-tight">
+              Rekapan Absensi Kelompok {kelompok && <span className="text-[#168a53]">{kelompok}</span>}
+            </h1>
+            <p className="text-slate-500 text-xs sm:text-sm mt-1">
+              Pantau matriks kehadiran generus kelompok Anda berdasarkan kategori kegiatan dan tahun.
+            </p>
+          </div>
+
+          <div className="flex lg:hidden items-center gap-2 shrink-0">
+            {!headerSlot && topActions}
+          </div>
+        </div>
+
+        {/* 3 Summary Stat Cards matching ReportByType */}
+        <div className="flex overflow-x-auto hide-scrollbar gap-2.5 sm:grid sm:grid-cols-3 sm:gap-4 pb-1 sm:pb-0">
+          {/* Total Generus */}
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-3.5 sm:p-4 min-w-[130px] flex-1 shrink-0 flex flex-col justify-between sm:flex-row sm:items-center gap-2 sm:gap-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+            <div className="flex items-center justify-between sm:hidden w-full">
+              <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+                <Users size={14} strokeWidth={2} />
+              </div>
+              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">
+                Generus
+              </span>
             </div>
 
-            <button 
-              onClick={exportToExcel}
-              disabled={!filteredData.length}
-              className="shrink-0 w-full md:w-auto justify-center flex items-center gap-2 px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50"
+            <div className="hidden sm:flex items-center gap-3.5 min-w-0">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                <Users size={18} strokeWidth={2} />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-medium text-slate-500 truncate">Total Generus</p>
+                <p className="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight leading-snug">
+                  {totalGenerus} Orang
+                </p>
+              </div>
+            </div>
+
+            <div className="sm:hidden mt-0.5">
+              <p className="text-[11px] font-medium text-slate-400">Total Generus</p>
+              <p className="text-lg font-extrabold text-slate-900 tracking-tight leading-tight mt-0.5">
+                {totalGenerus} <span className="text-xs font-medium text-slate-400">Orang</span>
+              </p>
+            </div>
+
+            <span className="hidden sm:inline-block text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 shrink-0">
+              Terfilter
+            </span>
+          </div>
+
+          {/* Rata-rata Kehadiran */}
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-3.5 sm:p-4 min-w-[130px] flex-1 shrink-0 flex flex-col justify-between sm:flex-row sm:items-center gap-2 sm:gap-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+            <div className="flex items-center justify-between sm:hidden w-full">
+              <div className="w-7 h-7 rounded-lg bg-emerald-50 text-[#168a53] flex items-center justify-center">
+                <Activity size={14} strokeWidth={2} />
+              </div>
+              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-50 text-[#168a53] border border-emerald-200/60">
+                {totalRecordedCount > 0 ? `${avgAttendancePercent}%` : '0%'}
+              </span>
+            </div>
+
+            <div className="hidden sm:flex items-center gap-3.5 min-w-0">
+              <div className="w-10 h-10 rounded-xl bg-emerald-50 text-[#168a53] flex items-center justify-center shrink-0">
+                <Activity size={18} strokeWidth={2} />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-medium text-slate-500 truncate">Rata-rata Hadir</p>
+                <p className="text-lg sm:text-xl font-extrabold text-[#168a53] tracking-tight leading-snug">
+                  {totalRecordedCount > 0 ? `${avgAttendancePercent}%` : '-'}
+                </p>
+              </div>
+            </div>
+
+            <div className="sm:hidden mt-0.5">
+              <p className="text-[11px] font-medium text-slate-400">Rata-rata Hadir</p>
+              <p className="text-lg font-extrabold text-slate-900 tracking-tight leading-tight mt-0.5">
+                {totalRecordedCount > 0 ? `${avgAttendancePercent}%` : '-'}
+              </p>
+            </div>
+
+            <span className="hidden sm:inline-block text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-emerald-50 text-[#168a53] border border-emerald-200/60 shrink-0">
+              Akumulasi
+            </span>
+          </div>
+
+          {/* Total Kegiatan */}
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-3.5 sm:p-4 min-w-[130px] flex-1 shrink-0 flex flex-col justify-between sm:flex-row sm:items-center gap-2 sm:gap-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+            <div className="flex items-center justify-between sm:hidden w-full">
+              <div className="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
+                <Calendar size={14} strokeWidth={2} />
+              </div>
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200/60">
+                {selectedYear}
+              </span>
+            </div>
+
+            <div className="hidden sm:flex items-center gap-3.5 min-w-0">
+              <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                <Calendar size={18} strokeWidth={2} />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-medium text-slate-500 truncate">Total Kegiatan</p>
+                <p className="text-lg sm:text-xl font-extrabold text-amber-700 tracking-tight leading-snug">
+                  {eventsList.length} Kegiatan
+                </p>
+              </div>
+            </div>
+
+            <div className="sm:hidden mt-0.5">
+              <p className="text-[11px] font-medium text-slate-400">Kegiatan</p>
+              <p className="text-lg font-extrabold text-slate-900 tracking-tight leading-tight mt-0.5">
+                {eventsList.length} <span className="text-xs font-medium text-slate-400">Acara</span>
+              </p>
+            </div>
+
+            <span className="hidden sm:inline-block text-[11px] font-bold px-2.5 py-1 rounded-lg bg-amber-50 text-amber-700 border border-amber-200/60 shrink-0">
+              Tahun {selectedYear}
+            </span>
+          </div>
+        </div>
+
+        {/* Primary Filters & Search Row */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+          <div className="flex flex-wrap items-center gap-2 flex-1 min-w-0">
+            {/* Year Selector */}
+            <CustomSelect
+              options={availableYears.map(y => ({ value: y.toString(), label: `Tahun ${y}` }))}
+              value={selectedYear}
+              onChange={setSelectedYear}
+              placeholder="Pilih Tahun"
+            />
+
+            {/* Event Types Multi Select */}
+            <CustomSelect
+              multiple
+              options={eventTypes.map(t => ({ value: t.id.toString(), label: t.name }))}
+              value={selectedType}
+              onChange={setSelectedType}
+              placeholder="Kategori Acara"
+            />
+          </div>
+
+          {/* Search & Filter Trigger */}
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1 sm:w-64">
+              <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+              <input
+                type="text"
+                placeholder="Cari nama generus..."
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+                className="w-full pl-9 pr-8 py-2 text-xs bg-white rounded-full border border-slate-200/90 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#168a53]/15 focus:border-[#168a53] shadow-2xs transition-all font-medium"
+              />
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm('')}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                >
+                  <X size={12} />
+                </button>
+              )}
+            </div>
+
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className={`px-3.5 py-2 text-xs font-bold rounded-full border flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer whitespace-nowrap ${
+                showFilters || filterJenjang.length > 0
+                  ? 'bg-emerald-50 border-emerald-200 text-[#168a53]'
+                  : 'bg-white border-slate-200/90 text-slate-600 hover:bg-slate-50'
+              }`}
             >
-              <FileUp size={16} className="text-teal-500" /> <span className="hidden sm:inline">Export</span>
+              <Filter size={13} />
+              <span>Filter</span>
+              {filterJenjang.length > 0 && (
+                <span className="w-1.5 h-1.5 rounded-full bg-[#168a53]" />
+              )}
             </button>
           </div>
         </div>
 
-        <div className="bg-white/80 backdrop-blur-xl border border-white shadow-[0_8px_30px_rgb(0,0,0,0.06)] rounded-[20px] overflow-hidden flex flex-col h-[calc(100dvh-280px)] md:h-[calc(100vh-180px)]" style={{ minHeight: '750px' }}>
-          
-          <div className="bg-slate-50/50 p-4 border-b border-slate-100 shrink-0 flex flex-col gap-4">
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-4">
-              <div className="relative w-full sm:max-w-md">
-                <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-                <input
-                  type="text"
-                  placeholder="Cari nama generus..."
-                  value={searchTerm}
-                  onChange={e => setSearchTerm(e.target.value)}
-                  className="w-full pl-11 pr-4 py-2 text-sm bg-white rounded-xl border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-400 shadow-sm transition-all"
-                />
-              </div>
-              <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
-                <span className="text-slate-500 text-xs font-bold">
-                  Total: {filteredData.length} Data
-                </span>
-                <button
-                  onClick={() => setShowFilters(!showFilters)}
-                  className={`px-4 py-2 text-xs font-bold rounded-xl border flex items-center gap-2 shadow-sm transition-colors ${showFilters ? 'bg-teal-50 border-teal-200 text-teal-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}
-                >
-                  <Filter size={14} /> Filter
-                  {filterJenjang.length > 0 && (
-                    <span className="w-2 h-2 rounded-full bg-red-500"></span>
-                  )}
-                </button>
-              </div>
-              
-              {/* Keterangan Warna Kategori */}
-              {selectedType.length > 0 && eventTypes.length > 0 && (
-                <div className="flex flex-wrap items-center gap-2 mt-2 pt-3 border-t border-slate-100">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mr-1">Keterangan Warna:</span>
-                  {selectedType.map(id => {
-                    const type = eventTypes.find(t => t.id.toString() === id);
-                    if (!type) return null;
-                    return (
-                      <div key={id} className={`px-2.5 py-1 rounded-md text-[10px] font-bold border ${getEventTypeColor(type.id)} flex items-center gap-1.5`}>
-                        <div className="w-2 h-2 rounded-full bg-current opacity-70"></div>
-                        {type.name}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-            
-            {showFilters && (
-            <div className="flex flex-col xl:flex-row gap-4 animate-in fade-in slide-in-from-top-2 duration-200">
-              <div className="bg-white border border-slate-200 rounded-xl px-4 py-3 shadow-sm flex-1">
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2.5 px-1 flex items-center gap-1.5">
-                  <Filter size={11} className="text-emerald-500" /> Jenjang
+        {/* Expandable Jenjang Filter Drawer */}
+        {showFilters && (
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-4 space-y-3.5 shadow-[0_1px_2px_rgba(0,0,0,0.02)] animate-in fade-in slide-in-from-top-2 duration-150">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <Filter size={11} className="text-emerald-600" /> Filter Jenjang & Jabatan
                 </p>
-                <div className="flex flex-wrap gap-2">
-                  {['', ...uniqueJenjang].map(j => {
-                    const label = j === '' ? 'Semua' : j;
-                    const active = j === '' ? filterJenjang.length === 0 : filterJenjang.includes(j);
-                    return (
-                      <button key={label} onClick={() => toggleJenjang(j)}
-                        className={`px-3 py-2 sm:py-1.5 rounded-xl text-xs font-semibold transition-all ${
-                          active ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200'
-                        }`}>
-                        {label}
-                      </button>
-                    );
-                  })}
-                </div>
+                {filterJenjang.length > 0 && (
+                  <button
+                    onClick={() => setFilterJenjang([])}
+                    className="text-[10px] font-bold text-[#168a53] hover:underline cursor-pointer"
+                  >
+                    Reset
+                  </button>
+                )}
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {['', ...uniqueJenjang].map(j => {
+                  const label = j === '' ? 'Semua' : j;
+                  const active = j === '' ? filterJenjang.length === 0 : filterJenjang.includes(j);
+                  return (
+                    <button
+                      key={label}
+                      onClick={() => toggleJenjang(j)}
+                      className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                        active
+                          ? 'bg-[#168a53] text-white shadow-2xs'
+                          : 'bg-slate-100/90 text-slate-600 hover:bg-slate-200/80'
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
               </div>
             </div>
-            )}
           </div>
+        )}
 
+        {/* Keterangan Warna Kategori */}
+        {selectedType.length > 0 && eventTypes.length > 0 && (
+          <div className="flex flex-wrap items-center gap-1.5 py-1">
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mr-1">Warna Acara:</span>
+            {selectedType.map(id => {
+              const type = eventTypes.find(t => t.id.toString() === id);
+              if (!type) return null;
+              return (
+                <div key={id} className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${getEventTypeColor(type.id)} flex items-center gap-1.5`}>
+                  <div className="w-1.5 h-1.5 rounded-full bg-current opacity-70" />
+                  {type.name}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Main Matrix Table Container */}
+        <div className="bg-white border border-slate-200/80 rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.02)] overflow-hidden flex flex-col" style={{ minHeight: '520px' }}>
+          
           <div className="flex-1 overflow-auto thin-scrollbar">
             {loading ? (
-              <div className="h-full flex flex-col items-center justify-center space-y-3">
-                <Loader2 size={32} className="animate-spin text-teal-500" />
-                <p className="text-slate-400 font-medium text-sm">Memuat rekapan absensi...</p>
+              <div className="py-24 flex flex-col items-center justify-center space-y-3">
+                <Loader2 size={32} className="animate-spin text-[#168a53]" />
+                <p className="text-slate-400 font-medium text-xs">Memuat rekapan absensi kelompok...</p>
               </div>
             ) : selectedType.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center space-y-3">
-                <Layers size={32} className="text-slate-300" />
-                <p className="text-slate-400 font-medium text-sm">Pilih kategori acara terlebih dahulu.</p>
+              <div className="py-24 flex flex-col items-center justify-center text-center p-6 space-y-3">
+                <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-[#168a53] flex items-center justify-center">
+                  <Layers size={24} />
+                </div>
+                <h3 className="text-base font-bold text-slate-800">Pilih Kategori Acara</h3>
+                <p className="text-slate-500 text-xs max-w-sm">
+                  Silakan pilih satu atau beberapa kategori kegiatan di atas untuk menampilkan rekapan absensi.
+                </p>
+              </div>
+            ) : eventsList.length === 0 ? (
+              <div className="py-24 flex flex-col items-center justify-center text-center p-6 space-y-3">
+                <div className="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                  <AlertCircle size={24} />
+                </div>
+                <h3 className="text-base font-bold text-slate-800">Tidak Ada Kegiatan</h3>
+                <p className="text-slate-500 text-xs max-w-sm">
+                  Tidak ditemukan jadwal atau acara yang sesuai pada tahun {selectedYear}.
+                </p>
               </div>
             ) : filteredData.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center space-y-3">
-                <AlertCircle size={32} className="text-slate-300" />
-                <p className="text-slate-400 font-medium text-sm">Tidak ada data ditemukan.</p>
+              <div className="py-24 flex flex-col items-center justify-center text-center p-6 space-y-3">
+                <div className="w-14 h-14 rounded-2xl bg-slate-50 text-slate-400 flex items-center justify-center">
+                  <Users size={24} />
+                </div>
+                <h3 className="text-base font-bold text-slate-800">Peserta Tidak Ditemukan</h3>
+                <p className="text-slate-500 text-xs max-w-sm">
+                  Tidak ada data peserta yang cocok dengan kata kunci pencarian atau filter jenjang yang aktif.
+                </p>
               </div>
             ) : (
-              <div className="w-max min-w-full pb-4">
-              <table className="w-full text-left border-collapse">
-                <thead className="md:sticky top-0 z-40 shadow-sm">
-                  <tr>
-                    <th className="px-2 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 text-center bg-slate-100 md:sticky md:left-0 z-30 w-[40px] min-w-[40px] md:shadow-[1px_0_0_#e2e8f0]">#</th>
-                    <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 bg-slate-100 md:sticky md:left-[40px] z-30 w-[180px] min-w-[180px] md:shadow-[1px_0_0_#e2e8f0]">Nama</th>
-                    <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 text-center bg-slate-100 md:sticky md:left-[220px] z-30 w-[220px] min-w-[220px] md:shadow-[1px_0_0_#e2e8f0]">Jenjang</th>
-                    <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 text-center bg-slate-100 md:sticky md:left-[440px] z-30 w-[80px] min-w-[80px] md:shadow-[1px_0_0_#e2e8f0]">Status</th>
-                    <th className="px-2 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 text-center bg-slate-100 md:sticky md:left-[520px] z-30 w-[70px] min-w-[70px] md:shadow-[2px_0_5px_-2px_rgba(0,0,0,0.2)]">Recap</th>
-                    
+              <table className="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr className="bg-slate-50/80 text-slate-500 font-extrabold uppercase tracking-wider border-b border-slate-200/80 sticky top-0 z-20">
+                    <th className="py-3 px-3.5 text-center w-12 sticky left-0 bg-slate-50 z-30 shadow-[1px_0_0_rgba(0,0,0,0.06)]">
+                      #
+                    </th>
+                    <th className="py-3 px-4 min-w-[200px] sticky left-12 bg-slate-50 z-30 shadow-[1px_0_0_rgba(0,0,0,0.06)]">
+                      Nama Peserta
+                    </th>
+                    <th className="py-3 px-3.5 min-w-[110px] text-center">
+                      Jenjang
+                    </th>
+                    <th className="py-3 px-3 min-w-[85px] text-center bg-slate-100/60 font-black">
+                      Rekap
+                    </th>
                     {eventsList.map(e => (
-                      <th key={e.id} className={`px-2 py-4 text-[10px] font-black uppercase tracking-widest border text-center min-w-[70px] w-[70px] ${getEventTypeColor(e.event_type_id)}`}>
-                        <div className="flex flex-col items-center gap-1">
-                          <span>{formatDate(e.event_date)}</span>
+                      <th
+                        key={e.id}
+                        className="py-2.5 px-3 min-w-[95px] text-center border-l border-slate-200/60 whitespace-nowrap"
+                        title={e.name}
+                      >
+                        <div className="font-extrabold text-slate-800 text-[11px]">{formatDate(e.event_date)}</div>
+                        <div className={`mt-0.5 inline-block text-[9px] font-bold px-1.5 py-0.2 rounded border ${getEventTypeColor(e.event_type_id)} truncate max-w-[85px]`}>
+                          {e.name}
                         </div>
                       </th>
                     ))}
                   </tr>
                 </thead>
-                <tbody>
-                  {filteredData.map((g, idx) => (
-                    <tr key={g.id} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="px-2 py-2 text-xs text-slate-400 font-semibold text-center border border-slate-200 bg-white md:sticky md:left-0 z-20 md:shadow-[1px_0_0_#e2e8f0]">{idx + 1}</td>
-                      <td className="px-4 py-2 border border-slate-200 bg-white md:sticky md:left-[40px] z-20 md:shadow-[1px_0_0_#e2e8f0]">
-                        <div className="flex items-center gap-3 w-full">
-                          <div className={`w-7 h-7 rounded-lg font-bold text-xs flex items-center justify-center shrink-0 ${g.jenis_kelamin === 'L' ? 'bg-blue-100 text-blue-600' : 'bg-pink-100 text-pink-600'}`}>
-                            {g.nama_lengkap.charAt(0).toUpperCase()}
+                <tbody className="divide-y divide-slate-100">
+                  {filteredData.map((g, idx) => {
+                    let hadir = 0;
+                    let totalAcara = 0;
+                    eventsList.forEach(e => {
+                      const stat = g.events_attendance[e.id];
+                      if (stat && stat !== '-') {
+                        totalAcara++;
+                        if (stat === 'H') hadir++;
+                      }
+                    });
+
+                    const roleBadges = [];
+                    if (g.is_pengurus) roleBadges.push('PENGURUS USMAN');
+                    if (g.is_pengurus_muda_mudi) roleBadges.push('PENGURUS MUDA MUDI');
+                    if (g.is_ketua_wakil_kelompok) roleBadges.push('KETUA/WAKIL KELOMPOK');
+
+                    return (
+                      <tr key={g.id} className="hover:bg-slate-50/70 transition-colors group">
+                        {/* Column 1: Index */}
+                        <td className="py-3 px-3.5 text-center font-bold text-slate-400 tabular-nums sticky left-0 bg-white group-hover:bg-slate-50/90 z-10 shadow-[1px_0_0_rgba(0,0,0,0.06)]">
+                          {idx + 1}
+                        </td>
+
+                        {/* Column 2: Nama */}
+                        <td className="py-3 px-4 sticky left-12 bg-white group-hover:bg-slate-50/90 z-10 shadow-[1px_0_0_rgba(0,0,0,0.06)]">
+                          <p className="font-extrabold text-slate-800 text-xs sm:text-sm leading-tight truncate max-w-[200px]">
+                            {g.nama_lengkap}
+                          </p>
+                          <p className="text-[10px] text-slate-400 font-medium mt-0.5">
+                            {g.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan'}
+                          </p>
+                        </td>
+
+                        {/* Column 3: Jenjang */}
+                        <td className="py-3 px-3.5 text-center">
+                          <div className="flex flex-col items-center gap-0.5">
+                            {roleBadges.map(rb => (
+                              <span key={rb} className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.2 bg-emerald-50 text-emerald-700 border border-emerald-200/60 rounded">
+                                {rb}
+                              </span>
+                            ))}
+                            <span className="text-[10px] font-bold px-2 py-0.5 bg-slate-100 text-slate-600 rounded">
+                              {g.jenjang || '-'}
+                            </span>
                           </div>
-                          <div className="flex-1 min-w-0 pr-2">
-                            <p className="text-sm font-bold text-slate-700 truncate">{g.nama_lengkap}</p>
-                            <p className="text-[10px] text-slate-400 truncate">{g.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan'}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-2 py-2 text-center border border-slate-200 bg-white md:sticky md:left-[220px] z-20 md:shadow-[1px_0_0_#e2e8f0]">
-                        <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded-md uppercase">
-                          {(g.is_pengurus ? 'PENGURUS USMAN, ' : '')}{(g.is_pengurus_muda_mudi ? 'PENGURUS MUDA MUDI, ' : '')}{(g.is_ketua_wakil_kelompok ? 'KETUA/WAKIL KELOMPOK, ' : '')}{(g.jenjang || '-')}
-                        </span>
-                      </td>
-                      <td className="px-2 py-2 text-center border border-slate-200 bg-white md:sticky md:left-[440px] z-20 md:shadow-[1px_0_0_#e2e8f0]">
-                        <span className={`text-[10px] font-bold px-2 py-1 rounded-md uppercase ${
-                          g.status?.toLowerCase() === 'aktif' ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'
-                        }`}>
-                          {g.status}
-                        </span>
-                      </td>
-                      <td className="px-2 py-2 text-center text-xs font-bold text-slate-700 border border-slate-200 bg-white md:sticky md:left-[520px] z-20 md:shadow-[2px_0_5px_-2px_rgba(0,0,0,0.2)]">
-                        {(() => {
-                          let present = 0;
-                          let totalParticipant = 0;
-                          eventsList.forEach(e => {
-                            const stat = g.events_attendance[e.id];
-                            if (stat && stat !== '-') {
-                              totalParticipant++;
-                              if (stat === 'H') present++;
-                            }
-                          });
-                          return totalParticipant === 0 ? '-' : `${present}/${totalParticipant}`;
-                        })()}
-                      </td>
-                      
-                      {eventsList.map(e => {
-                        const mStatus = g.events_attendance[e.id];
-                        const cellClass = mStatus && mStatus !== '-' ? getStatusCellClass(mStatus) : 'bg-white text-slate-200';
-                        return (
-                          <td key={e.id} className={`p-0 text-center border border-slate-200 align-middle w-[70px] min-w-[70px] text-xs transition-colors ${cellClass}`}>
-                            {mStatus && mStatus !== '-' ? mStatus : '-'}
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  ))}
+                        </td>
+
+                        {/* Column 4: Recap */}
+                        <td className="py-3 px-3 text-center bg-slate-50/60 font-extrabold text-[#168a53] tabular-nums">
+                          {totalAcara === 0 ? (
+                            <span className="text-slate-300 font-normal">-</span>
+                          ) : (
+                            <span className="px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200/60 text-xs">
+                              {hadir}/{totalAcara}
+                            </span>
+                          )}
+                        </td>
+
+                        {/* Events Attendance Columns */}
+                        {eventsList.map(e => {
+                          const status = g.events_attendance[e.id] || '-';
+                          return (
+                            <td key={e.id} className="py-3 px-3 text-center border-l border-slate-100">
+                              <span className={`inline-flex items-center justify-center w-7 h-7 rounded-lg text-xs font-black shadow-2xs select-none ${getStatusCellClass(status)}`}>
+                                {status === '-' ? '·' : status}
+                              </span>
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
-              </div>
             )}
           </div>
+
+          {/* Table Footer info bar */}
+          <div className="px-5 py-3 border-t border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
+            <div>
+              Menampilkan <span className="font-extrabold text-slate-800">{filteredData.length}</span> dari {reportData.length} peserta
+            </div>
+            <div className="flex items-center gap-3 text-[11px] font-bold">
+              <span className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded bg-emerald-500" /> Hadir (H)
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded bg-amber-400" /> Izin (I)
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded bg-blue-500" /> Sakit (S)
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded bg-red-500" /> Alfa (A)
+              </span>
+            </div>
+          </div>
+
         </div>
 
       </div>

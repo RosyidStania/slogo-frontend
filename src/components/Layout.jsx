@@ -157,6 +157,20 @@ export default function Layout() {
         { name: 'Presensi', path: '/admin/reports', icon: <ClipboardCheck size={20} /> },
         { name: 'Pengaturan', isSheet: true, icon: <Settings size={20} /> },
       ]
+    : role === 'absen_kelompok'
+    ? [
+        { name: 'Acara', path: '/admin/events', icon: <Calendar size={20} /> },
+        { name: 'Data Anggota', path: '/mt/members', icon: <UsersRound size={20} /> },
+        { name: 'Presensi', path: '/mt/attendance', icon: <ClipboardCheck size={20} /> },
+        { name: 'Pengaturan', isSheet: true, icon: <Settings size={20} /> },
+      ]
+    : role === 'mt'
+    ? [
+        { name: 'Dashboard', path: '/mt', icon: <LayoutGrid size={20} /> },
+        { name: 'Data Anggota', path: '/mt/members', icon: <UsersRound size={20} /> },
+        { name: 'Presensi', path: '/mt/attendance', icon: <ClipboardCheck size={20} /> },
+        { name: 'Pengaturan', isSheet: true, icon: <Settings size={20} /> },
+      ]
     : [
         ...menuItems.slice(0, 3),
         { name: 'Pengaturan', isSheet: true, icon: <Settings size={20} /> },
