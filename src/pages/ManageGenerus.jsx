@@ -1,14 +1,14 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import ReactDOM from 'react-dom';
 import api from '../api/axios';
 import CustomSelect from '../components/CustomSelect';
 import {
-  Plus, Edit, Trash2, X, MapPin, Eye, User, CalendarDays,
-  Users, ShieldAlert, ChevronDown, Phone, Info, FileUp, FileDown,
-  Loader2, TrendingUp, TrendingDown, Settings, Search, Filter,
-  QrCode, Download, Target, AlertTriangle, CheckCircle2, ChevronRight,
-  MoreVertical, ArrowUpDown, RefreshCw
+  Plus, Edit2, Trash2, X, MapPin, Eye,
+  Users, FileUp, FileDown,
+  Loader2, TrendingUp, TrendingDown, Search, Filter,
+  QrCode, Download, AlertTriangle, Check, ChevronRight, ChevronLeft,
+  SlidersHorizontal, RotateCw, Clock
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { QRCodeCanvas } from 'qrcode.react';
@@ -18,31 +18,44 @@ import { saveAs } from 'file-saver';
 import logoImg from '../assets/logo.png';
 
 
-// ─── Tiny helpers ────────────────────────────────────────────────────────────
+// Helpers
 const KELOMPOK_LIST = ['Semua', 'Slogo', 'Gabugan', 'Jekani', 'Gawan', 'Pengkruk', 'Sidomulyo', 'Karangasem'];
 const JENJANG_LIST  = ['Semua', 'MT', 'PAUD', 'TK', '1 SD', '2 SD', '3 SD', '4 SD', '5 SD', '6 SD', '1 SMP', '2 SMP', '3 SMP', '1 SMA/SMK', '2 SMA/SMK', '3 SMA/SMK', 'USMAN', 'PENGURUS USMAN', 'PENGURUS MUDA MUDI', 'KETUA/WAKIL KELOMPOK'];
 
 const STATUS_META = {
-  'aktif':       { label: 'Aktif',       color: 'text-emerald-700 bg-emerald-50 border-emerald-200',  dot: 'bg-emerald-500' },
-  'pasif':       { label: 'Pasif',       color: 'text-amber-700  bg-amber-50  border-amber-200',   dot: 'bg-amber-400'   },
-  'tidak aktif': { label: 'Tidak Aktif', color: 'text-red-700    bg-red-50    border-red-200',     dot: 'bg-red-500'     },
+  'aktif':       { label: 'Aktif',       color: 'text-emerald-700 bg-emerald-50/90 border-emerald-200/60',  dot: 'bg-emerald-500' },
+  'pasif':       { label: 'Pasif',       color: 'text-amber-700  bg-amber-50/90  border-amber-200/60',   dot: 'bg-amber-500'   },
+  'tidak aktif': { label: 'Tidak Aktif', color: 'text-red-700    bg-red-50/90    border-red-200/60',     dot: 'bg-red-500'     },
 };
 
-function StatusBadge({ status = 'aktif' }) {
+function StatusBadge({ status = 'aktif', size = 'normal' }) {
   const meta = STATUS_META[status?.toLowerCase()] ?? STATUS_META['aktif'];
+  const isSm = size === 'sm';
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${meta.color}`}>
-      <span className={`w-1.5 h-1.5 rounded-full ${meta.dot}`} />
+    <span className={`inline-flex items-center ${isSm ? 'gap-1 px-2 py-0.5 text-[10.5px]' : 'gap-1.5 px-3 py-1 text-xs'} rounded-full font-bold border ${meta.color}`}>
+      <span className={`${isSm ? 'w-1.5 h-1.5' : 'w-2 h-2'} rounded-full ${meta.dot}`} />
       {meta.label}
     </span>
   );
 }
 
-function Avatar({ name, gender, size = 'md' }) {
-  const sz = size === 'lg' ? 'w-14 h-14 text-xl' : 'w-9 h-9 text-sm';
-  const bg = gender === 'L' ? 'bg-blue-100 text-blue-600' : 'bg-pink-100 text-pink-600';
+const AVATAR_PALETTES = [
+  'bg-rose-50 text-rose-600 border-rose-100',
+  'bg-cyan-50 text-cyan-600 border-cyan-100',
+  'bg-indigo-50 text-indigo-600 border-indigo-100',
+  'bg-purple-50 text-purple-600 border-purple-100',
+  'bg-pink-50 text-pink-600 border-pink-100',
+  'bg-sky-50 text-sky-600 border-sky-100',
+  'bg-amber-50 text-amber-600 border-amber-100',
+  'bg-emerald-50 text-emerald-600 border-emerald-100',
+];
+
+function Avatar({ name, size = 'md' }) {
+  const sz = size === 'lg' ? 'w-14 h-14 text-xl' : size === 'mob' ? 'w-10 h-10 text-sm' : 'w-10 h-10 text-sm';
+  const charCode = name ? name.charCodeAt(0) + (name.charCodeAt(1) || 0) : 0;
+  const palette = AVATAR_PALETTES[charCode % AVATAR_PALETTES.length];
   return (
-    <div className={`${sz} ${bg} rounded-xl flex items-center justify-center font-bold shrink-0`}>
+    <div className={`${sz} ${palette} border rounded-full flex items-center justify-center font-extrabold shrink-0`}>
       {name ? name.charAt(0).toUpperCase() : '?'}
     </div>
   );
@@ -89,12 +102,12 @@ function TextInput({ name, value, onChange, placeholder = '', type = 'text', req
     <input
       type={type} name={name} value={value} onChange={onChange}
       placeholder={placeholder} required={required}
-      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-teal-400 transition-all"
+      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
     />
   );
 }
 
-function ConfirmDialog({ open, onClose, onConfirm, icon, iconBg, title, description, confirmLabel = 'Konfirmasi', confirmClass = 'bg-teal-500 hover:bg-teal-600', loading }) {
+function ConfirmDialog({ open, onClose, onConfirm, icon, iconBg, title, description, confirmLabel = 'Konfirmasi', confirmClass = 'bg-emerald-600 hover:bg-emerald-700', loading }) {
   return (
     <Modal open={open} onClose={onClose} maxWidth="max-w-sm">
       <div className="p-8 text-center">
@@ -114,7 +127,7 @@ function ConfirmDialog({ open, onClose, onConfirm, icon, iconBg, title, descript
   );
 }
 
-// ─── Calculate age helper ─────────────────────────────────────────────────────
+// Calculate age helper
 function calcAge(birthDate, dbUmur) {
   if (dbUmur) return dbUmur;
   if (!birthDate) return null;
@@ -133,24 +146,31 @@ const FORM_DEFAULT = {
   no_hp: '', akun_media: '', hobi: ''
 };
 
-// ═══════════════════════════════════════════════════════════════════════════════
 export default function ManageGenerus() {
-  const navigate = useNavigate();
-  const [generusList, setGenerusList]     = useState([]);
-  const [loading, setLoading]             = useState(true);
+  const location = useLocation();
+  const [generusList, setGenerusList]     = useState(() => {
+    const cached = sessionStorage.getItem('generusData_cache');
+    return cached ? JSON.parse(cached) : [];
+  });
+  const [loading, setLoading]             = useState(() => !sessionStorage.getItem('generusData_cache'));
   const [importing, setImporting]         = useState(false);
   const [exporting, setExporting]         = useState(false);
   const [processing, setProcessing]       = useState(false);
   const [saving, setSaving]               = useState(false);
   const [downloadingQrZip, setDownloadingQrZip] = useState(false);
+  const [headerSlot, setHeaderSlot]       = useState(() => document.getElementById('layout-header-actions'));
 
-  // Filters
+  // Filters & Pagination
   const [search, setSearch]               = useState('');
+  const [statusTab, setStatusTab]         = useState('semua');
   const [filterKelompok, setFilterKelompok] = useState(['Semua']);
   const [filterJenjang, setFilterJenjang]   = useState(['Semua']);
   const [showFilters, setShowFilters]       = useState(false);
+  const [currentPage, setCurrentPage]       = useState(1);
+  const [rowsPerPage, setRowsPerPage]       = useState(8);
 
   const handleToggleKelompok = (k) => {
+    setCurrentPage(1);
     if (k === 'Semua') {
       setFilterKelompok(['Semua']);
       return;
@@ -168,6 +188,7 @@ export default function ManageGenerus() {
   };
 
   const handleToggleJenjang = (j) => {
+    setCurrentPage(1);
     if (j === 'Semua') {
       setFilterJenjang(['Semua']);
       return;
@@ -213,18 +234,16 @@ export default function ManageGenerus() {
   const [showPromote, setShowPromote]     = useState(false);
   const [showDemote, setShowDemote]       = useState(false);
   const [showQr, setShowQr]               = useState(false);
-  const [showSettings, setShowSettings]   = useState(false);
+  const [showSettings, setShowSettings]   = useState(() => location.search.includes('openSettings=1'));
   const [showQrZipModal, setShowQrZipModal] = useState(false);
   const [selectedQrZipJenjang, setSelectedQrZipJenjang] = useState(['Semua']);
 
   const fileInputRef   = useRef(null);
   const idCardRef      = useRef(null);
   const settingsRef    = useRef(null);
+  const searchInputRef = useRef(null);
 
   const fetchData = async () => {
-    const cached = sessionStorage.getItem('generusData_cache');
-    if (cached) { setGenerusList(JSON.parse(cached)); setLoading(false); }
-    else setLoading(true);
     try {
       const res = await api.get('/admin/generus');
       const data = res.data.data || [];
@@ -234,18 +253,41 @@ export default function ManageGenerus() {
     finally { setLoading(false); }
   };
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => {
+    fetchData();
+    const id = requestAnimationFrame(() => {
+      setHeaderSlot(document.getElementById('layout-header-actions'));
+    });
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+  useEffect(() => {
+    const openSettingsHandler = () => setShowSettings(v => !v);
+    window.addEventListener('open-generus-settings', openSettingsHandler);
+    return () => window.removeEventListener('open-generus-settings', openSettingsHandler);
+  }, []);
+
   useEffect(() => {
     const handler = (e) => {
       if (settingsRef.current && !settingsRef.current.contains(e.target)) setShowSettings(false);
     };
+    const keyHandler = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
     document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
+    document.addEventListener('keydown', keyHandler);
+    return () => {
+      document.removeEventListener('mousedown', handler);
+      document.removeEventListener('keydown', keyHandler);
+    };
   }, []);
 
   const invalidateAndFetch = () => { sessionStorage.removeItem('generusData_cache'); fetchData(); };
 
-  // ─── CRUD ──────────────────────────────────────────────────────────────────
+  // CRUD
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (saving) return;
@@ -280,7 +322,7 @@ export default function ManageGenerus() {
       setShowDeleteAll(false);
       setDeleteConfirm('');
       invalidateAndFetch();
-    } catch (e) { alert('Gagal menghapus data.'); }
+    } catch { alert('Gagal menghapus data.'); }
     finally { setProcessing(false); }
   };
 
@@ -291,7 +333,7 @@ export default function ManageGenerus() {
       alert(res.data.message);
       setShowPromote(false);
       invalidateAndFetch();
-    } catch (e) { alert('Terjadi kesalahan.'); }
+    } catch { alert('Terjadi kesalahan.'); }
     finally { setProcessing(false); }
   };
 
@@ -302,15 +344,15 @@ export default function ManageGenerus() {
       alert(res.data.message);
       setShowDemote(false);
       invalidateAndFetch();
-    } catch (e) { alert('Terjadi kesalahan.'); }
+    } catch { alert('Terjadi kesalahan.'); }
     finally { setProcessing(false); }
   };
 
-  // ─── Import / Export ───────────────────────────────────────────────────────
+  // Import / Export
   const handleExport = async () => {
     setExporting(true);
     try {
-      const data = filtered; // Gunakan data yang sudah difilter
+      const data = filtered;
       const rows = data.map((item, i) => ({
         'No': i + 1, 'Nama Lengkap': item.nama_lengkap || '',
         'Kelompok': item.kelompok || '', 'Status': item.status || '',
@@ -326,7 +368,7 @@ export default function ManageGenerus() {
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "Data Generus");
       XLSX.writeFile(wb, "Data_Generus.xlsx");
-    } catch (e) { alert('Gagal mengunduh.'); }
+    } catch { alert('Gagal mengunduh.'); }
     finally { setExporting(false); }
   };
 
@@ -367,13 +409,13 @@ export default function ManageGenerus() {
         const res = await api.post('/admin/generus/import', formatted);
         alert(res.data.message);
         invalidateAndFetch();
-      } catch (err) { alert('Gagal memproses file.'); }
+      } catch { alert('Gagal memproses file.'); }
       finally { setImporting(false); e.target.value = null; }
     };
     reader.readAsBinaryString(file);
   };
 
-  // ─── QR download ──────────────────────────────────────────────────────────
+  // QR download
   const downloadQr = async () => {
     if (!idCardRef.current) return;
     try {
@@ -417,7 +459,6 @@ export default function ManageGenerus() {
         const g = activeGenerus[i];
         const node = document.getElementById(`bulk-idcard-${g.id}`);
         if (node) {
-          // Generate high quality PNG
           const dataUrl = await toPng(node, { cacheBust: true, pixelRatio: 4 });
           const base64Data = dataUrl.split(',')[1];
           
@@ -446,11 +487,13 @@ export default function ManageGenerus() {
     }
   };
 
-
-
-  // ─── Filtered / sorted data ────────────────────────────────────────────────
-  const filtered = generusList.filter(g => {
-    const q = search.toLowerCase();
+  // Filtered / sorted data (before status tab)
+  const baseFiltered = generusList.filter(g => {
+    const q = search.toLowerCase().trim();
+    const matchQuery = !q ||
+      g.nama_lengkap?.toLowerCase().includes(q) ||
+      g.kelompok?.toLowerCase().includes(q) ||
+      g.jenjang?.toLowerCase().includes(q);
     const matchKelompok = filterKelompok.includes('Semua') || filterKelompok.some(k => g.kelompok?.toLowerCase() === k.toLowerCase());
     const matchJenjang = filterJenjang.includes('Semua') || filterJenjang.some(j => {
       if (j === 'PENGURUS USMAN') return g.is_pengurus === 1 || g.is_pengurus === true;
@@ -459,11 +502,7 @@ export default function ManageGenerus() {
       return g.jenjang?.toLowerCase() === j.toLowerCase();
     });
     
-    return (
-      g.nama_lengkap?.toLowerCase().includes(q) &&
-      matchKelompok &&
-      matchJenjang
-    );
+    return matchQuery && matchKelompok && matchJenjang;
   }).sort((a, b) => {
     const sw = s => s?.toLowerCase() === 'tidak aktif' ? 2 : 1;
     if (sw(a.status) !== sw(b.status)) return sw(a.status) - sw(b.status);
@@ -472,7 +511,28 @@ export default function ManageGenerus() {
     return ageB - ageA;
   });
 
-  // ─── Open modal helpers ───────────────────────────────────────────────────
+  // Stats based on baseFiltered
+  const totalKelompok = baseFiltered.length;
+  const totalAktif    = baseFiltered.filter(g => (g.status?.toLowerCase() || 'aktif') === 'aktif').length;
+  const totalPasif    = baseFiltered.filter(g => g.status?.toLowerCase() === 'pasif').length;
+  const totalNonaktif = baseFiltered.filter(g => g.status?.toLowerCase() === 'tidak aktif').length;
+
+  // Apply statusTab filter
+  const filtered = baseFiltered.filter(g => {
+    if (statusTab === 'semua') return true;
+    return (g.status?.toLowerCase() || 'aktif') === statusTab;
+  });
+
+  // Pagination logic
+  const effectiveRowsPerPage = rowsPerPage === 'all' ? (filtered.length || 1) : Number(rowsPerPage);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / effectiveRowsPerPage));
+  const safePage = Math.min(currentPage, totalPages);
+  const startIndex = (safePage - 1) * effectiveRowsPerPage;
+  const paginatedRows = rowsPerPage === 'all'
+    ? filtered
+    : filtered.slice(startIndex, startIndex + effectiveRowsPerPage);
+
+  // Open modal helpers
   const openAdd = () => {
     setModalMode('add');
     const nonEnumJenjang = ['Semua', 'PENGURUS USMAN', 'PENGURUS MUDA MUDI', 'KETUA/WAKIL KELOMPOK'];
@@ -500,36 +560,129 @@ export default function ManageGenerus() {
     setFormData(p => ({ ...p, [name]: value }));
   };
 
-  // ─── Stats — ikut semua filter ──────────
-  const totalAktif    = filtered.filter(g => g.status?.toLowerCase() === 'aktif').length;
-  const totalPasif    = filtered.filter(g => g.status?.toLowerCase() === 'pasif').length;
-  const totalNonaktif = filtered.filter(g => g.status?.toLowerCase() === 'tidak aktif').length;
-  const totalKelompok = filtered.length;
+  const pct = (part, total) => (total > 0 ? Math.round((part / total) * 100) : 0);
 
-  // ══════════════════════════════════════════════════════════════════════════
+  // Build pagination page numbers with ellipsis
+  const getPageNumbers = () => {
+    if (totalPages <= 5) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+    if (safePage <= 3) {
+      return [1, 2, 3, '...', totalPages];
+    }
+    if (safePage >= totalPages - 2) {
+      return [1, '...', totalPages - 2, totalPages - 1, totalPages];
+    }
+    return [1, '...', safePage, '...', totalPages];
+  };
+
+  const topHeaderButtons = (
+    <div className="flex items-center gap-2">
+      {/* Mobile Header Buttons: Filter Circle + Green Tambah Pill */}
+      <div className="flex lg:hidden items-center gap-2">
+        <button
+          type="button"
+          onClick={() => setShowFilters(v => !v)}
+          className={`w-9 h-9 rounded-full border flex items-center justify-center transition-colors shadow-2xs relative ${
+            showFilters
+              ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
+              : 'bg-white border-slate-200/90 text-slate-600 hover:bg-slate-50'
+          }`}
+          title="Filter"
+        >
+          <Filter size={15} />
+          {((!filterKelompok.includes('Semua') && filterKelompok.length > 0) || (!filterJenjang.includes('Semua') && filterJenjang.length > 0)) && (
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-600" />
+          )}
+        </button>
+
+        <button
+          type="button"
+          onClick={openAdd}
+          className="flex items-center gap-1 px-4 py-2 bg-[#168a53] hover:bg-[#127344] text-white rounded-full text-xs font-bold transition-colors shadow-xs"
+        >
+          <Plus size={14} strokeWidth={2.5} />
+          <span>Tambah</span>
+        </button>
+      </div>
+
+      {/* Desktop Header Buttons: Export, Import, + Tambah Peserta */}
+      <div className="hidden lg:flex items-center gap-2">
+        <button
+          onClick={handleExport}
+          disabled={exporting}
+          className="flex items-center gap-1.5 px-3.5 py-1.5 bg-white border border-slate-200/90 rounded-full text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-2xs disabled:opacity-50"
+        >
+          {exporting ? <Loader2 size={13} className="animate-spin" /> : <FileDown size={13} className="text-slate-500" />}
+          <span>Export</span>
+        </button>
+
+        <button
+          onClick={() => fileInputRef.current?.click()}
+          disabled={importing}
+          className="flex items-center gap-1.5 px-3.5 py-1.5 bg-white border border-slate-200/90 rounded-full text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-2xs disabled:opacity-50"
+        >
+          {importing ? <Loader2 size={13} className="animate-spin" /> : <FileUp size={13} className="text-slate-500" />}
+          <span>Import</span>
+        </button>
+
+        <button
+          onClick={openAdd}
+          className="flex items-center gap-1.5 px-4 py-1.5 bg-[#168a53] hover:bg-[#127344] text-white rounded-full text-xs font-semibold transition-colors shadow-xs"
+        >
+          <Plus size={14} strokeWidth={2.5} />
+          <span>Tambah Peserta</span>
+        </button>
+      </div>
+    </div>
+  );
+
   return (
-    <div className="min-h-screen bg-slate-50 font-sans">
-      <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
+    <div className="min-h-full font-sans">
+      {headerSlot && ReactDOM.createPortal(topHeaderButtons, headerSlot)}
+      <input type="file" accept=".xlsx,.xls,.csv" ref={fileInputRef} className="hidden" onChange={handleImport} />
 
-        {/* ── Page Header ─────────────────────────────────────────────────── */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="w-full py-4 sm:py-6 space-y-4 sm:space-y-5">
+
+        {/* Page Title & Utility Actions */}
+        <div className="flex items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Data Generus</h1>
-            <p className="text-slate-500 text-sm mt-0.5">Kelola peserta dan keaktifan tiap kelompok</p>
+            <h1 className="text-[26px] sm:text-2xl font-extrabold text-slate-900 tracking-tight leading-tight">
+              Data Generus
+            </h1>
+            <p className="sm:hidden text-slate-500 text-xs mt-1 font-medium">
+              {new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' })} · Kelola info & sebaran desa
+            </p>
+            <p className="hidden sm:block text-slate-500 text-sm mt-1">
+              Kelola informasi peserta, status keaktifan, dan sebaran kelompok desa.
+            </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto mt-3 sm:mt-0">
-            {/* Settings dropdown */}
+          <div className="flex items-center gap-2 shrink-0">
+            {!headerSlot && topHeaderButtons}
+
+            {/* Settings / Aksi Tahunan dropdown */}
             <div className="relative" ref={settingsRef}>
               <button
                 onClick={() => setShowSettings(v => !v)}
-                className="p-2.5 text-slate-500 hover:text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors"
-                title="Pengaturan tahunan"
+                className="hidden sm:flex w-9 h-9 items-center justify-center text-slate-500 hover:text-slate-700 bg-white border border-slate-200/80 rounded-xl hover:bg-slate-50 transition-colors shadow-2xs"
+                title="Pengaturan & Aksi Massal"
               >
-                <Settings size={18} />
+                <SlidersHorizontal size={15} />
               </button>
               {showSettings && (
-                <div className="absolute right-0 mt-2 w-56 bg-white border border-slate-100 rounded-2xl shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                <div className="fixed sm:absolute right-4 sm:right-0 top-16 sm:top-auto sm:mt-2 w-60 bg-white border border-slate-100 rounded-2xl shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                  <div className="lg:hidden border-b border-slate-100 pb-1 mb-1">
+                    <p className="px-4 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Data Excel</p>
+                    <button onClick={() => { setShowSettings(false); handleExport(); }} disabled={exporting}
+                      className="w-full text-left px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-3">
+                      <FileDown size={15} className="text-emerald-600" /> Export Excel
+                    </button>
+                    <button onClick={() => { setShowSettings(false); fileInputRef.current?.click(); }} disabled={importing}
+                      className="w-full text-left px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-3">
+                      <FileUp size={15} className="text-blue-600" /> Import Excel
+                    </button>
+                  </div>
                   <p className="px-4 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Aksi Tahunan</p>
                   <button onClick={() => { setShowSettings(false); setShowPromote(true); }}
                     className="w-full text-left px-4 py-2.5 text-sm font-semibold text-emerald-700 hover:bg-emerald-50 transition-colors flex items-center gap-3">
@@ -554,246 +707,583 @@ export default function ManageGenerus() {
               )}
             </div>
 
-            <input type="file" accept=".xlsx,.xls,.csv" ref={fileInputRef} className="hidden" onChange={handleImport} />
-
-            <button onClick={handleExport} disabled={exporting}
-              className="flex items-center gap-2 px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50">
-              {exporting ? <Loader2 size={16} className="animate-spin" /> : <FileUp size={16} className="text-teal-500" />}
-              <span className="hidden sm:inline">Export</span>
-            </button>
-
-            <button onClick={() => fileInputRef.current?.click()} disabled={importing}
-              className="flex items-center gap-2 px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50">
-              {importing ? <Loader2 size={16} className="animate-spin" /> : <FileDown size={16} className="text-emerald-500" />}
-              <span className="hidden sm:inline">Import</span>
-            </button>
-
-            <button onClick={() => navigate('/admin/users')}
-              className="lg:hidden flex items-center gap-2 px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors">
-              <Users size={16} className="text-blue-500" />
-              <span className="hidden sm:inline">Users</span>
-            </button>
-
-            <button onClick={openAdd}
-              className="flex items-center gap-2 px-4 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-sm font-semibold transition-colors shadow-sm">
-              <Plus size={16} />
-              <span className="hidden sm:inline">Tambah</span>
+            <button
+              onClick={invalidateAndFetch}
+              className="hidden sm:flex w-9 h-9 items-center justify-center text-slate-500 hover:text-slate-700 bg-white border border-slate-200/80 rounded-xl hover:bg-slate-50 transition-colors shadow-2xs"
+              title="Muat Ulang Data"
+            >
+              <RotateCw size={15} className={loading ? 'animate-spin text-emerald-600' : ''} />
             </button>
           </div>
         </div>
 
-        {/* ── Stats cards — berubah sesuai kelompok aktif ──────────────────── */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          {[
-            { label: filterKelompok.includes('Semua') ? 'Total Peserta' : (filterKelompok.length === 1 ? `Kelompok ${filterKelompok[0]}` : 'Multi Kelompok'), value: totalKelompok, color: 'text-slate-700', bg: 'bg-white', border: 'border-slate-200', icon: <Users size={16} className="text-slate-400" /> },
-            { label: 'Aktif', value: totalAktif, color: 'text-emerald-700', bg: 'bg-emerald-50', border: 'border-emerald-100', icon: <CheckCircle2 size={16} className="text-emerald-500" /> },
-            { label: 'Pasif', value: totalPasif, color: 'text-amber-700', bg: 'bg-amber-50', border: 'border-amber-100', icon: <RefreshCw size={16} className="text-amber-500" /> },
-            { label: 'Tidak Aktif', value: totalNonaktif, color: 'text-red-700', bg: 'bg-red-50', border: 'border-red-100', icon: <AlertTriangle size={16} className="text-red-500" /> },
-          ].map(s => (
-            <div key={s.label} className={`${s.bg} border ${s.border} rounded-xl px-3 py-2.5 flex items-center justify-between transition-all duration-300`}>
-              <div>
-                <p className="text-[11px] sm:text-xs text-slate-500 font-medium truncate max-w-[100px]">{s.label}</p>
-                <p className={`text-lg sm:text-xl font-bold mt-0.5 ${s.color} tabular-nums`}>{s.value}</p>
-              </div>
-              {s.icon}
-            </div>
-          ))}
+        {/* Mobile Search Bar (Shown above stat cards on mobile) */}
+        <div className="lg:hidden relative">
+          <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+          <input
+            type="text"
+            placeholder="Cari nama, kelompok, jenjang..."
+            value={search}
+            onChange={e => { setSearch(e.target.value); setCurrentPage(1); }}
+            className="w-full pl-10 pr-4 py-3 text-xs bg-slate-200/60 rounded-2xl border border-slate-200/80 text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+          />
         </div>
 
-        {/* ── Filters ──────────────────────────────────────────────────────── */}
-        <div className="space-y-2 z-20 bg-slate-50 pt-2 pb-4 -mt-2 lg:sticky lg:top-0">
-          {/* Search bar */}
-          <div className="flex flex-col sm:flex-row gap-2">
-            <div className="relative flex-1">
-              <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+        {/* Mobile Expandable Kelompok & Jenjang Filter Drawer */}
+        {showFilters && (
+          <div className="lg:hidden bg-white border border-slate-200/80 rounded-2xl p-3.5 space-y-3 shadow-xs animate-in fade-in slide-in-from-top-1 duration-150">
+            <div>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <MapPin size={10} className="text-emerald-600" /> Kelompok
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {KELOMPOK_LIST.map(k => {
+                  const count = k === 'Semua'
+                    ? generusList.length
+                    : generusList.filter(g => g.kelompok?.toLowerCase() === k.toLowerCase()).length;
+                  const active = filterKelompok.includes(k);
+                  return (
+                    <button
+                      key={k}
+                      onClick={() => handleToggleKelompok(k)}
+                      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
+                        active
+                          ? 'bg-[#168a53] text-white'
+                          : 'bg-slate-50 text-slate-600 border border-slate-200/80'
+                      }`}
+                    >
+                      {k}
+                      <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded ${
+                        active ? 'bg-white/20 text-white' : 'bg-slate-200/70 text-slate-500'
+                      }`}>
+                        {count}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="pt-2 border-t border-slate-100">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <Filter size={10} className="text-emerald-600" /> Jenjang
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {JENJANG_LIST.map(j => {
+                  const active = filterJenjang.includes(j);
+                  return (
+                    <button
+                      key={j}
+                      onClick={() => handleToggleJenjang(j)}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
+                        active
+                          ? 'bg-[#168a53] text-white'
+                          : 'bg-slate-50 text-slate-600 border border-slate-200/80'
+                      }`}
+                    >
+                      {j}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 4 Summary Stat Cards (2x2 on mobile, 4 cols on desktop) */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          {/* Total Peserta */}
+          <div className="bg-white border border-slate-200/70 rounded-2xl p-4 sm:p-5 shadow-[0_1px_2px_rgba(0,0,0,0.03)] flex flex-col justify-between">
+            <div className="flex items-center justify-between gap-1">
+              <span className="text-xs font-semibold text-slate-500 truncate">
+                {filterKelompok.includes('Semua') ? 'Total Peserta' : (filterKelompok.length === 1 ? `Kelompok ${filterKelompok[0]}` : 'Multi Kelompok')}
+              </span>
+              <div className="w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center shrink-0">
+                <Users size={14} />
+              </div>
+            </div>
+            <div className="mt-3 sm:mt-4 flex items-baseline justify-between gap-1">
+              <span className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight tabular-nums">
+                {totalKelompok}
+              </span>
+              <span className="px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-slate-100 text-slate-600 whitespace-nowrap">
+                100% Total
+              </span>
+            </div>
+          </div>
+
+          {/* Peserta Aktif */}
+          <div className="bg-white border border-slate-200/70 rounded-2xl p-4 sm:p-5 shadow-[0_1px_2px_rgba(0,0,0,0.03)] flex flex-col justify-between">
+            <div className="flex items-center justify-between gap-1">
+              <span className="text-xs font-semibold text-slate-500 truncate">Peserta Aktif</span>
+              <div className="w-7 h-7 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                <Check size={14} strokeWidth={2.5} />
+              </div>
+            </div>
+            <div className="mt-3 sm:mt-4 flex items-baseline justify-between gap-1">
+              <span className="text-2xl sm:text-3xl font-extrabold text-[#168a53] tracking-tight tabular-nums">
+                {totalAktif}
+              </span>
+              <span className="px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-emerald-50 text-emerald-700 whitespace-nowrap">
+                {pct(totalAktif, totalKelompok)}% Rasio
+              </span>
+            </div>
+          </div>
+
+          {/* Peserta Pasif */}
+          <div className="bg-white border border-slate-200/70 rounded-2xl p-4 sm:p-5 shadow-[0_1px_2px_rgba(0,0,0,0.03)] flex flex-col justify-between">
+            <div className="flex items-center justify-between gap-1">
+              <span className="text-xs font-semibold text-slate-500 truncate">Peserta Pasif</span>
+              <div className="w-7 h-7 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center shrink-0">
+                <Clock size={14} />
+              </div>
+            </div>
+            <div className="mt-3 sm:mt-4 flex items-baseline justify-between gap-1">
+              <span className="text-2xl sm:text-3xl font-extrabold text-amber-500 tracking-tight tabular-nums">
+                {totalPasif}
+              </span>
+              <span className="px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-amber-50 text-amber-700 whitespace-nowrap">
+                {pct(totalPasif, totalKelompok)}% Rasio
+              </span>
+            </div>
+          </div>
+
+          {/* Tidak Aktif */}
+          <div className="bg-white border border-slate-200/70 rounded-2xl p-4 sm:p-5 shadow-[0_1px_2px_rgba(0,0,0,0.03)] flex flex-col justify-between">
+            <div className="flex items-center justify-between gap-1">
+              <span className="text-xs font-semibold text-slate-500 truncate">Tidak Aktif</span>
+              <div className="w-7 h-7 rounded-full bg-red-50 text-red-500 flex items-center justify-center shrink-0">
+                <AlertTriangle size={14} />
+              </div>
+            </div>
+            <div className="mt-3 sm:mt-4 flex items-baseline justify-between gap-1">
+              <span className="text-2xl sm:text-3xl font-extrabold text-red-600 tracking-tight tabular-nums">
+                {totalNonaktif}
+              </span>
+              <span className="px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-red-50 text-red-600 whitespace-nowrap">
+                {pct(totalNonaktif, totalKelompok)}% Rasio
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Status Segmented Control */}
+        <div className="lg:hidden bg-slate-200/60 p-1 rounded-2xl grid grid-cols-4 gap-1 border border-slate-200/60">
+          {[
+            { id: 'semua', label: `Semua (${totalKelompok})` },
+            { id: 'aktif', label: `Aktif (${totalAktif})` },
+            { id: 'pasif', label: `Pasif (${totalPasif})` },
+            { id: 'tidak aktif', label: `Nonaktif (${totalNonaktif})` },
+          ].map(tab => {
+            const active = statusTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => { setStatusTab(tab.id); setCurrentPage(1); }}
+                className={`py-2 px-1 rounded-xl text-[11px] text-center truncate transition-all ${
+                  active
+                    ? 'bg-white text-slate-900 font-bold shadow-xs'
+                    : 'text-slate-500 hover:text-slate-700 font-semibold'
+                }`}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Mobile Info Bar */}
+        <div className="lg:hidden flex items-center justify-between px-1">
+          <p className="text-xs text-slate-500">
+            Menampilkan <span className="font-bold text-slate-800">{paginatedRows.length}</span> dari {filtered.length} peserta
+          </p>
+          <span className="text-xs font-semibold text-[#168a53] flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#168a53]" />
+            Realtime sync
+          </span>
+        </div>
+
+        {/* Main Card Container (Mobile Card List + Desktop Table) */}
+        <div className="bg-white border border-slate-200/80 rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.02)] overflow-hidden">
+
+          {/* Desktop Toolbar: Search + Status Tabs + Filter */}
+          <div className="hidden lg:flex p-4 border-b border-slate-100 items-center justify-between gap-3">
+            {/* Search input */}
+            <div className="relative flex-1 max-w-md">
+              <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
               <input
+                ref={searchInputRef}
                 type="text"
-                placeholder="Cari nama peserta..."
+                placeholder="Cari nama, kelompok, jenjang..."
                 value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 text-sm bg-white rounded-2xl border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-teal-400 shadow-sm"
+                onChange={e => { setSearch(e.target.value); setCurrentPage(1); }}
+                className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm bg-slate-50/90 rounded-xl border border-slate-200/70 text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium"
               />
             </div>
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className={`px-4 py-3 text-sm font-bold rounded-2xl border flex items-center justify-center gap-2 shadow-sm transition-colors ${showFilters ? 'bg-teal-50 border-teal-200 text-teal-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}
-            >
-              <Filter size={16} /> Filter
-              {((!filterKelompok.includes('Semua') && filterKelompok.length > 0) || (!filterJenjang.includes('Semua') && filterJenjang.length > 0)) && (
-                <span className="w-2 h-2 rounded-full bg-red-500"></span>
-              )}
-            </button>
-          </div>
 
-          {showFilters && (
-          <div className="flex flex-col md:flex-row gap-2 animate-in fade-in slide-in-from-top-2 duration-200">
-          {/* Pill filter — Kelompok */}
-          <div className="bg-white border border-slate-200 rounded-2xl px-3 py-2.5 shadow-sm flex-1">
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 px-1 flex items-center gap-1.5">
-              <MapPin size={10} className="text-teal-500" /> Kelompok
-            </p>
-            <div className="flex flex-wrap gap-1.5">
-              {KELOMPOK_LIST.map(k => {
-                const count = k === 'Semua'
-                  ? generusList.length
-                  : generusList.filter(g => g.kelompok?.toLowerCase() === k.toLowerCase()).length;
-                const active = filterKelompok.includes(k);
-                return (
-                  <button
-                    key={k}
-                    onClick={() => handleToggleKelompok(k)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all duration-150 ${
-                      active
-                        ? 'bg-teal-600 text-white shadow-sm shadow-teal-200'
-                        : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200'
-                    }`}
-                  >
-                    {k === 'Semua' ? 'Semua' : k}
-                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${
-                      active ? 'bg-teal-500/50 text-white' : 'bg-slate-200 text-slate-500'
-                    }`}>
-                      {count}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+            {/* Status Segmented Tabs + Filter Button */}
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="bg-slate-100/80 p-1 rounded-xl flex items-center gap-0.5 border border-slate-200/50 overflow-x-auto">
+                {[
+                  { id: 'semua', label: `Semua (${totalKelompok})` },
+                  { id: 'aktif', label: `Aktif (${totalAktif})` },
+                  { id: 'pasif', label: `Pasif (${totalPasif})` },
+                  { id: 'tidak aktif', label: `Tidak Aktif (${totalNonaktif})` },
+                ].map(tab => {
+                  const active = statusTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      onClick={() => { setStatusTab(tab.id); setCurrentPage(1); }}
+                      className={`px-3.5 py-1.5 rounded-lg text-xs sm:text-sm whitespace-nowrap transition-all cursor-pointer ${
+                        active
+                          ? 'bg-white text-slate-900 font-extrabold shadow-2xs'
+                          : 'text-slate-500 hover:text-slate-700 font-semibold'
+                      }`}
+                    >
+                      {tab.label}
+                    </button>
+                  );
+                })}
+              </div>
 
-          {/* Pill filter — Jenjang */}
-          <div className="bg-white border border-slate-200 rounded-2xl px-3 py-2.5 shadow-sm flex-1">
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 px-1 flex items-center gap-1.5">
-              <Filter size={10} className="text-emerald-500" /> Jenjang
-            </p>
-            <div className="flex flex-wrap gap-1.5">
-              {JENJANG_LIST.map(j => {
-                const active = filterJenjang.includes(j);
-                return (
-                  <button
-                    key={j}
-                    onClick={() => handleToggleJenjang(j)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all duration-150 ${
-                      active
-                        ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-200'
-                        : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200'
-                    }`}
-                  >
-                    {j === 'Semua' ? 'Semua' : j}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-          </div>
-          )}
-        </div>
-
-        {/* ── Table ────────────────────────────────────────────────────────── */}
-        <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
-
-          {/* result count */}
-          <div className="px-5 py-3 border-b border-slate-100 flex items-center justify-between">
-            <p className="text-sm text-slate-500">
-              Menampilkan <span className="font-semibold text-slate-700">{filtered.length}</span> dari {generusList.length} peserta
-            </p>
-            {(search || !filterKelompok.includes('Semua') || !filterJenjang.includes('Semua')) && (
-              <button onClick={() => { setSearch(''); setFilterKelompok(['Semua']); setFilterJenjang(['Semua']); }}
-                className="text-xs font-semibold text-teal-600 hover:text-teal-700 transition-colors">
-                Reset filter
+              <button
+                type="button"
+                onClick={() => setShowFilters(!showFilters)}
+                className={`px-4 py-2 text-xs sm:text-sm font-bold rounded-xl border flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
+                  showFilters
+                    ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
+                    : 'bg-white border-slate-200/90 text-slate-700 hover:bg-slate-50'
+                }`}
+              >
+                <Filter size={14} />
+                <span>Filter</span>
+                {((!filterKelompok.includes('Semua') && filterKelompok.length > 0) || (!filterJenjang.includes('Semua') && filterJenjang.length > 0)) && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+                )}
               </button>
-            )}
+            </div>
           </div>
 
-          <div className="overflow-x-auto">
+          {/* Desktop Expandable Kelompok & Jenjang Filter Drawer */}
+          {showFilters && (
+            <div className="hidden lg:grid p-4 bg-slate-50/70 border-b border-slate-100 grid-cols-1 md:grid-cols-2 gap-3 animate-in fade-in slide-in-from-top-1 duration-150">
+              {/* Pill filter Kelompok */}
+              <div className="bg-white border border-slate-200/80 rounded-xl p-3">
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                  <MapPin size={10} className="text-emerald-600" /> Kelompok
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {KELOMPOK_LIST.map(k => {
+                    const count = k === 'Semua'
+                      ? generusList.length
+                      : generusList.filter(g => g.kelompok?.toLowerCase() === k.toLowerCase()).length;
+                    const active = filterKelompok.includes(k);
+                    return (
+                      <button
+                        key={k}
+                        onClick={() => handleToggleKelompok(k)}
+                        className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all duration-150 ${
+                          active
+                            ? 'bg-[#168a53] text-white shadow-2xs'
+                            : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200/80'
+                        }`}
+                      >
+                        {k}
+                        <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded ${
+                          active ? 'bg-white/20 text-white' : 'bg-slate-200/70 text-slate-500'
+                        }`}>
+                          {count}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Pill filter Jenjang */}
+              <div className="bg-white border border-slate-200/80 rounded-xl p-3">
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                  <Filter size={10} className="text-emerald-600" /> Jenjang
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {JENJANG_LIST.map(j => {
+                    const active = filterJenjang.includes(j);
+                    return (
+                      <button
+                        key={j}
+                        onClick={() => handleToggleJenjang(j)}
+                        className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all duration-150 ${
+                          active
+                            ? 'bg-[#168a53] text-white shadow-2xs'
+                            : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200/80'
+                        }`}
+                      >
+                        {j}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Desktop Sub-header info bar */}
+          <div className="hidden lg:flex px-6 py-3 bg-slate-50/50 border-b border-slate-100 items-center justify-between">
+            <p className="text-xs sm:text-sm text-slate-600">
+              Menampilkan <span className="font-extrabold text-slate-900">{filtered.length}</span> dari {generusList.length} peserta terdaftar
+            </p>
+            <span className="text-xs text-slate-400">
+              Pembaruan otomatis realtime
+            </span>
+          </div>
+
+          {/* Mobile Participant Card List */}
+          <div className="md:hidden divide-y divide-slate-100">
+            {loading ? (
+              <div className="py-16 text-center">
+                <Loader2 size={26} className="animate-spin text-emerald-500 mx-auto mb-2" />
+                <p className="text-slate-400 text-sm">Memuat data peserta...</p>
+              </div>
+            ) : paginatedRows.length === 0 ? (
+              <div className="py-16 px-4 text-center">
+                <Users size={30} className="text-slate-300 mx-auto mb-2.5" />
+                <p className="text-slate-600 font-semibold text-sm">Tidak ada peserta yang sesuai</p>
+                <p className="text-slate-400 text-xs mt-1">Coba ubah kata kunci pencarian atau filter.</p>
+              </div>
+            ) : paginatedRows.map((item) => {
+              const roleBadges = [];
+              if (item.is_pengurus) roleBadges.push('PENGURUS USMAN');
+              if (item.is_pengurus_muda_mudi) roleBadges.push('PENGURUS MUDA MUDI');
+              if (item.is_ketua_wakil_kelompok) roleBadges.push('KETUA/WAKIL KELOMPOK');
+
+              return (
+                <div
+                  key={item.id}
+                  onClick={() => openDetail(item)}
+                  className="p-3.5 sm:p-4 flex items-center gap-3 active:bg-slate-50 transition-colors cursor-pointer"
+                >
+                  <Avatar name={item.nama_lengkap} size="mob" />
+
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="font-bold text-slate-900 text-sm sm:text-base leading-snug truncate max-w-[180px] sm:max-w-none">
+                        {item.nama_lengkap}
+                      </p>
+                      <StatusBadge status={item.status} size="sm" />
+                    </div>
+
+                    <p className="text-[11.5px] sm:text-xs text-slate-500 mt-0.5">
+                      {item.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan'} · {calcAge(item.tanggal_lahir, item.umur) ?? '-'} thn
+                    </p>
+
+                    <div className="flex items-center gap-1.5 sm:gap-2 mt-1.5 flex-wrap">
+                      {roleBadges.map(rb => (
+                        <span key={rb} className="text-[10px] sm:text-xs font-bold uppercase tracking-wider px-1.5 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200/60 rounded">
+                          {rb}
+                        </span>
+                      ))}
+                      <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider px-1.5 py-0.5 bg-slate-100 text-slate-700 rounded">
+                        {item.jenjang || '-'}
+                      </span>
+                      <span className="text-[11px] sm:text-xs text-slate-500 flex items-center gap-1 font-medium">
+                        <MapPin size={11} className="text-slate-400 shrink-0" />
+                        {item.kelompok}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); openQr(item); }}
+                      className="p-1.5 sm:p-2 text-slate-400 hover:text-slate-700 rounded-lg transition-colors cursor-pointer"
+                      title="Kartu QR"
+                    >
+                      <QrCode size={17} />
+                    </button>
+                    <ChevronRight size={17} className="text-slate-300" />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Desktop Table */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
-                <tr className="bg-slate-50 text-slate-500 text-xs font-semibold uppercase tracking-wide border-b border-slate-100">
-                  <th className="px-5 py-3 text-left w-8">#</th>
-                  <th className="px-5 py-3 text-left">Nama</th>
-                  <th className="px-5 py-3 text-left hidden md:table-cell">Jenjang</th>
-                  <th className="px-5 py-3 text-left hidden sm:table-cell">Umur</th>
-                  <th className="px-5 py-3 text-left">Status</th>
-                  {(filterKelompok.includes('Semua') || filterKelompok.length > 1) && <th className="px-5 py-3 text-left hidden lg:table-cell">Kelompok</th>}
-                  <th className="px-5 py-3 text-center">Aksi</th>
+                <tr className="text-slate-500 text-xs font-extrabold uppercase tracking-wider border-b border-slate-100 bg-white">
+                  <th className="px-6 py-3.5 text-left w-14">#</th>
+                  <th className="px-6 py-3.5 text-left">Nama Peserta</th>
+                  <th className="px-6 py-3.5 text-left">Jenjang</th>
+                  <th className="px-6 py-3.5 text-left">Umur</th>
+                  <th className="px-6 py-3.5 text-left">Status</th>
+                  <th className="px-6 py-3.5 text-left">Kelompok</th>
+                  <th className="px-6 py-3.5 text-right pr-6">Aksi</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
                   <tr>
                     <td colSpan={7} className="py-20 text-center">
-                      <Loader2 size={28} className="animate-spin text-teal-400 mx-auto mb-2" />
-                      <p className="text-slate-400 text-sm">Memuat data...</p>
+                      <Loader2 size={28} className="animate-spin text-emerald-500 mx-auto mb-2" />
+                      <p className="text-slate-400 text-sm">Memuat data peserta...</p>
                     </td>
                   </tr>
-                ) : filtered.length === 0 ? (
+                ) : paginatedRows.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="py-20 text-center">
                       <Users size={32} className="text-slate-300 mx-auto mb-3" />
-                      <p className="text-slate-400 font-medium">Tidak ada data yang sesuai</p>
-                      <p className="text-slate-400 text-xs mt-1">Coba ubah filter pencarian</p>
+                      <p className="text-slate-500 font-semibold text-sm">Tidak ada peserta yang sesuai dengan pencarian atau filter</p>
+                      <p className="text-slate-400 text-xs mt-1">Ubah kata kunci pencarian atau tekan Reset filter untuk melihat seluruh peserta.</p>
                     </td>
                   </tr>
-                ) : filtered.map((item, idx) => (
-                  <tr key={item.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors group">
-                    <td className="px-5 py-3.5 text-slate-400 font-medium">{idx + 1}</td>
-                    <td className="px-5 py-3.5">
-                      <div className="flex items-center gap-3">
-                        <Avatar name={item.nama_lengkap} gender={item.jenis_kelamin} />
-                        <div>
-                          <p className="font-semibold text-slate-800 leading-tight">{item.nama_lengkap}</p>
-                          <p className="text-xs text-slate-400 mt-0.5">{item.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan'}</p>
+                ) : paginatedRows.map((item, idx) => {
+                  const rowNum = startIndex + idx + 1;
+                  const roleBadges = [];
+                  if (item.is_pengurus) roleBadges.push('PENGURUS USMAN');
+                  if (item.is_pengurus_muda_mudi) roleBadges.push('PENGURUS MUDA MUDI');
+                  if (item.is_ketua_wakil_kelompok) roleBadges.push('KETUA/WAKIL KELOMPOK');
+
+                  return (
+                    <tr key={item.id} className="border-b border-slate-100/80 hover:bg-slate-50/70 transition-colors">
+                      <td className="px-6 py-4 text-slate-500 text-sm font-bold tabular-nums">{rowNum}</td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3.5">
+                          <Avatar name={item.nama_lengkap} />
+                          <div>
+                            <p className="font-extrabold text-slate-900 text-sm leading-snug">{item.nama_lengkap}</p>
+                            <p className="text-xs font-medium text-slate-400 mt-0.5">{item.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan'}</p>
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-5 py-3.5 hidden md:table-cell">
-                      <span className="text-xs font-semibold px-2.5 py-1 bg-slate-100 text-slate-600 rounded-lg">
-                        {(item.is_pengurus ? 'PENGURUS USMAN, ' : '')}{(item.is_pengurus_muda_mudi ? 'PENGURUS MUDA MUDI, ' : '')}{(item.is_ketua_wakil_kelompok ? 'KETUA/WAKIL KELOMPOK, ' : '')}{(item.jenjang || '-')}
-                      </span>
-                    </td>
-                    <td className="px-5 py-3.5 hidden sm:table-cell">
-                      <span className="text-sm font-medium text-slate-600">
-                        {calcAge(item.tanggal_lahir, item.umur) ?? '—'} <span className="text-slate-400 text-xs">thn</span>
-                      </span>
-                    </td>
-                    <td className="px-5 py-3.5">
-                      <StatusBadge status={item.status} />
-                    </td>
-                    {(filterKelompok.includes('Semua') || filterKelompok.length > 1) && (
-                      <td className="px-5 py-3.5 hidden lg:table-cell">
-                        <span className="text-xs font-medium text-slate-600 flex items-center gap-1">
-                          <MapPin size={11} className="text-teal-500" /> {item.kelompok}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex flex-col items-start gap-1">
+                          {roleBadges.map(rb => (
+                            <span key={rb} className="text-xs font-bold uppercase tracking-wide px-2.5 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200/60 rounded-md">
+                              {rb}
+                            </span>
+                          ))}
+                          <span className="text-xs font-bold uppercase tracking-wide px-2.5 py-0.5 bg-slate-100 text-slate-700 rounded-md">
+                            {item.jenjang || '-'}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="text-sm font-bold text-slate-800 tabular-nums">
+                          {calcAge(item.tanggal_lahir, item.umur) ?? '-'} <span className="text-slate-400 font-medium text-xs">thn</span>
                         </span>
                       </td>
-                    )}
-                    <td className="px-5 py-3.5">
-                      <div className="flex items-center justify-center gap-1 opacity-100 lg:opacity-40 lg:group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => openQr(item)}
-                          className="p-2 sm:p-1.5 text-slate-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors" title="QR Code">
-                          <QrCode size={16} />
-                        </button>
-                        <button onClick={() => openDetail(item)}
-                          className="p-2 sm:p-1.5 text-slate-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors" title="Lihat detail">
-                          <Eye size={16} />
-                        </button>
-                        <button onClick={() => openEdit(item)}
-                          className="p-2 sm:p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Edit">
-                          <Edit size={16} />
-                        </button>
-                        <button onClick={() => openDel(item)}
-                          className="p-2 sm:p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Hapus">
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                      <td className="px-6 py-4">
+                        <StatusBadge status={item.status} />
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="text-sm font-bold text-slate-700 flex items-center gap-1.5">
+                          <MapPin size={14} className="text-slate-400 shrink-0" /> {item.kelompok}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 pr-6">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button onClick={() => openQr(item)}
+                            className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer" title="Kartu QR">
+                            <QrCode size={16} />
+                          </button>
+                          <button onClick={() => openDetail(item)}
+                            className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors cursor-pointer" title="Lihat detail">
+                            <Eye size={16} />
+                          </button>
+                          <button onClick={() => openEdit(item)}
+                            className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer" title="Edit">
+                            <Edit2 size={16} />
+                          </button>
+                          <button onClick={() => openDel(item)}
+                            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer" title="Hapus">
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
+
+          {/* Pagination Footer */}
+          <div className="px-6 py-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 bg-white">
+            <div className="flex items-center gap-2 text-xs sm:text-sm text-slate-600">
+              <span>Baris per halaman:</span>
+              <select
+                value={rowsPerPage}
+                onChange={e => {
+                  const val = e.target.value === 'all' ? 'all' : Number(e.target.value);
+                  setRowsPerPage(val);
+                  setCurrentPage(1);
+                }}
+                className="px-2.5 py-1 bg-white border border-slate-200 rounded-lg text-xs sm:text-sm font-bold text-slate-700 focus:outline-none focus:border-emerald-500 cursor-pointer"
+              >
+                <option value={8}>8</option>
+                <option value={15}>15</option>
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+                <option value="all">Semua</option>
+              </select>
+              <span className="text-slate-400 ml-2">
+                Menampilkan {filtered.length === 0 ? 0 : startIndex + 1}-{Math.min(startIndex + effectiveRowsPerPage, filtered.length)} dari {filtered.length}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                disabled={safePage <= 1}
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                title="Halaman Sebelumnya"
+              >
+                <ChevronLeft size={14} />
+              </button>
+
+              {getPageNumbers().map((p, idx) =>
+                p === '...' ? (
+                  <span key={`ellipsis-${idx}`} className="px-1.5 text-xs text-slate-400 select-none">
+                    ...
+                  </span>
+                ) : (
+                  <button
+                    key={p}
+                    type="button"
+                    onClick={() => setCurrentPage(p)}
+                    className={`w-7 h-7 rounded-lg text-xs font-bold flex items-center justify-center transition-colors ${
+                      safePage === p
+                        ? 'bg-[#168a53] text-white shadow-2xs'
+                        : 'text-slate-600 hover:bg-slate-100'
+                    }`}
+                  >
+                    {p}
+                  </button>
+                )
+              )}
+
+              <button
+                type="button"
+                disabled={safePage >= totalPages}
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-800 border border-slate-200/80 hover:bg-slate-50 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                title="Halaman Berikutnya"
+              >
+                <ChevronRight size={14} />
+              </button>
+            </div>
+          </div>
+
         </div>
       </div>
 
-      {/* ══ MODAL: Form Tambah/Edit ══════════════════════════════════════════ */}
+      {/* MODAL: Form Tambah/Edit */}
       <Modal open={showForm} onClose={() => setShowForm(false)} maxWidth="max-w-2xl">
         <ModalHeader
           title={modalMode === 'add' ? 'Tambah Peserta Baru' : 'Edit Data Peserta'}
@@ -823,28 +1313,28 @@ export default function ManageGenerus() {
               <label className="flex items-center gap-2 mt-2 cursor-pointer select-none">
                 <input type="checkbox" name="is_pengurus" checked={!!formData.is_pengurus}
                   onChange={(e) => setFormData(prev => ({ ...prev, is_pengurus: e.target.checked }))}
-                  className="rounded border-slate-300 text-teal-600 focus:ring-teal-500 w-4 h-4" />
+                  className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 w-4 h-4" />
                 <span className="text-sm font-semibold text-slate-700">Pengurus Usman</span>
               </label>
               <label className="flex items-center gap-2 mt-2 cursor-pointer select-none">
                 <input type="checkbox" name="is_pengurus_muda_mudi" checked={!!formData.is_pengurus_muda_mudi}
                   onChange={(e) => setFormData(prev => ({ ...prev, is_pengurus_muda_mudi: e.target.checked }))}
-                  className="rounded border-slate-300 text-teal-600 focus:ring-teal-500 w-4 h-4" />
+                  className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 w-4 h-4" />
                 <span className="text-sm font-semibold text-slate-700">Pengurus Muda Mudi</span>
               </label>
               <label className="flex items-center gap-2 mt-2 cursor-pointer select-none">
                 <input type="checkbox" name="is_ketua_wakil_kelompok" checked={!!formData.is_ketua_wakil_kelompok}
                   onChange={(e) => setFormData(prev => ({ ...prev, is_ketua_wakil_kelompok: e.target.checked }))}
-                  className="rounded border-slate-300 text-teal-600 focus:ring-teal-500 w-4 h-4" />
+                  className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 w-4 h-4" />
                 <span className="text-sm font-semibold text-slate-700">Ketua/Wakil Kelompok</span>
               </label>
             </Field>
             <Field label="Status">
               <CustomSelect name="status" value={formData.status} onChange={inp}
                 options={[
-                  { value: 'aktif', label: '🟢 Aktif' },
-                  { value: 'pasif', label: '🟡 Pasif' },
-                  { value: 'tidak aktif', label: '🔴 Tidak Aktif' },
+                  { value: 'aktif', label: 'Aktif' },
+                  { value: 'pasif', label: 'Pasif' },
+                  { value: 'tidak aktif', label: 'Tidak Aktif' },
                 ]} />
             </Field>
           </div>
@@ -904,7 +1394,7 @@ export default function ManageGenerus() {
               Batal
             </button>
             <button type="submit" disabled={saving}
-              className="flex-1 py-3 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-semibold text-sm transition-colors shadow-sm disabled:opacity-50 flex items-center justify-center gap-2">
+              className="flex-1 py-3 rounded-xl bg-[#168a53] hover:bg-[#127344] text-white font-semibold text-sm transition-colors shadow-sm disabled:opacity-50 flex items-center justify-center gap-2">
               {saving && <Loader2 size={16} className="animate-spin" />}
               {saving ? 'Menyimpan...' : (modalMode === 'add' ? 'Simpan Peserta' : 'Simpan Perubahan')}
             </button>
@@ -912,7 +1402,7 @@ export default function ManageGenerus() {
         </form>
       </Modal>
 
-      {/* ══ MODAL: Detail ════════════════════════════════════════════════════ */}
+      {/* MODAL: Detail */}
       <Modal open={showDetail} onClose={() => setShowDetail(false)} maxWidth="max-w-lg">
         {selected && (
           <>
@@ -920,12 +1410,12 @@ export default function ManageGenerus() {
             <div className="p-6 space-y-5">
               {/* Profile top */}
               <div className="flex items-center gap-4">
-                <Avatar name={selected.nama_lengkap} gender={selected.jenis_kelamin} size="lg" />
+                <Avatar name={selected.nama_lengkap} size="lg" />
                 <div>
                   <h2 className="text-xl font-bold text-slate-800">{selected.nama_lengkap}</h2>
                   <div className="flex flex-wrap items-center gap-2 mt-1">
-                    <span className="text-xs font-semibold px-2.5 py-1 bg-slate-100 text-slate-600 rounded-lg">{selected.jenjang || '—'}</span>
-                    <span className="text-xs font-medium text-slate-500 flex items-center gap-1"><MapPin size={10} className="text-teal-500" />{selected.kelompok}</span>
+                    <span className="text-xs font-semibold px-2.5 py-1 bg-slate-100 text-slate-600 rounded-lg">{selected.jenjang || '-'}</span>
+                    <span className="text-xs font-medium text-slate-500 flex items-center gap-1"><MapPin size={10} className="text-emerald-600" />{selected.kelompok}</span>
                     <StatusBadge status={selected.status} />
                   </div>
                 </div>
@@ -934,14 +1424,14 @@ export default function ManageGenerus() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {[
                   { label: 'Jenis Kelamin', value: selected.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan' },
-                  { label: 'Umur', value: calcAge(selected.tanggal_lahir, selected.umur) ? `${calcAge(selected.tanggal_lahir, selected.umur)} tahun` : '—' },
-                  { label: 'Tempat Lahir', value: selected.tempat_lahir || '—' },
-                  { label: 'Tanggal Lahir', value: selected.tanggal_lahir || '—' },
-                  { label: 'No. HP', value: selected.no_hp || '—' },
-                  { label: 'Media Sosial', value: selected.akun_media || '—' },
-                  { label: 'Hari Libur', value: selected.libur || '—' },
-                  { label: 'Keterangan', value: selected.keterangan || '—' },
-                  { label: 'Hobi', value: selected.hobi || '—' },
+                  { label: 'Umur', value: calcAge(selected.tanggal_lahir, selected.umur) ? `${calcAge(selected.tanggal_lahir, selected.umur)} tahun` : '-' },
+                  { label: 'Tempat Lahir', value: selected.tempat_lahir || '-' },
+                  { label: 'Tanggal Lahir', value: selected.tanggal_lahir || '-' },
+                  { label: 'No. HP', value: selected.no_hp || '-' },
+                  { label: 'Media Sosial', value: selected.akun_media || '-' },
+                  { label: 'Hari Libur', value: selected.libur || '-' },
+                  { label: 'Keterangan', value: selected.keterangan || '-' },
+                  { label: 'Hobi', value: selected.hobi || '-' },
                 ].map(r => (
                   <div key={r.label} className="bg-slate-50 rounded-xl p-3">
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">{r.label}</p>
@@ -955,22 +1445,27 @@ export default function ManageGenerus() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <div>
                     <p className="text-[10px] text-slate-400 mb-0.5">Ayah</p>
-                    <p className="text-sm font-semibold text-slate-700">{selected.nama_ayah || '—'}</p>
+                    <p className="text-sm font-semibold text-slate-700">{selected.nama_ayah || '-'}</p>
                   </div>
                   <div>
                     <p className="text-[10px] text-slate-400 mb-0.5">Ibu</p>
-                    <p className="text-sm font-semibold text-slate-700">{selected.nama_ibu || '—'}</p>
+                    <p className="text-sm font-semibold text-slate-700">{selected.nama_ibu || '-'}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="flex gap-3 pt-1">
+              <div className="flex gap-2.5 pt-1">
+                <button onClick={() => { setShowDetail(false); openDel(selected); }}
+                  className="px-3.5 py-2.5 rounded-xl border border-red-200 bg-red-50 text-red-600 font-semibold text-sm hover:bg-red-100 transition-colors flex items-center justify-center gap-1.5"
+                  title="Hapus Peserta">
+                  <Trash2 size={15} />
+                </button>
                 <button onClick={() => { setShowDetail(false); openEdit(selected); }}
                   className="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-semibold text-sm hover:bg-slate-50 transition-colors flex items-center justify-center gap-2">
-                  <Edit size={15} /> Edit Data
+                  <Edit2 size={15} /> Edit Data
                 </button>
                 <button onClick={() => setShowDetail(false)}
-                  className="flex-1 py-2.5 rounded-xl bg-teal-600 text-white font-semibold text-sm hover:bg-teal-700 transition-colors">
+                  className="flex-1 py-2.5 rounded-xl bg-[#168a53] text-white font-semibold text-sm hover:bg-[#127344] transition-colors">
                   Tutup
                 </button>
               </div>
@@ -979,7 +1474,7 @@ export default function ManageGenerus() {
         )}
       </Modal>
 
-      {/* ══ MODAL: QR ════════════════════════════════════════════════════════ */}
+      {/* MODAL: QR */}
       <Modal open={showQr} onClose={() => setShowQr(false)} maxWidth="max-w-xs">
         {selected && (
           <>
@@ -989,14 +1484,14 @@ export default function ManageGenerus() {
               <div ref={idCardRef}
                 className="bg-white rounded-xl overflow-hidden border border-slate-200 shadow-lg flex flex-col max-w-full"
                 style={{ width: '54mm', height: '86mm', fontFamily: 'system-ui, sans-serif' }}>
-                <div className="bg-teal-600 px-3 py-2 flex items-center justify-center gap-1.5 text-white shrink-0">
+                <div className="bg-[#168a53] px-3 py-2 flex items-center justify-center gap-1.5 text-white shrink-0">
                   <img src={logoImg} alt="Logo" className="w-3.5 h-3.5 object-contain brightness-0 invert" />
                   <span className="font-black text-[10px] tracking-widest">DESA SLOGO</span>
                 </div>
                 <div className="px-3 py-3 text-center flex-1 flex flex-col items-center justify-center">
                   <p className="text-[7px] font-bold text-slate-400 uppercase tracking-widest mb-1">Kartu Absensi Generus</p>
                   <p className="font-black text-slate-800 text-sm uppercase leading-tight mb-0.5 max-w-full line-clamp-2 px-1">{selected.nama_lengkap}</p>
-                  <p className="text-[9px] font-semibold text-teal-600 mb-3">{selected.kelompok}</p>
+                  <p className="text-[9px] font-semibold text-emerald-600 mb-3">{selected.kelompok}</p>
                   <div className="flex justify-center p-1.5 bg-slate-50 rounded-lg border border-slate-100">
                     <QRCodeCanvas value={`SLOGO-${selected.kode_unik || `GEN-${selected.id}`}`} size={110} level="H" includeMargin={false} />
                   </div>
@@ -1009,7 +1504,7 @@ export default function ManageGenerus() {
                   Tutup
                 </button>
                 <button onClick={downloadQr}
-                  className="flex-1 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-semibold text-sm flex items-center justify-center gap-2 transition-colors">
+                  className="flex-1 py-2.5 rounded-xl bg-[#168a53] hover:bg-[#127344] text-white font-semibold text-sm flex items-center justify-center gap-2 transition-colors">
                   <Download size={15} /> Unduh
                 </button>
               </div>
@@ -1018,7 +1513,7 @@ export default function ManageGenerus() {
         )}
       </Modal>
 
-      {/* ══ CONFIRM: Hapus satu ══════════════════════════════════════════════ */}
+      {/* CONFIRM: Hapus satu */}
       <ConfirmDialog
         open={showDelete}
         onClose={() => setShowDelete(false)}
@@ -1031,7 +1526,7 @@ export default function ManageGenerus() {
         confirmClass="bg-red-500 hover:bg-red-600"
       />
 
-      {/* ══ CONFIRM: Naik kelas ══════════════════════════════════════════════ */}
+      {/* CONFIRM: Naik kelas */}
       <ConfirmDialog
         open={showPromote}
         onClose={() => setShowPromote(false)}
@@ -1040,12 +1535,12 @@ export default function ManageGenerus() {
         icon={<TrendingUp size={26} className="text-emerald-500" />}
         iconBg="bg-emerald-50"
         title="Naik Kelas Massal?"
-        description="Semua peserta akan dinaikkan satu tingkat jenjang secara otomatis (contoh: 6 SD → 1 SMP)."
+        description="Semua peserta akan dinaikkan satu tingkat jenjang secara otomatis (contoh: 6 SD ke 1 SMP)."
         confirmLabel="Ya, Naikkan"
         confirmClass="bg-emerald-500 hover:bg-emerald-600"
       />
 
-      {/* ══ CONFIRM: Turun kelas ═════════════════════════════════════════════ */}
+      {/* CONFIRM: Turun kelas */}
       <ConfirmDialog
         open={showDemote}
         onClose={() => setShowDemote(false)}
@@ -1059,7 +1554,7 @@ export default function ManageGenerus() {
         confirmClass="bg-amber-500 hover:bg-amber-600"
       />
 
-      {/* ══ MODAL: Download QR ZIP ═══════════════════════════════════════════════ */}
+      {/* MODAL: Download QR ZIP */}
       <Modal open={showQrZipModal} onClose={() => setShowQrZipModal(false)} maxWidth="max-w-md">
         <div className="p-6">
           <div className="flex items-center gap-3 mb-5">
@@ -1110,7 +1605,7 @@ export default function ManageGenerus() {
         </div>
       </Modal>
 
-      {/* ══ MODAL: Hapus semua ═══════════════════════════════════════════════ */}
+      {/* MODAL: Hapus semua */}
       <Modal open={showDeleteAll} onClose={() => { setShowDeleteAll(false); setDeleteConfirm(''); }} maxWidth="max-w-md">
         <div className="p-8">
           <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-5">
@@ -1142,20 +1637,20 @@ export default function ManageGenerus() {
           </div>
         </div>
       </Modal>
-      {/* ══ HIDDEN CONTAINER FOR BULK ID CARD GENERATION ══════════════════════ */}
+      {/* HIDDEN CONTAINER FOR BULK ID CARD GENERATION */}
       <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
         {generusList.filter(g => g.status?.toLowerCase() === 'aktif').map(g => (
           <div key={g.id} id={`bulk-idcard-${g.id}`}
             className="bg-white rounded-xl overflow-hidden border border-slate-200 shadow-lg flex flex-col max-w-full"
             style={{ width: '54mm', height: '86mm', fontFamily: 'system-ui, sans-serif' }}>
-            <div className="bg-teal-600 px-3 py-2 flex items-center justify-center gap-1.5 text-white shrink-0">
+            <div className="bg-[#168a53] px-3 py-2 flex items-center justify-center gap-1.5 text-white shrink-0">
               <img src={logoImg} alt="Logo" className="w-3.5 h-3.5 object-contain brightness-0 invert" />
               <span className="font-black text-[10px] tracking-widest">DESA SLOGO</span>
             </div>
             <div className="px-3 py-3 text-center flex-1 flex flex-col items-center justify-center">
               <p className="text-[7px] font-bold text-slate-400 uppercase tracking-widest mb-1">Kartu Absensi Generus</p>
               <p className="font-black text-slate-800 text-sm uppercase leading-tight mb-0.5 max-w-full line-clamp-2 px-1">{g.nama_lengkap}</p>
-              <p className="text-[9px] font-semibold text-teal-600 mb-3">{g.kelompok}</p>
+              <p className="text-[9px] font-semibold text-emerald-600 mb-3">{g.kelompok}</p>
               <div className="flex justify-center p-1.5 bg-slate-50 rounded-lg border border-slate-100">
                 <QRCodeCanvas value={`SLOGO-${g.kode_unik || `GEN-${g.id}`}`} size={110} level="H" includeMargin={false} />
               </div>

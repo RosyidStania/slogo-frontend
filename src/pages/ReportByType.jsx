@@ -1,6 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import ReactDOM from 'react-dom';
 import api from '../api/axios';
-import { Layers, Loader2, Download, Search, AlertCircle, MapPin, Filter, ChevronDown, Upload, FileUp, FileDown } from 'lucide-react';
+import {
+  Layers, Loader2, Search, AlertCircle, MapPin, Filter,
+  ChevronDown, FileUp, X, Check, Users, Calendar, Activity
+} from 'lucide-react';
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 
@@ -32,21 +36,22 @@ function CustomSelect({ options, value, onChange, placeholder, multiple = false 
   };
 
   return (
-    <div className="relative w-full md:w-auto" ref={containerRef}>
-      <div 
+    <div className="relative w-full sm:w-auto" ref={containerRef}>
+      <button
+        type="button"
         onClick={() => setOpen(!open)}
-        className="flex items-center justify-between gap-2 md:gap-4 pl-3 md:pl-4 pr-2 md:pr-3 py-2.5 bg-white/80 border border-slate-200/80 rounded-xl text-xs md:text-sm font-bold text-slate-700 shadow-sm cursor-pointer hover:bg-white transition-colors select-none min-w-0 md:min-w-[150px]"
+        className="w-full sm:w-auto flex items-center justify-between gap-2.5 px-3.5 py-2 bg-white border border-slate-200/90 rounded-full text-xs font-bold text-slate-700 shadow-2xs hover:border-slate-300 transition-all select-none cursor-pointer min-w-0 sm:min-w-[140px]"
       >
         <span className="truncate">{getLabel()}</span>
-        <ChevronDown size={16} className={`text-slate-400 transition-transform duration-200 shrink-0 ${open ? 'rotate-180' : ''}`} />
-      </div>
+        <ChevronDown size={14} className={`text-slate-400 transition-transform duration-200 shrink-0 ${open ? 'rotate-180' : ''}`} />
+      </button>
 
       {open && (
-        <div className="absolute z-50 top-full right-0 md:left-0 md:right-auto mt-1.5 w-max min-w-full bg-white/95 backdrop-blur-xl border border-slate-200/80 rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] overflow-hidden py-1.5 max-h-64 overflow-y-auto thin-scrollbar">
+        <div className="absolute top-full right-0 sm:left-0 sm:right-auto mt-1.5 w-max min-w-full max-w-[280px] bg-white border border-slate-200/80 rounded-2xl shadow-xl overflow-hidden py-1.5 max-h-64 overflow-y-auto z-[100] animate-in fade-in zoom-in-95 duration-100">
           {options.map(opt => {
             const isSelected = multiple ? (value || []).includes(opt.value) : value == opt.value;
             return (
-              <div 
+              <div
                 key={opt.value}
                 onClick={() => {
                   if (multiple) {
@@ -61,11 +66,13 @@ function CustomSelect({ options, value, onChange, placeholder, multiple = false 
                     setOpen(false);
                   }
                 }}
-                className={`px-4 py-2.5 text-sm font-semibold cursor-pointer transition-colors flex justify-between items-center ${isSelected ? 'bg-teal-50 text-teal-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}
+                className={`px-3.5 py-2 text-xs font-semibold cursor-pointer transition-colors flex justify-between items-center gap-2 ${
+                  isSelected ? 'bg-emerald-50 text-[#168a53] font-bold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                }`}
               >
-                <span>{opt.label}</span>
+                <span className="truncate">{opt.label}</span>
                 {multiple && isSelected && (
-                  <svg className="w-4 h-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
+                  <Check size={14} className="text-[#168a53] shrink-0" strokeWidth={2.5} />
                 )}
               </div>
             );
@@ -79,12 +86,13 @@ function CustomSelect({ options, value, onChange, placeholder, multiple = false 
 export default function ReportByType() {
   const [eventTypes, setEventTypes] = useState([]);
   const [loading, setLoading] = useState(false);
-  
+  const [headerSlot, setHeaderSlot] = useState(() => document.getElementById('layout-header-actions'));
+
   // Filters
   const [selectedType, setSelectedType] = useState([]);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
   const [availableYears, setAvailableYears] = useState([new Date().getFullYear()]);
-  
+
   const [reportData, setReportData] = useState([]);
   const [eventsList, setEventsList] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -92,9 +100,11 @@ export default function ReportByType() {
   const [filterJenjang, setFilterJenjang] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
   const [mainKelompok, setMainKelompok] = useState('');
-  
-  const hasGroupCategory = eventTypes.some(t => selectedType.includes(t.id.toString()) && (t.is_group_attendance === 1 || t.is_group_attendance === true));
-  
+
+  const hasGroupCategory = eventTypes.some(
+    t => selectedType.includes(t.id.toString()) && (t.is_group_attendance === 1 || t.is_group_attendance === true)
+  );
+
   const formatDate = (dateString) => {
     const d = new Date(dateString);
     const day = d.getDate().toString().padStart(2, '0');
@@ -104,28 +114,28 @@ export default function ReportByType() {
 
   const getEventTypeColor = (eventTypeId) => {
     const colors = [
-      'bg-blue-100 text-blue-800 border-blue-200',
-      'bg-orange-100 text-orange-800 border-orange-200',
-      'bg-emerald-100 text-emerald-800 border-emerald-200',
-      'bg-purple-100 text-purple-800 border-purple-200',
-      'bg-rose-100 text-rose-800 border-rose-200',
-      'bg-cyan-100 text-cyan-800 border-cyan-200',
-      'bg-amber-100 text-amber-800 border-amber-200',
-      'bg-indigo-100 text-indigo-800 border-indigo-200',
-      'bg-lime-100 text-lime-800 border-lime-200',
-      'bg-fuchsia-100 text-fuchsia-800 border-fuchsia-200',
-      'bg-sky-100 text-sky-800 border-sky-200',
-      'bg-pink-100 text-pink-800 border-pink-200',
-      'bg-teal-100 text-teal-800 border-teal-200',
-      'bg-red-100 text-red-800 border-red-200',
-      'bg-violet-100 text-violet-800 border-violet-200',
-      'bg-yellow-100 text-yellow-800 border-yellow-200'
+      'bg-blue-50 text-blue-700 border-blue-200/60',
+      'bg-orange-50 text-orange-700 border-orange-200/60',
+      'bg-emerald-50 text-emerald-700 border-emerald-200/60',
+      'bg-purple-50 text-purple-700 border-purple-200/60',
+      'bg-rose-50 text-rose-700 border-rose-200/60',
+      'bg-cyan-50 text-cyan-700 border-cyan-200/60',
+      'bg-amber-50 text-amber-700 border-amber-200/60',
+      'bg-indigo-50 text-indigo-700 border-indigo-200/60',
+      'bg-lime-50 text-lime-700 border-lime-200/60',
+      'bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200/60',
+      'bg-sky-50 text-sky-700 border-sky-200/60',
+      'bg-pink-50 text-pink-700 border-pink-200/60',
+      'bg-teal-50 text-teal-700 border-teal-200/60',
+      'bg-red-50 text-red-700 border-red-200/60',
+      'bg-violet-50 text-violet-700 border-violet-200/60',
+      'bg-yellow-50 text-yellow-700 border-yellow-200/60'
     ];
 
     const mapping = {};
-    let nextColorIdx = 3; 
+    let nextColorIdx = 3;
     const sortedTypes = [...eventTypes].sort((a, b) => a.id - b.id);
-    
+
     sortedTypes.forEach(type => {
       const name = type.name.toLowerCase();
       if (name.includes('bersih') && !Object.values(mapping).includes(colors[0])) {
@@ -140,13 +150,8 @@ export default function ReportByType() {
       }
     });
 
-    return mapping[eventTypeId] || 'bg-slate-100 text-slate-500 border-slate-200';
+    return mapping[eventTypeId] || 'bg-slate-50 text-slate-600 border-slate-200/60';
   };
-
-  useEffect(() => {
-    fetchEventTypes();
-    fetchAvailableYears();
-  }, []);
 
   const fetchAvailableYears = async () => {
     try {
@@ -158,7 +163,7 @@ export default function ReportByType() {
         }
       }
     } catch (err) {
-      console.error("Gagal mengambil daftar tahun", err);
+      console.error('Gagal mengambil daftar tahun', err);
     }
   };
 
@@ -166,23 +171,13 @@ export default function ReportByType() {
     try {
       const res = await api.get('/admin/event-types');
       setEventTypes(res.data.data || []);
-      // Auto-select first type if available
       if (res.data.data?.length > 0) {
         setSelectedType([res.data.data[0].id.toString()]);
       }
     } catch (err) {
-      console.error("Gagal mengambil kategori acara", err);
+      console.error('Gagal mengambil kategori acara', err);
     }
   };
-
-  useEffect(() => {
-    if (selectedType.length > 0 && selectedYear) {
-      fetchReport();
-    } else {
-      setReportData([]);
-      setEventsList([]);
-    }
-  }, [selectedType, selectedYear]);
 
   const fetchReport = async () => {
     setLoading(true);
@@ -193,18 +188,38 @@ export default function ReportByType() {
       setReportData(res.data.data || []);
       setEventsList(res.data.events || []);
     } catch (err) {
-      console.error("Gagal mengambil data laporan", err);
+      console.error('Gagal mengambil data laporan', err);
     } finally {
       setLoading(false);
     }
   };
 
-  // Extract unique options for filters
+  useEffect(() => {
+    fetchEventTypes();
+    fetchAvailableYears();
+    const id = requestAnimationFrame(() => {
+      setHeaderSlot(document.getElementById('layout-header-actions'));
+    });
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+  useEffect(() => {
+    if (selectedType.length > 0 && selectedYear) {
+      fetchReport();
+    } else {
+      const id = requestAnimationFrame(() => {
+        setReportData([]);
+        setEventsList([]);
+      });
+      return () => cancelAnimationFrame(id);
+    }
+  }, [selectedType, selectedYear]);
+
   const uniqueKelompok = [...new Set(reportData.map(d => d.kelompok))].filter(Boolean).sort();
-  
+
   const baseJenjang = ['MT', 'USMAN', '3 SMA/SMK', '2 SMA/SMK', '1 SMA/SMK', '3 SMP', '2 SMP', '1 SMP', '6 SD', '5 SD', '4 SD', '3 SD', '2 SD', '1 SD', 'TK', 'PAUD'];
   const uniqueJenjang = baseJenjang.filter(j => reportData.some(g => g.jenjang === j));
-  
+
   if (reportData.some(g => g.is_pengurus)) uniqueJenjang.push('PENGURUS USMAN');
   if (reportData.some(g => g.is_pengurus_muda_mudi)) uniqueJenjang.push('PENGURUS MUDA MUDI');
   if (reportData.some(g => g.is_ketua_wakil_kelompok)) uniqueJenjang.push('KETUA/WAKIL KELOMPOK');
@@ -237,6 +252,25 @@ export default function ReportByType() {
     else setFilterJenjang(prev => prev.includes(j) ? prev.filter(x => x !== j) : [...prev, j]);
   };
 
+  // Calculation of Summary Metrics
+  const totalGenerus = filteredData.length;
+  let totalHadirCount = 0;
+  let totalRecordedCount = 0;
+
+  filteredData.forEach(g => {
+    filteredEventsList.forEach(e => {
+      const stat = g.events_attendance[e.id];
+      if (stat && stat !== '-') {
+        totalRecordedCount++;
+        if (stat === 'H') totalHadirCount++;
+      }
+    });
+  });
+
+  const avgAttendancePercent = totalRecordedCount > 0
+    ? Math.round((totalHadirCount / totalRecordedCount) * 100)
+    : 0;
+
   const exportToExcel = async () => {
     if (!filteredData.length) return;
 
@@ -248,7 +282,6 @@ export default function ReportByType() {
     const typeName = eventTypes.filter(t => selectedType.includes(t.id.toString())).map(t => t.name).join('_') || 'Kategori';
     const titleText = `Rekapan_${typeName.replace(/\s+/g, '_')}_Tahun_${selectedYear}.xlsx`;
 
-    // Define Columns
     const columns = [
       { header: 'ID GENERUS', key: 'id', width: 10, hidden: true },
       { header: 'NO', key: 'no', width: 5 },
@@ -269,14 +302,13 @@ export default function ReportByType() {
 
     worksheet.columns = columns;
 
-    // Style Header Row
     const headerRow = worksheet.getRow(1);
     headerRow.eachCell((cell) => {
-      cell.font = { name: 'Poppins', bold: true, color: { argb: 'FF334155' } }; // Slate-700
+      cell.font = { name: 'Poppins', bold: true, color: { argb: 'FF334155' } };
       cell.fill = {
         type: 'pattern',
         pattern: 'solid',
-        fgColor: { argb: 'FFF1F5F9' } // Slate-100 (putih keabuan)
+        fgColor: { argb: 'FFF1F5F9' }
       };
       cell.alignment = { vertical: 'middle', horizontal: 'center' };
       cell.border = {
@@ -288,7 +320,6 @@ export default function ReportByType() {
     });
     headerRow.height = 30;
 
-    // Add Data
     filteredData.forEach((g, index) => {
       let present = 0;
       let totalParticipant = 0;
@@ -315,12 +346,9 @@ export default function ReportByType() {
       });
 
       const row = worksheet.addRow(rowData);
-      
-      // Styling Data Row
+
       row.eachCell((cell, colNumber) => {
         cell.font = { name: 'Poppins' };
-
-        // Default borders
         cell.border = {
           top: { style: 'thin', color: { argb: 'FFE2E8F0' } },
           left: { style: 'thin', color: { argb: 'FFE2E8F0' } },
@@ -333,50 +361,49 @@ export default function ReportByType() {
           cell.alignment = { vertical: 'middle', horizontal: 'center' };
         }
 
-        // Color Status
         if (colNumber === 3 && cell.value) {
           const val = cell.value.toString().replace(/\s+/g, '');
           if (val === 'AKTIF') {
-            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF10B981' } }; // Green
+            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF10B981' } };
+          } else if (val === 'PASIF') {
+            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF59E0B' } };
           } else if (val === 'NONAKTIF' || val === 'TIDAKAKTIF') {
-            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEF4444' } }; // Red
+            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEF4444' } };
           }
-          cell.value = ''; // Remove text
+          cell.value = '';
         }
 
-        // Color Attendance
         if (colNumber > 6 && cell.value) {
           cell.alignment = { vertical: 'middle', horizontal: 'center' };
           cell.font = { name: 'Poppins', bold: true };
           if (cell.value === 'H') {
-            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF10B981' } }; // Emerald-500
+            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF10B981' } };
             cell.font.color = { argb: 'FFFFFFFF' };
           } else if (cell.value === 'A') {
-            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEF4444' } }; // Red-500
+            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEF4444' } };
             cell.font.color = { argb: 'FFFFFFFF' };
           } else if (cell.value === 'I') {
-            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF59E0B' } }; // Amber-500
+            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF59E0B' } };
             cell.font.color = { argb: 'FFFFFFFF' };
           } else if (cell.value === 'S') {
-            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF3B82F6' } }; // Blue-500
+            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF3B82F6' } };
             cell.font.color = { argb: 'FFFFFFFF' };
           }
         }
       });
     });
 
-    // Auto-filter
     worksheet.autoFilter = {
       from: { row: 1, column: 1 },
       to: { row: 1, column: columns.length }
     };
 
-    // Save
     const buffer = await workbook.xlsx.writeBuffer();
     const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     saveAs(blob, titleText);
   };
 
+  // Full solid colored square for Hadir (Green), Alpa (Red), Izin (Amber), Sakit (Blue)
   const getStatusCellClass = (status) => {
     switch(status) {
       case 'H': return 'bg-emerald-500 text-white font-black';
@@ -387,262 +414,472 @@ export default function ReportByType() {
     }
   };
 
+  // Mobile Top Action Portal
+  const mobileTopActions = headerSlot && ReactDOM.createPortal(
+    <div className="flex lg:hidden items-center gap-1.5 sm:gap-2">
+      <button
+        type="button"
+        onClick={exportToExcel}
+        disabled={!filteredData.length}
+        className="flex items-center gap-1 px-3 py-1.5 bg-[#168a53] hover:bg-[#127344] disabled:opacity-50 text-white rounded-full text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95"
+      >
+        <FileUp size={13} strokeWidth={2.5} />
+        <span>Export</span>
+      </button>
+    </div>,
+    headerSlot
+  );
+
   return (
-    <div className="min-h-screen bg-transparent">
-      <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
-        
-        {/* Header & Controls */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Rekapan Kehadiran per Kategori</h1>
-            <p className="text-slate-500 text-sm mt-0.5">Pantau absensi bulanan berdasarkan jenis kegiatan.</p>
-          </div>
-          
-          <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto mt-3 sm:mt-0">
-            <div className={`grid ${hasGroupCategory ? 'grid-cols-3' : 'grid-cols-2'} gap-2 sm:gap-3 w-full sm:w-auto`}>
-              {/* Filter Year */}
-              <CustomSelect 
-                options={availableYears.map(y => ({ value: y.toString(), label: y.toString() }))}
-                value={selectedYear}
-                onChange={setSelectedYear}
-                placeholder="Tahun"
-              />
+    <div className="w-full py-4 sm:py-6 space-y-4 sm:space-y-5">
+      {mobileTopActions}
 
-              {/* Filter Kategori */}
-                <CustomSelect 
-                  multiple
-                  options={eventTypes.map(t => ({ value: t.id.toString(), label: t.name }))}
-                  value={selectedType}
-                  onChange={setSelectedType}
-                  placeholder="Pilih Kategori Acara"
-                />
-                {hasGroupCategory && (
-                  <CustomSelect
-                    options={[
-                      { value: '', label: 'Semua Kelompok' },
-                      ...uniqueKelompok.map(k => ({ value: k, label: k }))
-                    ]}
-                    value={mainKelompok}
-                    onChange={setMainKelompok}
-                    placeholder="Pilih Kelompok"
-                  />
-                )}
-            </div>
-
-            {/* Export Button */}
-            <button 
-              onClick={exportToExcel}
-              disabled={!filteredData.length}
-              className="shrink-0 w-full md:w-auto justify-center flex items-center gap-2 px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50"
-            >
-              <FileUp size={16} className="text-teal-500" /> <span className="hidden sm:inline">Export</span>
-            </button>
-          </div>
+      {/* ── Page Header ─────────────────────────────────────────────────── */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Rekapan Absensi</h1>
+          <p className="text-slate-500 text-xs sm:text-sm mt-1">
+            Pantau matriks kehadiran generus berdasarkan kategori kegiatan dan tahun.
+          </p>
         </div>
 
-        {/* Tabel Data */}
-        <div className="bg-white/80 backdrop-blur-xl border border-white shadow-[0_8px_30px_rgb(0,0,0,0.06)] rounded-[20px] overflow-hidden flex flex-col h-[calc(100dvh-280px)] md:h-[calc(100vh-180px)]" style={{ minHeight: '750px' }}>
-          
-          {/* Toolbar Table */}
-          <div className="bg-slate-50/50 p-4 border-b border-slate-100 shrink-0 flex flex-col gap-4">
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-4">
-              <div className="relative w-full sm:max-w-md">
-                <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-                <input
-                  type="text"
-                  placeholder="Cari nama generus..."
-                  value={searchTerm}
-                  onChange={e => setSearchTerm(e.target.value)}
-                  className="w-full pl-11 pr-4 py-2 text-sm bg-white rounded-xl border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-400 shadow-sm transition-all"
-                />
-              </div>
-              <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
-                <span className="text-slate-500 text-xs font-bold">
-                  Total: {filteredData.length} Data
-                </span>
+        {/* Desktop Export Button */}
+        <div className="hidden lg:flex items-center gap-2 shrink-0">
+          <button
+            type="button"
+            onClick={exportToExcel}
+            disabled={!filteredData.length}
+            className="flex items-center justify-center gap-1.5 px-4 py-2 bg-[#168a53] hover:bg-[#127344] active:scale-95 disabled:opacity-50 text-white rounded-full font-bold text-xs shadow-xs transition-all cursor-pointer whitespace-nowrap"
+          >
+            <FileUp size={14} strokeWidth={2.5} />
+            <span>Export Excel</span>
+          </button>
+        </div>
+      </div>
+
+      {/* ── 3 Summary Stat Cards (iOS Inset Style) ───────────────────────── */}
+      <div className="flex overflow-x-auto hide-scrollbar gap-2.5 sm:grid sm:grid-cols-3 sm:gap-4 pb-1 sm:pb-0">
+        {/* Total Generus */}
+        <div className="bg-white border border-slate-200/80 rounded-2xl p-3.5 sm:p-4 min-w-[130px] flex-1 shrink-0 flex flex-col justify-between sm:flex-row sm:items-center gap-2 sm:gap-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+          <div className="flex items-center justify-between sm:hidden w-full">
+            <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+              <Users size={14} strokeWidth={2} />
+            </div>
+            <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">
+              Generus
+            </span>
+          </div>
+
+          <div className="hidden sm:flex items-center gap-3.5 min-w-0">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+              <Users size={18} strokeWidth={2} />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs font-medium text-slate-500 truncate">Total Generus</p>
+              <p className="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight leading-snug">
+                {totalGenerus} Orang
+              </p>
+            </div>
+          </div>
+
+          <div className="sm:hidden mt-0.5">
+            <p className="text-[11px] font-medium text-slate-400">Total Generus</p>
+            <p className="text-lg font-extrabold text-slate-900 tracking-tight leading-tight mt-0.5">
+              {totalGenerus} <span className="text-xs font-medium text-slate-400">Orang</span>
+            </p>
+          </div>
+
+          <span className="hidden sm:inline-block text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 shrink-0">
+            Terfilter
+          </span>
+        </div>
+
+        {/* Rata-rata Kehadiran */}
+        <div className="bg-white border border-slate-200/80 rounded-2xl p-3.5 sm:p-4 min-w-[130px] flex-1 shrink-0 flex flex-col justify-between sm:flex-row sm:items-center gap-2 sm:gap-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+          <div className="flex items-center justify-between sm:hidden w-full">
+            <div className="w-7 h-7 rounded-lg bg-emerald-50 text-[#168a53] flex items-center justify-center">
+              <Activity size={14} strokeWidth={2} />
+            </div>
+            <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-50 text-[#168a53] border border-emerald-200/60">
+              {totalRecordedCount > 0 ? `${avgAttendancePercent}%` : '0%'}
+            </span>
+          </div>
+
+          <div className="hidden sm:flex items-center gap-3.5 min-w-0">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-[#168a53] flex items-center justify-center shrink-0">
+              <Activity size={18} strokeWidth={2} />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs font-medium text-slate-500 truncate">Rata-rata Hadir</p>
+              <p className="text-lg sm:text-xl font-extrabold text-[#168a53] tracking-tight leading-snug">
+                {totalRecordedCount > 0 ? `${avgAttendancePercent}%` : '-'}
+              </p>
+            </div>
+          </div>
+
+          <div className="sm:hidden mt-0.5">
+            <p className="text-[11px] font-medium text-slate-400">Rata-rata Hadir</p>
+            <p className="text-lg font-extrabold text-slate-900 tracking-tight leading-tight mt-0.5">
+              {totalRecordedCount > 0 ? `${avgAttendancePercent}%` : '-'}
+            </p>
+          </div>
+
+          <span className="hidden sm:inline-block text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-emerald-50 text-[#168a53] border border-emerald-200/60 shrink-0">
+            Akumulasi
+          </span>
+        </div>
+
+        {/* Total Kegiatan */}
+        <div className="bg-white border border-slate-200/80 rounded-2xl p-3.5 sm:p-4 min-w-[130px] flex-1 shrink-0 flex flex-col justify-between sm:flex-row sm:items-center gap-2 sm:gap-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+          <div className="flex items-center justify-between sm:hidden w-full">
+            <div className="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
+              <Calendar size={14} strokeWidth={2} />
+            </div>
+            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200/60">
+              {selectedYear}
+            </span>
+          </div>
+
+          <div className="hidden sm:flex items-center gap-3.5 min-w-0">
+            <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+              <Calendar size={18} strokeWidth={2} />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs font-medium text-slate-500 truncate">Total Kegiatan</p>
+              <p className="text-lg sm:text-xl font-extrabold text-amber-700 tracking-tight leading-snug">
+                {filteredEventsList.length} Kegiatan
+              </p>
+            </div>
+          </div>
+
+          <div className="sm:hidden mt-0.5">
+            <p className="text-[11px] font-medium text-slate-400">Kegiatan</p>
+            <p className="text-lg font-extrabold text-slate-900 tracking-tight leading-tight mt-0.5">
+              {filteredEventsList.length} <span className="text-xs font-medium text-slate-400">Acara</span>
+            </p>
+          </div>
+
+          <span className="hidden sm:inline-block text-[11px] font-bold px-2.5 py-1 rounded-lg bg-amber-50 text-amber-700 border border-amber-200/60 shrink-0">
+            Tahun {selectedYear}
+          </span>
+        </div>
+      </div>
+
+      {/* ── Primary Filters & Dropdowns Row ──────────────────────────────── */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+        <div className="flex flex-wrap items-center gap-2 flex-1 min-w-0">
+          {/* Year Filter */}
+          <CustomSelect
+            options={availableYears.map(y => ({ value: y.toString(), label: `Tahun ${y}` }))}
+            value={selectedYear}
+            onChange={setSelectedYear}
+            placeholder="Pilih Tahun"
+          />
+
+          {/* Event Types Multi Select */}
+          <CustomSelect
+            multiple
+            options={eventTypes.map(t => ({ value: t.id.toString(), label: t.name }))}
+            value={selectedType}
+            onChange={setSelectedType}
+            placeholder="Kategori Acara"
+          />
+
+          {/* Group Scope Selector */}
+          {hasGroupCategory && (
+            <CustomSelect
+              options={[
+                { value: '', label: 'Semua Kelompok' },
+                ...uniqueKelompok.map(k => ({ value: k, label: `Kel. ${k}` }))
+              ]}
+              value={mainKelompok}
+              onChange={setMainKelompok}
+              placeholder="Pilih Kelompok"
+            />
+          )}
+        </div>
+
+        {/* Search & Filter Trigger */}
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1 sm:w-64">
+            <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+            <input
+              type="text"
+              placeholder="Cari nama generus..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              className="w-full pl-9 pr-8 py-2 text-xs bg-white rounded-full border border-slate-200/90 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#168a53]/15 focus:border-[#168a53] shadow-2xs transition-all"
+            />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+              >
+                <X size={12} />
+              </button>
+            )}
+          </div>
+
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className={`px-3.5 py-2 text-xs font-bold rounded-full border flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer whitespace-nowrap ${
+              showFilters || filterKelompok.length > 0 || filterJenjang.length > 0
+                ? 'bg-emerald-50 border-emerald-200 text-[#168a53]'
+                : 'bg-white border-slate-200/90 text-slate-600 hover:bg-slate-50'
+            }`}
+          >
+            <Filter size={13} />
+            <span>Filter</span>
+            {(filterKelompok.length > 0 || filterJenjang.length > 0) && (
+              <span className="w-1.5 h-1.5 rounded-full bg-[#168a53]" />
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* ── Collapsible Secondary Filter Inset ───────────────────────────── */}
+      {showFilters && (
+        <div className="bg-white border border-slate-200/80 rounded-2xl p-4 space-y-3.5 shadow-[0_1px_2px_rgba(0,0,0,0.02)] animate-in fade-in slide-in-from-top-2 duration-150">
+          {/* Kelompok Pills */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                <MapPin size={11} className="text-emerald-600" /> Filter Kelompok
+              </p>
+              {filterKelompok.length > 0 && (
                 <button
-                  onClick={() => setShowFilters(!showFilters)}
-                  className={`px-4 py-2 text-xs font-bold rounded-xl border flex items-center gap-2 shadow-sm transition-colors ${showFilters ? 'bg-teal-50 border-teal-200 text-teal-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}
+                  onClick={() => setFilterKelompok([])}
+                  className="text-[10px] font-bold text-[#168a53] hover:underline cursor-pointer"
                 >
-                  <Filter size={14} /> Filter
-                  {(filterKelompok.length > 0 || filterJenjang.length > 0) && (
-                    <span className="w-2 h-2 rounded-full bg-red-500"></span>
-                  )}
+                  Reset
                 </button>
-              </div>
-              
-              {/* Keterangan Warna Kategori */}
-              {selectedType.length > 0 && eventTypes.length > 0 && (
-                <div className="flex flex-wrap items-center gap-2 mt-2 pt-3 border-t border-slate-100">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mr-1">Keterangan Warna:</span>
-                  {selectedType.map(id => {
-                    const type = eventTypes.find(t => t.id.toString() === id);
-                    if (!type) return null;
-                    return (
-                      <div key={id} className={`px-2.5 py-1 rounded-md text-[10px] font-bold border ${getEventTypeColor(type.id)} flex items-center gap-1.5`}>
-                        <div className="w-2 h-2 rounded-full bg-current opacity-70"></div>
-                        {type.name}
-                      </div>
-                    );
-                  })}
-                </div>
               )}
             </div>
-            
-            {showFilters && (
-            <div className="flex flex-col xl:flex-row gap-4 animate-in fade-in slide-in-from-top-2 duration-200">
-              {/* Pill filter: Kelompok */}
-              <div className="bg-white border border-slate-200 rounded-xl px-4 py-3 shadow-sm flex-1">
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2.5 px-1 flex items-center gap-1.5">
-                  <MapPin size={11} className="text-teal-500" /> Kelompok
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {['', ...uniqueKelompok].map(k => {
-                    const label = k === '' ? 'Semua' : k;
-                    const cnt = k === '' 
-                      ? reportData.length 
-                      : reportData.filter(g => g.kelompok === k).length;
-                    const active = k === '' ? filterKelompok.length === 0 : filterKelompok.includes(k);
-                    return (
-                      <button key={label} onClick={() => toggleKelompok(k)}
-                        className={`flex items-center gap-1.5 px-3 py-2 sm:py-1.5 rounded-xl text-xs font-semibold transition-all ${
-                          active ? 'bg-teal-600 text-white shadow-sm' : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200'
-                        }`}>
-                        {label}
-                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${active ? 'bg-teal-500/50 text-white' : 'bg-slate-200 text-slate-500'}`}>
-                          {cnt}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Pill filter: Jenjang */}
-              <div className="bg-white border border-slate-200 rounded-xl px-4 py-3 shadow-sm flex-1">
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2.5 px-1 flex items-center gap-1.5">
-                  <Filter size={11} className="text-emerald-500" /> Jenjang
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {['', ...uniqueJenjang].map(j => {
-                    const label = j === '' ? 'Semua' : j;
-                    const active = j === '' ? filterJenjang.length === 0 : filterJenjang.includes(j);
-                    return (
-                      <button key={label} onClick={() => toggleJenjang(j)}
-                        className={`px-3 py-2 sm:py-1.5 rounded-xl text-xs font-semibold transition-all ${
-                          active ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200'
-                        }`}>
-                        {label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+            <div className="flex flex-wrap gap-1.5">
+              {['', ...uniqueKelompok].map(k => {
+                const label = k === '' ? 'Semua' : k;
+                const cnt = k === ''
+                  ? reportData.length
+                  : reportData.filter(g => g.kelompok === k).length;
+                const active = k === '' ? filterKelompok.length === 0 : filterKelompok.includes(k);
+                return (
+                  <button
+                    key={label}
+                    onClick={() => toggleKelompok(k)}
+                    className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                      active
+                        ? 'bg-[#168a53] text-white shadow-2xs'
+                        : 'bg-slate-100/90 text-slate-600 hover:bg-slate-200/80'
+                    }`}
+                  >
+                    <span>{label}</span>
+                    <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded-full ${
+                      active ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-500'
+                    }`}>
+                      {cnt}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
-            )}
           </div>
 
-          {/* Table Container */}
-          <div className="flex-1 overflow-auto thin-scrollbar">
-            {loading ? (
-              <div className="h-full flex flex-col items-center justify-center space-y-3">
-                <Loader2 size={32} className="animate-spin text-teal-500" />
-                <p className="text-slate-400 font-medium text-sm">Memuat rekapan absensi...</p>
-              </div>
-            ) : selectedType.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center space-y-3">
-                <Layers size={32} className="text-slate-300" />
-                <p className="text-slate-400 font-medium text-sm">Pilih kategori acara terlebih dahulu.</p>
-              </div>
-            ) : filteredData.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center space-y-3">
-                <AlertCircle size={32} className="text-slate-300" />
-                <p className="text-slate-400 font-medium text-sm">Tidak ada data ditemukan.</p>
-              </div>
-            ) : (
-              <div className="w-max min-w-full pb-4">
-              <table className="w-full text-left border-collapse">
-                <thead className="lg:sticky top-0 z-40 shadow-sm">
-                  <tr>
-                    <th className="px-2 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 text-center bg-slate-100 lg:sticky lg:left-0 z-30 w-[40px] min-w-[40px] lg:shadow-[1px_0_0_#e2e8f0]">#</th>
-                    <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 bg-slate-100 lg:sticky lg:left-[40px] z-30 w-[180px] min-w-[180px] lg:shadow-[1px_0_0_#e2e8f0]">Nama</th>
-                    <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 text-center bg-slate-100 lg:sticky lg:left-[220px] z-30 w-[220px] min-w-[220px] lg:shadow-[1px_0_0_#e2e8f0]">Jenjang</th>
-                    <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 text-center bg-slate-100 lg:sticky lg:left-[440px] z-30 w-[100px] min-w-[100px] lg:shadow-[1px_0_0_#e2e8f0]">Kelompok</th>
-                    <th className="px-4 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 text-center bg-slate-100 lg:sticky lg:left-[540px] z-30 w-[80px] min-w-[80px] lg:shadow-[1px_0_0_#e2e8f0]">Status</th>
-                    <th className="px-2 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border border-slate-200 text-center bg-slate-100 lg:sticky lg:left-[620px] z-30 w-[70px] min-w-[70px] lg:shadow-[2px_0_5px_-2px_rgba(0,0,0,0.2)]">Recap</th>
-                    
-                    {/* Kolom Acara Dinamis */}
-                    {filteredEventsList.map(e => (
-                      <th key={e.id} className={`px-2 py-4 text-[10px] font-black uppercase tracking-widest border text-center min-w-[70px] w-[70px] ${getEventTypeColor(e.event_type_id)}`}>
-                        <div className="flex flex-col items-center gap-1">
-                          <span>{formatDate(e.event_date)}</span>
-                        </div>
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredData.map((g, idx) => (
-                    <tr key={g.id} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="px-2 py-2 text-xs text-slate-400 font-semibold text-center border border-slate-200 bg-white lg:sticky lg:left-0 z-20 lg:shadow-[1px_0_0_#e2e8f0]">{idx + 1}</td>
-                      <td className="px-4 py-2 border border-slate-200 bg-white lg:sticky lg:left-[40px] z-20 lg:shadow-[1px_0_0_#e2e8f0]">
-                        <div className="flex items-center gap-3 w-full">
-                          <div className={`w-7 h-7 rounded-lg font-bold text-xs flex items-center justify-center shrink-0 ${g.jenis_kelamin === 'L' ? 'bg-blue-100 text-blue-600' : 'bg-pink-100 text-pink-600'}`}>
-                            {g.nama_lengkap.charAt(0).toUpperCase()}
-                          </div>
-                          <div className="flex-1 min-w-0 pr-2">
-                            <p className="text-sm font-bold text-slate-700 truncate">{g.nama_lengkap}</p>
-                            <p className="text-[10px] text-slate-400 truncate">{g.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan'}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-2 py-2 text-center border border-slate-200 bg-white lg:sticky lg:left-[220px] z-20 lg:shadow-[1px_0_0_#e2e8f0]">
-                        <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded-md uppercase">
-                          {(g.is_pengurus ? 'PENGURUS USMAN, ' : '')}{(g.is_pengurus_muda_mudi ? 'PENGURUS MUDA MUDI, ' : '')}{(g.is_ketua_wakil_kelompok ? 'KETUA/WAKIL KELOMPOK, ' : '')}{(g.jenjang || '-')}
-                        </span>
-                      </td>
-                      <td className="px-2 py-2 text-center text-xs text-slate-500 font-medium border border-slate-200 bg-white lg:sticky lg:left-[440px] z-20 lg:shadow-[1px_0_0_#e2e8f0]">{g.kelompok}</td>
-                      <td className="px-2 py-2 text-center border border-slate-200 bg-white lg:sticky lg:left-[540px] z-20 lg:shadow-[1px_0_0_#e2e8f0]">
-                        <span className={`text-[10px] font-bold px-2 py-1 rounded-md uppercase ${
-                          g.status?.toLowerCase() === 'aktif' ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'
-                        }`}>
-                          {g.status}
-                        </span>
-                      </td>
-                      <td className="px-2 py-2 text-center text-xs font-bold text-slate-700 border border-slate-200 bg-white lg:sticky lg:left-[620px] z-20 lg:shadow-[2px_0_5px_-2px_rgba(0,0,0,0.2)]">
-                        {(() => {
-                          let present = 0;
-                          let totalParticipant = 0;
-                          filteredEventsList.forEach(e => {
-                            const stat = g.events_attendance[e.id];
-                            if (stat && stat !== '-') {
-                              totalParticipant++;
-                              if (stat === 'H') present++;
-                            }
-                          });
-                          return totalParticipant === 0 ? '-' : `${present}/${totalParticipant}`;
-                        })()}
-                      </td>
-                      
-                      {/* Sel Acara Dinamis */}
-                      {filteredEventsList.map(e => {
-                        const mStatus = g.events_attendance[e.id];
-                        const cellClass = mStatus && mStatus !== '-' ? getStatusCellClass(mStatus) : 'bg-white text-slate-200';
-                        return (
-                          <td key={e.id} className={`p-0 text-center border border-slate-200 align-middle w-[70px] min-w-[70px] text-xs transition-colors ${cellClass}`}>
-                            {mStatus && mStatus !== '-' ? mStatus : '-'}
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              </div>
-            )}
+          {/* Jenjang Pills */}
+          <div className="pt-2 border-t border-slate-100">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                <Filter size={11} className="text-emerald-600" /> Filter Jenjang & Jabatan
+              </p>
+              {filterJenjang.length > 0 && (
+                <button
+                  onClick={() => setFilterJenjang([])}
+                  className="text-[10px] font-bold text-[#168a53] hover:underline cursor-pointer"
+                >
+                  Reset
+                </button>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {['', ...uniqueJenjang].map(j => {
+                const label = j === '' ? 'Semua' : j;
+                const active = j === '' ? filterJenjang.length === 0 : filterJenjang.includes(j);
+                return (
+                  <button
+                    key={label}
+                    onClick={() => toggleJenjang(j)}
+                    className={`px-2.5 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                      active
+                        ? 'bg-[#168a53] text-white shadow-2xs'
+                        : 'bg-slate-100/90 text-slate-600 hover:bg-slate-200/80'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
+      )}
 
+      {/* ── Matrix Table Container (iOS Inset Grouped) ───────────────────── */}
+      <div className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
+        {/* Table Top Toolbar */}
+        <div className="px-4 sm:px-6 py-3.5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/70">
+          <div className="flex items-center gap-2.5">
+            <h3 className="font-extrabold text-slate-800 text-sm sm:text-base tracking-tight">Matriks Kehadiran</h3>
+            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-[#168a53] border border-emerald-200/60">
+              {filteredData.length} generus
+            </span>
+          </div>
+
+          {/* Color Legends */}
+          {selectedType.length > 0 && eventTypes.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2">
+              {selectedType.map(id => {
+                const type = eventTypes.find(t => t.id.toString() === id);
+                if (!type) return null;
+                return (
+                  <div key={id} className={`px-2.5 py-1 rounded-md text-xs font-bold border ${getEventTypeColor(type.id)} flex items-center gap-1.5`}>
+                    <div className="w-2 h-2 rounded-full bg-current opacity-80" />
+                    <span>{type.name}</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Content Body */}
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-24 gap-3">
+            <Loader2 size={34} className="animate-spin text-[#168a53]" />
+            <p className="text-slate-400 font-medium text-sm">Memuat rekapan absensi...</p>
+          </div>
+        ) : selectedType.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-24 gap-3">
+            <Layers size={36} className="text-slate-300" />
+            <p className="text-slate-500 font-semibold text-base">Pilih kategori acara terlebih dahulu.</p>
+          </div>
+        ) : filteredData.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-24 gap-3">
+            <AlertCircle size={36} className="text-slate-300" />
+            <p className="text-slate-500 font-semibold text-base">Tidak ada data ditemukan.</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto hide-scrollbar sm:thin-scrollbar max-h-[calc(100vh-320px)] min-h-[380px]">
+            <table className="w-full text-left border-collapse">
+              <thead className="sticky top-0 z-40 bg-slate-50/95 backdrop-blur-xs border-b border-slate-200/80 shadow-2xs">
+                <tr>
+                  <th className="px-3 py-3.5 text-xs font-extrabold text-slate-500 uppercase tracking-wider text-center lg:sticky lg:left-0 z-30 bg-slate-50 w-12 min-w-12 border-r border-slate-200/60">
+                    #
+                  </th>
+                  <th className="px-4 py-3.5 text-xs font-extrabold text-slate-500 uppercase tracking-wider lg:sticky lg:left-12 z-30 bg-slate-50 w-60 min-w-60 border-r border-slate-200/60 lg:shadow-[2px_0_4px_-2px_rgba(0,0,0,0.06)]">
+                    Nama Generus
+                  </th>
+                  <th className="px-3 py-3.5 text-xs font-extrabold text-slate-500 uppercase tracking-wider text-center w-40 min-w-40 border-r border-slate-100">
+                    Jenjang
+                  </th>
+                  <th className="px-3 py-3.5 text-xs font-extrabold text-slate-500 uppercase tracking-wider text-center w-32 min-w-32 border-r border-slate-100">
+                    Kelompok
+                  </th>
+                  <th className="px-3 py-3.5 text-xs font-extrabold text-slate-500 uppercase tracking-wider text-center w-28 min-w-28 border-r border-slate-100">
+                    Status
+                  </th>
+                  <th className="px-3 py-3.5 text-xs font-extrabold text-slate-500 uppercase tracking-wider text-center w-24 min-w-24 border-r border-slate-200/60">
+                    Rasio
+                  </th>
+
+                  {/* Dynamic Event Columns */}
+                  {filteredEventsList.map(e => (
+                    <th
+                      key={e.id}
+                      className={`px-1.5 py-3.5 text-xs font-extrabold uppercase tracking-wider text-center min-w-[62px] w-[62px] border-r border-slate-200/80 ${getEventTypeColor(e.event_type_id)}`}
+                    >
+                      <div className="flex flex-col items-center">
+                        <span className="font-mono font-black">{formatDate(e.event_date)}</span>
+                      </div>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {filteredData.map((g, idx) => (
+                  <tr key={g.id} className="hover:bg-slate-50/70 transition-colors group">
+                    <td className="px-3 py-2.5 text-center font-bold text-slate-500 text-sm lg:sticky lg:left-0 z-20 bg-white group-hover:bg-slate-50/70 border-r border-slate-100">
+                      {idx + 1}
+                    </td>
+
+                    <td className="px-4 py-2.5 lg:sticky lg:left-12 z-20 bg-white group-hover:bg-slate-50/70 border-r border-slate-100 lg:shadow-[2px_0_4px_-2px_rgba(0,0,0,0.06)]">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-lg font-extrabold text-sm flex items-center justify-center shrink-0 ${
+                          g.jenis_kelamin === 'L' ? 'bg-blue-50 text-blue-600' : 'bg-pink-50 text-pink-600'
+                        }`}>
+                          {g.nama_lengkap.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="min-w-0 pr-1">
+                          <p className="text-sm font-extrabold text-slate-900 truncate leading-snug">{g.nama_lengkap}</p>
+                          <p className="text-xs font-medium text-slate-400 truncate mt-0.5">{g.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan'}</p>
+                        </div>
+                      </div>
+                    </td>
+
+                    <td className="px-3 py-2.5 text-center border-r border-slate-100">
+                      <span className="text-[11px] font-bold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-md uppercase inline-block leading-tight">
+                        {(g.is_pengurus ? 'PENGURUS USMAN, ' : '')}{(g.is_pengurus_muda_mudi ? 'PENGURUS MUDA MUDI, ' : '')}{(g.is_ketua_wakil_kelompok ? 'KETUA/WAKIL KELOMPOK, ' : '')}{(g.jenjang || '-')}
+                      </span>
+                    </td>
+
+                    <td className="px-3 py-2.5 text-center text-sm font-bold text-slate-700 border-r border-slate-100">
+                      {g.kelompok}
+                    </td>
+
+                    <td className="px-3 py-2.5 text-center border-r border-slate-100">
+                      <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full uppercase ${
+                        g.status?.toLowerCase() === 'aktif'
+                          ? 'bg-emerald-50 text-[#168a53] border border-emerald-200/60'
+                          : g.status?.toLowerCase() === 'pasif'
+                            ? 'bg-amber-50 text-amber-700 border border-amber-200/60'
+                            : 'bg-red-50 text-red-600 border border-red-200/60'
+                      }`}>
+                        {g.status}
+                      </span>
+                    </td>
+
+                    <td className="px-3 py-2.5 text-center text-sm font-mono font-black text-slate-800 border-r border-slate-100">
+                      {(() => {
+                        let present = 0;
+                        let totalParticipant = 0;
+                        filteredEventsList.forEach(e => {
+                          const stat = g.events_attendance[e.id];
+                          if (stat && stat !== '-') {
+                            totalParticipant++;
+                            if (stat === 'H') present++;
+                          }
+                        });
+                        return totalParticipant === 0 ? '-' : `${present}/${totalParticipant}`;
+                      })()}
+                    </td>
+
+                    {/* Dynamic Event Status Cells: 1 Kotak Penuh Solid dengan Huruf Jauh Lebih Besar */}
+                    {filteredEventsList.map(e => {
+                      const mStatus = g.events_attendance[e.id];
+                      const cellClass = mStatus && mStatus !== '-' ? getStatusCellClass(mStatus) : 'bg-white text-slate-300';
+                      return (
+                        <td
+                          key={e.id}
+                          className={`p-0 text-center border-r border-b border-slate-200/80 align-middle w-[62px] min-w-[62px] h-10 sm:h-11 text-sm sm:text-base font-black transition-colors select-none ${cellClass}`}
+                        >
+                          {mStatus && mStatus !== '-' ? mStatus : '-'}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

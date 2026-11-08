@@ -1,9 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { LogIn, BookOpen, Heart, Shield, Star, Users, Briefcase, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { 
+  BookOpen, 
+  Heart, 
+  Shield, 
+  Star, 
+  Users, 
+  Briefcase, 
+  RefreshCw, 
+  CheckCircle2, 
+  ChevronDown,
+  ArrowRight,
+  School,
+  Home
+} from 'lucide-react';
 import bgImage from '../assets/Generus2.jpg';
+import logoImg from '../assets/logo.png';
+
 export default function LandingPage() {
-  // Scroll ke atas saat halaman dimuat
+  // Scroll to top on mount
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -11,8 +26,191 @@ export default function LandingPage() {
   // State untuk wheel/lingkaran 29 Karakter Luhur
   const [selected, setSelected] = useState(0);
   const [mounted, setMounted] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(null);
+  const [mobileOpen, setMobileOpen] = useState(0);
   const [wheelRotation, setWheelRotation] = useState(0);
+
+  const karakterData = [
+    {
+      id: "tri-sukses",
+      color: "amber",
+      icon: <Star className="w-5 h-5" strokeWidth={2.2} />,
+      title: "Tri Sukses",
+      badge: "3 Pokok",
+      subtitle: "Fondasi utama pembentukan generasi",
+      items: [
+        { name: "Akhlaqul Karimah", desc: "Berperilaku mulia dalam ucapan, sikap, dan perbuatan sehari-hari." },
+        { name: "Alim dan Faqih", desc: "Menguasai ilmu agama dan memahaminya secara mendalam untuk diamalkan." },
+        { name: "Mandiri", desc: "Mampu berdiri sendiri secara ekonomi, spiritual, dan sosial tanpa bergantung." }
+      ]
+    },
+    {
+      id: "tobiat-luhur",
+      color: "rose",
+      icon: <Heart className="w-5 h-5" strokeWidth={2.2} />,
+      title: "6 Tobi'at Luhur",
+      badge: "6 Sifat",
+      subtitle: "Watak mulia dalam interaksi sosial",
+      items: [
+        { name: "Rukun", desc: "Mewujudkan kedamaian, keselarasan, dan keharmonisan bersama sesama." },
+        { name: "Kompak", desc: "Bergerak bersama secara serentak dalam satu visi dan tujuan mulia." },
+        { name: "Kerjasama", desc: "Saling bahu-membahu dan tolong-menolong dalam kebajikan." },
+        { name: "Jujur", desc: "Selalu berkata dan bersikap lurus sesuai fakta dan kebenaran." },
+        { name: "Amanah", desc: "Bertanggung jawab penuh atas setiap kepercayaan dan tugas yang diemban." },
+        { name: "Mujhid Muzhid", desc: "Bersungguh-sungguh dalam ikhtiar, hidup hemat, dan tidak berlebihan." }
+      ]
+    },
+    {
+      id: "tali-keimanan",
+      color: "blue",
+      icon: <BookOpen className="w-5 h-5" strokeWidth={2.2} />,
+      title: "4 Tali Keimanan",
+      badge: "4 Pilar",
+      subtitle: "Penguatan hubungan hamba dengan Sang Pencipta",
+      items: [
+        { name: "Bersyukur", desc: "Senantiasa berterima kasih dan menghargai segala nikmat Allah." },
+        { name: "Mempersungguh", desc: "Mencurahkan kesungguhan terbaik dalam setiap ibadah dan amal saleh." },
+        { name: "Mengagungkan", desc: "Menjunjung tinggi keagungan perintah Allah dan sunnah Rasul-Nya." },
+        { name: "Berdoa", desc: "Rendah hati selalu memohon pertolongan dan hidayah kepada Allah." }
+      ]
+    },
+    {
+      id: "prinsip-kerja",
+      color: "emerald",
+      icon: <Briefcase className="w-5 h-5" strokeWidth={2.2} />,
+      title: "3 Prinsip Kerja",
+      badge: "3 Etika",
+      subtitle: "Pedoman profesionalitas dan etika berkarya",
+      items: [
+        { name: "Benar", desc: "Bekerja sesuai tuntunan syariat, aturan resmi, dan norma kebaikan." },
+        { name: "Kurup", desc: "Disiplin tepat waktu, hemat anggaran, dan tepat sasaran hasil." },
+        { name: "Janji", desc: "Konsisten menepati komitmen dan kesepakatan yang telah dibuat." }
+      ]
+    },
+    {
+      id: "maqodirulloh",
+      color: "indigo",
+      icon: <Shield className="w-5 h-5" strokeWidth={2.2} />,
+      title: "4 Maqodirulloh",
+      badge: "4 Sikap",
+      subtitle: "Sikap bijak menghadapi segala ketentuan takdir Allah",
+      items: [
+        { name: "Bersyukur", desc: "Bersyukur dan tidak sombong saat dilimpahi nikmat serta kemudahan." },
+        { name: "Istirja'", desc: "Mengembalikan segala urusan kepada Allah ketika menghadapi musibah." },
+        { name: "Sabar", desc: "Berjiwa besar, tabah, dan tidak putus asa dalam menghadapi cobaan." },
+        { name: "Taubat", desc: "Segera introspeksi, menyesali, dan memperbaiki diri dari kekhilafan." }
+      ]
+    },
+    {
+      id: "roda-berputar",
+      color: "teal",
+      icon: <RefreshCw className="w-5 h-5" strokeWidth={2.2} />,
+      title: "4 Roda Berputar",
+      badge: "4 Sinergi",
+      subtitle: "Prinsip sinergi dan saling tolong-menolong",
+      items: [
+        { name: "Kuat & Lemah", desc: "Yang memiliki kekuatan menopang dan menguatkan yang sedang lemah." },
+        { name: "Bisa & Tidak", desc: "Yang memiliki keahlian membimbing dan mendampingi yang belum bisa." },
+        { name: "Ingat & Lupa", desc: "Yang senantiasa ingat dengan santun mengingatkan yang lupa." },
+        { name: "Saling Menasehati", desc: "Saling menasihati dalam kebenaran dan kesabaran demi kebaikan bersama." }
+      ]
+    },
+    {
+      id: "syarat-kerukunan",
+      color: "orange",
+      icon: <Users className="w-5 h-5" strokeWidth={2.2} />,
+      title: "5 Syarat Kerukunan",
+      badge: "5 Kunci",
+      subtitle: "Pedoman menjaga keharmonisan sosial kemasyarakatan",
+      items: [
+        { name: "Berbicara Baik", desc: "Menjaga lisan dengan bertutur kata sopan, santun, dan bermanfaat." },
+        { name: "Jujur & Percaya", desc: "Membangun rasa saling percaya dengan keterbukaan dan kejujuran." },
+        { name: "Sabar & Ngalah", desc: "Mampu mengendalikan ego dan bersedia mengalah demi keutuhan bersama." },
+        { name: "Tidak Merusak", desc: "Menghindari segala hal yang berpotensi merusak hubungan persaudaraan." },
+        { name: "Menjaga Perasaan", desc: "Memiliki kepekaan empati tinggi untuk senantiasa menjaga hati sesama." }
+      ]
+    }
+  ];
+
+  // Visual styling variants per category matching Apple iOS palette
+  const categoryStyles = {
+    amber: {
+      bg: "bg-amber-500",
+      lightBg: "bg-amber-50",
+      text: "text-amber-700",
+      border: "border-amber-200",
+      ring: "ring-amber-500/20",
+      badgeBg: "bg-amber-100 text-amber-800",
+      iconBg: "bg-amber-500 text-white",
+      pillActive: "bg-amber-500 text-white shadow-sm shadow-amber-500/25",
+      orbitActive: "ring-4 ring-amber-500/30 scale-110 shadow-lg shadow-amber-500/20"
+    },
+    rose: {
+      bg: "bg-rose-500",
+      lightBg: "bg-rose-50",
+      text: "text-rose-700",
+      border: "border-rose-200",
+      ring: "ring-rose-500/20",
+      badgeBg: "bg-rose-100 text-rose-800",
+      iconBg: "bg-rose-500 text-white",
+      pillActive: "bg-rose-500 text-white shadow-sm shadow-rose-500/25",
+      orbitActive: "ring-4 ring-rose-500/30 scale-110 shadow-lg shadow-rose-500/20"
+    },
+    blue: {
+      bg: "bg-sky-500",
+      lightBg: "bg-sky-50",
+      text: "text-sky-700",
+      border: "border-sky-200",
+      ring: "ring-sky-500/20",
+      badgeBg: "bg-sky-100 text-sky-800",
+      iconBg: "bg-sky-500 text-white",
+      pillActive: "bg-sky-500 text-white shadow-sm shadow-sky-500/25",
+      orbitActive: "ring-4 ring-sky-500/30 scale-110 shadow-lg shadow-sky-500/20"
+    },
+    emerald: {
+      bg: "bg-emerald-600",
+      lightBg: "bg-emerald-50",
+      text: "text-[#168a53]",
+      border: "border-emerald-200",
+      ring: "ring-emerald-500/20",
+      badgeBg: "bg-emerald-100 text-emerald-800",
+      iconBg: "bg-emerald-600 text-white",
+      pillActive: "bg-[#168a53] text-white shadow-sm shadow-emerald-700/25",
+      orbitActive: "ring-4 ring-emerald-500/30 scale-110 shadow-lg shadow-emerald-600/20"
+    },
+    indigo: {
+      bg: "bg-indigo-600",
+      lightBg: "bg-indigo-50",
+      text: "text-indigo-700",
+      border: "border-indigo-200",
+      ring: "ring-indigo-500/20",
+      badgeBg: "bg-indigo-100 text-indigo-800",
+      iconBg: "bg-indigo-600 text-white",
+      pillActive: "bg-indigo-600 text-white shadow-sm shadow-indigo-600/25",
+      orbitActive: "ring-4 ring-indigo-500/30 scale-110 shadow-lg shadow-indigo-600/20"
+    },
+    teal: {
+      bg: "bg-teal-600",
+      lightBg: "bg-teal-50",
+      text: "text-teal-700",
+      border: "border-teal-200",
+      ring: "ring-teal-500/20",
+      badgeBg: "bg-teal-100 text-teal-800",
+      iconBg: "bg-teal-600 text-white",
+      pillActive: "bg-teal-600 text-white shadow-sm shadow-teal-600/25",
+      orbitActive: "ring-4 ring-teal-500/30 scale-110 shadow-lg shadow-teal-600/20"
+    },
+    orange: {
+      bg: "bg-orange-500",
+      lightBg: "bg-orange-50",
+      text: "text-orange-700",
+      border: "border-orange-200",
+      ring: "ring-orange-500/20",
+      badgeBg: "bg-orange-100 text-orange-800",
+      iconBg: "bg-orange-500 text-white",
+      pillActive: "bg-orange-500 text-white shadow-sm shadow-orange-500/25",
+      orbitActive: "ring-4 ring-orange-500/30 scale-110 shadow-lg shadow-orange-500/20"
+    }
+  };
 
   const handleSelectBubble = (idx) => {
     setSelected(idx);
@@ -33,109 +231,11 @@ export default function LandingPage() {
     return () => clearTimeout(t);
   }, []);
 
-  const karakterData = [
-    {
-      color: "amber",
-      icon: <Star className="text-amber-500 w-8 h-8 mb-4" />,
-      title: "Tri Sukses",
-      subtitle: "Fondasi utama pembentukan generasi",
-      items: [
-        { name: "Akhlaqul Karimah", desc: "Berperilaku mulia dalam ucapan dan perbuatan." },
-        { name: "Alim dan Faqih", desc: "Menguasai ilmu agama dan memahaminya secara mendalam." },
-        { name: "Mandiri", desc: "Mampu berdiri sendiri secara ekonomi, spiritual, dan sosial." }
-      ]
-    },
-    {
-      color: "rose",
-      icon: <Heart className="text-rose-500 w-8 h-8 mb-4" />,
-      title: "6 Tobi'at Luhur",
-      subtitle: "Watak mulia dalam interaksi sosial",
-      items: [
-        { name: "Rukun", desc: "Mewujudkan kedamaian dan keharmonisan." },
-        { name: "Kompak", desc: "Bergerak bersama dalam satu tujuan." },
-        { name: "Kerjasama", desc: "Saling membantu dalam kebaikan." },
-        { name: "Jujur", desc: "Berkata dan bersikap sesuai kenyataan." },
-        { name: "Amanah", desc: "Bertanggung jawab atas kepercayaan yang diberikan." },
-        { name: "Mujhid Muzhid", desc: "Hidup hemat, bersungguh-sungguh, dan tidak boros." }
-      ]
-    },
-    {
-      color: "blue",
-      icon: <BookOpen className="text-blue-500 w-8 h-8 mb-4" />,
-      title: "4 Tali Keimanan",
-      subtitle: "Penguatan hubungan dengan Allah",
-      items: [
-        { name: "Bersyukur", desc: "Selalu berterima kasih atas nikmat Allah." },
-        { name: "Mempersungguh", desc: "Bersungguh-sungguh dalam ibadah dan amal." },
-        { name: "Mengagungkan", desc: "Menjunjung tinggi perintah Allah dan Rasul." },
-        { name: "Berdoa", desc: "Selalu memohon kepada Allah dalam setiap keadaan." }
-      ]
-    },
-    {
-      color: "emerald",
-      icon: <Briefcase className="text-emerald-500 w-8 h-8 mb-4" />,
-      title: "3 Prinsip Kerja",
-      subtitle: "Pedoman etika kerja",
-      items: [
-        { name: "Benar", desc: "Sesuai aturan dan syariat." },
-        { name: "Kurup", desc: "Tepat waktu dan tepat sasaran." },
-        { name: "Janji", desc: "Menepati apa yang telah disepakati." }
-      ]
-    },
-    {
-      color: "indigo",
-      icon: <Shield className="text-indigo-500 w-8 h-8 mb-4" />,
-      title: "4 Maqodirulloh",
-      subtitle: "Sikap terhadap qodar atau ketentuan Allah",
-      items: [
-        { name: "Bersyukur", desc: "Saat mendapat nikmat." },
-        { name: "Istirja'", desc: "Saat tertimpa musibah." },
-        { name: "Sabar", desc: "Saat mendapat cobaan." },
-        { name: "Taubat", desc: "Saat melakukan kesalahan." }
-      ]
-    },
-    {
-      color: "teal",
-      icon: <RefreshCw className="text-teal-500 w-8 h-8 mb-4" />,
-      title: "4 Roda Berputar",
-      subtitle: "Prinsip saling tolong-menolong",
-      items: [
-        { name: "Kuat & Lemah", desc: "Yang kuat membantu yang lemah." },
-        { name: "Bisa & Tidak", desc: "Yang bisa membantu yang tidak bisa." },
-        { name: "Ingat & Lupa", desc: "Yang ingat mengingatkan yang lupa." },
-        { name: "Saling Menasehati", desc: "Yang salah dinasehati agar mau bertaubat." }
-      ]
-    },
-    {
-      color: "orange",
-      icon: <Users className="text-orange-500 w-8 h-8 mb-4" />,
-      title: "5 Syarat Kerukunan",
-      subtitle: "Pedoman hubungan sosial",
-      items: [
-        { name: "Berbicara Baik", desc: "Berbicara yang baik dan benar." },
-        { name: "Jujur & Percaya", desc: "Jujur, dapat dipercaya dan mempercayai." },
-        { name: "Sabar & Ngalah", desc: "Sabar, sanggup ngalah demi kebaikan bersama." },
-        { name: "Tidak Merusak", desc: "Tidak merusak diri sendiri maupun sesama." },
-        { name: "Menjaga Perasaan", desc: "Saling memperhatikan dan menjaga perasaan." }
-      ]
-    }
-  ];
-
-  const colorStyles = {
-    amber: { grad: "from-amber-400 to-amber-600" },
-    rose: { grad: "from-rose-400 to-rose-600" },
-    blue: { grad: "from-blue-400 to-blue-600" },
-    emerald: { grad: "from-emerald-400 to-emerald-600" },
-    indigo: { grad: "from-indigo-400 to-indigo-600" },
-    teal: { grad: "from-teal-400 to-teal-600" },
-    orange: { grad: "from-orange-400 to-orange-600" }
-  };
-
-  // Ukuran wheel (lingkaran besar) & posisi tiap bubble mengelilingi lingkaran tengah
-  const wheelSize = 750;
+  // Dimensi orbit wheel
+  const wheelSize = 720;
   const center = wheelSize / 2;
-  const centerCircleSize = 460;
-  const orbitRadius = 280;
+  const centerCircleSize = 440;
+  const orbitRadius = 265;
   const totalBubbles = karakterData.length;
 
   const getBubblePos = (idx, size) => {
@@ -145,93 +245,194 @@ export default function LandingPage() {
     return { left: cx - size / 2, top: cy - size / 2 };
   };
 
+  const currentCategory = karakterData[selected];
+  const currentStyle = categoryStyles[currentCategory.color];
+
   const penerapanData = [
-    { title: "Keluarga", desc: "Mengajarkan disiplin ibadah, menghormati orang tua, menjaga kebersihan, dan menghargai saudara." },
-    { title: "Sekolah dan Masjid", desc: "Membiasakan ketertiban waktu, salam dan jabat tangan, berpakaian rapi, serta aktif dalam kegiatan sosial dan pengajian." },
-    { title: "Komunitas", desc: "Mengamalkan nilai-nilai kerukunan, kerja sama, dan saling menolong dalam kehidupan sosial." }
+    {
+      title: "Keluarga Harmonis",
+      desc: "Membiasakan etika sopan santun kepada orang tua, ketertiban shalat lima waktu, serta saling menyayangi antar anggota keluarga di rumah.",
+      icon: <Home className="w-6 h-6 text-[#168a53]" strokeWidth={2} />,
+      tag: "Fondasi Rumah Tangga"
+    },
+    {
+      title: "Masjid & Pembinaan",
+      desc: "Menghidupkan budaya salam, ketertiban majelis ilmu, kebersihan tempat ibadah, dan keaktifan menghadiri musyawarah serta halaqah pemuda.",
+      icon: <School className="w-6 h-6 text-sky-600" strokeWidth={2} />,
+      tag: "Pusat Pembinaan Generus"
+    },
+    {
+      title: "Masyarakat & Sosial",
+      desc: "Menghadirkan teladan di tengah warga dengan tolong-menolong, kejujuran bermuamalah, dan kerukunan tanpa membedakan latar belakang.",
+      icon: <Users className="w-6 h-6 text-amber-600" strokeWidth={2} />,
+      tag: "Pengabdian Sosial"
+    }
   ];
 
   return (
-    <div className="min-h-screen bg-white text-slate-800 font-sans selection:bg-teal-500 selection:text-white">
+    <div className="min-h-screen bg-[#f8fafc] text-slate-800 font-sans selection:bg-[#168a53] selection:text-white relative overflow-hidden">
 
-      {/* Keyframes untuk animasi pergantian keterangan */}
-      <style>{`
-        @keyframes smoothReveal {
-          0% { opacity: 0; transform: translateY(15px) scale(0.96); filter: blur(5px); }
-          100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0px); }
-        }
-        .smooth-reveal { animation: smoothReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
-      `}</style>
+      {/* iOS Soft Ambient Gradient Orbs */}
+      <div className="fixed top-[-100px] left-1/2 -translate-x-1/2 w-[700px] h-[360px] bg-gradient-to-b from-emerald-100/40 via-teal-50/20 to-transparent rounded-full blur-[100px] pointer-events-none -z-10" />
+      <div className="fixed top-[20%] right-[-100px] w-[450px] h-[450px] bg-sky-100/30 rounded-full blur-[120px] pointer-events-none -z-10" />
+      <div className="fixed bottom-[10%] left-[-100px] w-[450px] h-[450px] bg-emerald-50/50 rounded-full blur-[120px] pointer-events-none -z-10" />
 
-      {/* NAVBAR */}
-      <nav className="fixed top-0 w-full z-50 px-6 md:px-12 py-4 flex justify-between items-center backdrop-blur-xl bg-teal-900/40 border-b border-teal-700/40 shadow-sm transition-all">
-        <div className="text-2xl font-extrabold tracking-tight text-white drop-shadow-md">
-          DesaSlogo.
-        </div>
-      </nav>
-
-      {/* HERO SECTION */}
-      <section className="relative min-h-[100dvh] flex items-center justify-center pt-20 px-4">
-        {/* Background Image & Global Overlay */}
-        <div
-          className="fixed inset-0 bg-cover bg-center bg-no-repeat z-[0]"
-          style={{ backgroundImage: `url(${bgImage})` }}
-        >
-          {/* Dark overlay fixed across all sections */}
-          <div className="absolute inset-0 bg-slate-900/50"></div>
-        </div>
-
-        {/* Ambient background glow (iOS/macOS modern aesthetic) */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-teal-500/40 rounded-full blur-[120px] pointer-events-none"></div>
-        <div className="absolute bottom-1/4 right-1/3 w-96 h-96 bg-blue-500/40 rounded-full blur-[120px] pointer-events-none"></div>
-
-        {/* Glassmorphism Card */}
-        <div className="relative z-10 text-center px-6 sm:px-10 py-12 md:py-16 max-w-4xl w-full mx-auto rounded-[2.5rem] backdrop-blur-2xl bg-gradient-to-b from-teal-900/50 to-teal-950/50 border border-teal-700/40 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] animate-in fade-in slide-in-from-bottom-8 duration-1000">
-
-          <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold text-white tracking-tight leading-[1.15] mb-6 drop-shadow-lg">
-            Membangun Generasi <br className="hidden md:block"/> 29 Karakter Luhur
-          </h1>
+      {/* ============================================================== */}
+      {/* 1. iOS Translucent Frosted Glass Navbar                        */}
+      {/* ============================================================== */}
+      <header className="sticky top-0 z-50 w-full backdrop-blur-xl bg-white/75 border-b border-slate-200/70 transition-all">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-[70px] flex items-center justify-between">
           
-          
-          <Link
-            to="/login"
-            className="inline-flex items-center gap-3 bg-white/90 hover:bg-white text-slate-900 px-8 py-4 rounded-2xl font-semibold text-lg shadow-[0_4px_20px_0_rgba(255,255,255,0.3)] hover:shadow-[0_8px_30px_rgba(255,255,255,0.4)] hover:-translate-y-1 transition-all duration-300 active:scale-95 backdrop-blur-sm"
-          >
-            Login <LogIn size={20} className="text-slate-700" />
+          {/* Brand Logo & Title */}
+          <Link to="/" className="flex items-center gap-3 group active:scale-[0.98] transition-all">
+            <div className="w-10 h-10 rounded-xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-1.5 flex items-center justify-center shrink-0 group-hover:border-emerald-300 transition-colors">
+              <img src={logoImg} alt="DesaSlogo" className="w-full h-full object-contain" />
+            </div>
+            <div className="leading-tight">
+              <span className="font-extrabold text-slate-900 text-lg tracking-tight flex items-center gap-1.5">
+                DesaSlogo
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#168a53]" />
+              </span>
+              <p className="text-[11px] font-medium text-slate-400">
+                Sistem Generus
+              </p>
+            </div>
           </Link>
+
+          {/* Center Navigation Links (Desktop) */}
+          <nav className="hidden md:flex items-center gap-1 bg-slate-100/80 p-1 rounded-full border border-slate-200/60 shadow-2xs">
+            <a 
+              href="#karakter" 
+              className="px-4 py-1.5 rounded-full text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-white/70 transition-all"
+            >
+              29 Karakter Luhur
+            </a>
+            <a 
+              href="#penerapan" 
+              className="px-4 py-1.5 rounded-full text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-white/70 transition-all"
+            >
+              Penerapan
+            </a>
+          </nav>
+        </div>
+      </header>
+
+      {/* ============================================================== */}
+      {/* 2. Hero Section (iOS Clean Style - Full First Screen View)     */}
+      {/* ============================================================== */}
+      <section className="relative min-h-[calc(100dvh-64px)] sm:min-h-[calc(100dvh-70px)] flex flex-col justify-between items-center pt-6 sm:pt-10 pb-6 sm:pb-8 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto w-full text-center flex-1 flex flex-col justify-center items-center my-auto">
+
+          {/* Main Display Headline */}
+          <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold text-slate-900 tracking-tight leading-[1.1] mb-6 sm:mb-8">
+            Membangun Generasi <br className="hidden sm:inline" />
+            <span className="bg-gradient-to-r from-[#168a53] via-emerald-600 to-teal-600 bg-clip-text text-transparent">
+              29 Karakter Luhur
+            </span>
+          </h1>
+
+          {/* CTA: Single Primary Button */}
+          <div className="flex items-center justify-center mb-8 sm:mb-12">
+            <Link
+              to="/login"
+              className="inline-flex items-center justify-center gap-2.5 bg-[#168a53] hover:bg-[#137747] text-white px-8 py-3.5 sm:py-4 rounded-2xl font-bold text-sm sm:text-base shadow-sm shadow-emerald-700/25 active:scale-[0.97] transition-all cursor-pointer"
+            >
+              <span>Login</span>
+              <ArrowRight size={17} strokeWidth={2.4} />
+            </Link>
+          </div>
+
+          {/* iOS Clean Photo Card */}
+          <div className="relative max-w-4xl mx-auto w-full">
+            <div className="bg-white/80 backdrop-blur-xl p-2 sm:p-3 rounded-[28px] sm:rounded-[36px] border border-slate-200/80 shadow-[0_16px_50px_rgba(0,0,0,0.06)] overflow-hidden">
+              <div className="relative rounded-[22px] sm:rounded-[28px] overflow-hidden aspect-[4/3] sm:aspect-[21/10] bg-slate-900">
+                <img 
+                  src={bgImage} 
+                  alt="Generasi Luhur DesaSlogo" 
+                  className="w-full h-full object-cover object-center brightness-95 contrast-105"
+                />
+              </div>
+            </div>
+          </div>
+
         </div>
 
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce flex flex-col items-center gap-2">
-            <span className="text-white/70 text-[10px] font-bold tracking-[0.2em] uppercase">Scroll</span>
-            <ChevronDownIcon className="text-white/70 w-5 h-5" />
-        </div>
+        {/* Scroll Indicator at bottom of first screen */}
+        <a 
+          href="#karakter"
+          className="mt-6 sm:mt-8 flex flex-col items-center justify-center gap-1.5 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer group"
+        >
+          <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 group-hover:text-slate-600">
+            Scroll ke Bawah
+          </span>
+          <ChevronDown size={16} className="animate-bounce text-[#168a53]" strokeWidth={2.2} />
+        </a>
       </section>
 
-      {/* ABOUT / 29 KARAKTER LUHUR SECTION */}
-      <section className="py-12 sm:py-16 md:py-24 px-6 md:px-12 relative z-10">
-        <div className="max-w-7xl mx-auto">
+      {/* ============================================================== */}
+      {/* 3. Section 29 Karakter Luhur (iOS Interactive - Halaman Kedua)  */}
+      {/* ============================================================== */}
+      <section id="karakter" className="min-h-screen pt-24 sm:pt-32 pb-20 sm:pb-28 px-4 sm:px-6 lg:px-8 relative border-t border-slate-200/60 scroll-mt-16 sm:scroll-mt-20 flex flex-col justify-center">
+        <div className="max-w-6xl mx-auto w-full">
 
-          <div className="text-center mb-4 max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4 tracking-tight drop-shadow-md">29 Karakter Luhur</h2>
-            <p className="text-slate-200 text-lg leading-relaxed drop-shadow-md">
+          {/* Section Header */}
+          <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-14">
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-3">
+              29 Karakter Luhur
+            </h2>
+            <p className="text-slate-500 text-sm sm:text-base leading-relaxed">
               Karakter luhur adalah pedoman nilai-nilai akhlak mulia yang membentuk generasi muda menjadi pribadi berintegritas, mandiri, dan beriman.
             </p>
           </div>
 
-          {/* DESKTOP: WHEEL / LINGKARAN BERPUTAR */}
-          <div className="hidden lg:flex justify-center mb-16 mt-8">
+          {/* iOS Segmented Pill Filter Bar (Rapid Selection) */}
+          <div className="flex items-center justify-start sm:justify-center overflow-x-auto hide-scrollbar gap-2 mb-10 pb-2 px-1">
+            {karakterData.map((cat, idx) => {
+              const isActive = selected === idx;
+              const catStyle = categoryStyles[cat.color];
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => handleSelectBubble(idx)}
+                  className={`px-4 py-2 rounded-full text-xs font-bold transition-all duration-200 shrink-0 cursor-pointer flex items-center gap-2 active:scale-95 ${
+                    isActive
+                      ? catStyle.pillActive
+                      : "bg-white text-slate-600 border border-slate-200/90 hover:bg-slate-50 shadow-2xs"
+                  }`}
+                >
+                  <span className={`w-2 h-2 rounded-full ${isActive ? 'bg-white' : catStyle.bg}`} />
+                  <span>{cat.title}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* DESKTOP INTERACTIVE WHEEL (LIGHT iOS STYLE) */}
+          <div className="hidden lg:flex justify-center mb-16 mt-4">
             <div className="relative" style={{ width: wheelSize, height: wheelSize }}>
+
+              {/* Orbiting Ring Guide */}
+              <div 
+                className="absolute rounded-full border border-dashed border-slate-300/80 pointer-events-none"
+                style={{
+                  width: orbitRadius * 2,
+                  height: orbitRadius * 2,
+                  left: center - orbitRadius,
+                  top: center - orbitRadius
+                }}
+              />
 
               {/* BUBBLES CONTAINER */}
               <div 
-                className="absolute inset-0 transition-transform duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                className="absolute inset-0 transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
                 style={{ transform: `rotate(${wheelRotation}deg)` }}
               >
                 {karakterData.map((item, idx) => {
-                  const size = 96 + Math.min(item.items.length, 6) * 8;
+                  const size = 96 + Math.min(item.items.length, 6) * 6;
                   const pos = getBubblePos(idx, size);
                   const isActive = selected === idx;
+                  const itemStyle = categoryStyles[item.color];
+
                   return (
                     <div
                       key={item.title}
@@ -242,23 +443,27 @@ export default function LandingPage() {
                         width: size,
                         height: size,
                         opacity: mounted ? 1 : 0,
-                        transitionDelay: mounted ? "0ms" : `${idx * 90}ms`
+                        transitionDelay: mounted ? "0ms" : `${idx * 80}ms`
                       }}
                     >
                       <div 
-                        className="w-full h-full transition-transform duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                        className="w-full h-full transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
                         style={{ transform: `rotate(${-wheelRotation}deg)` }}
                       >
                         <button
                           onClick={() => handleSelectBubble(idx)}
-                          className={`w-full h-full rounded-full flex flex-col items-center justify-center text-center transition-all duration-500 ease-out bg-gradient-to-br ${colorStyles[item.color].grad} ${
+                          className={`w-full h-full rounded-full flex flex-col items-center justify-center text-center p-2 transition-all duration-300 ease-out cursor-pointer active:scale-95 ${
                             isActive
-                              ? "scale-110 shadow-[0_0_20px_rgba(255,255,255,0.4)] ring-4 ring-white/80"
-                              : "scale-100 shadow-lg hover:scale-105"
+                              ? `bg-white ${itemStyle.text} ${itemStyle.orbitActive} border-2 ${itemStyle.border}`
+                              : `bg-white text-slate-700 border border-slate-200/90 shadow-md hover:scale-105 hover:border-slate-300`
                           }`}
                         >
-                          {React.cloneElement(item.icon, { className: "text-white w-5 h-5 mb-1" })}
-                          <span className="text-white font-bold text-[11px] leading-tight px-2 drop-shadow-md">{item.title}</span>
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center mb-1 ${isActive ? itemStyle.iconBg : 'bg-slate-100 text-slate-600'}`}>
+                            {React.cloneElement(item.icon, { className: "w-4 h-4" })}
+                          </div>
+                          <span className="font-extrabold text-[11px] leading-tight px-2">
+                            {item.title}
+                          </span>
                         </button>
                       </div>
                     </div>
@@ -266,9 +471,9 @@ export default function LandingPage() {
                 })}
               </div>
 
-              {/* LINGKARAN TENGAH - menampilkan keterangan dengan animasi berputar */}
+              {/* CENTER DISPLAY CARD (iOS Cupertino Frosted Panel) */}
               <div
-                className="absolute rounded-full backdrop-blur-2xl bg-gradient-to-b from-teal-900/50 to-teal-950/50 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] border border-teal-700/40 flex items-center justify-center overflow-hidden z-30"
+                className="absolute rounded-[36px] bg-white/95 backdrop-blur-2xl shadow-[0_20px_50px_rgba(0,0,0,0.08)] border border-slate-200/90 flex items-center justify-center overflow-hidden z-30"
                 style={{
                   width: centerCircleSize,
                   height: centerCircleSize,
@@ -276,111 +481,189 @@ export default function LandingPage() {
                   top: center - centerCircleSize / 2
                 }}
               >
-                <div key={selected} className="smooth-reveal text-center px-4 py-2 w-[360px]">
-                  <div className="flex flex-col items-center drop-shadow-md">
-                    {karakterData[selected].icon}
+                <div key={selected} className="text-center px-6 py-4 w-[380px] animate-in fade-in zoom-in-95 duration-300">
+                  
+                  {/* Category Pill */}
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full mb-3 shadow-2xs border border-slate-200/60 bg-slate-50">
+                    <span className={`w-2 h-2 rounded-full ${currentStyle.bg}`} />
+                    <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wider">
+                      {currentCategory.badge}
+                    </span>
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-1 drop-shadow-md">{karakterData[selected].title}</h3>
-                  <p className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-4 pb-3 border-b border-white/20 drop-shadow-sm">
-                    {karakterData[selected].subtitle}
+
+                  {/* Icon & Title */}
+                  <h3 className="text-2xl font-black text-slate-900 tracking-tight mb-1">
+                    {currentCategory.title}
+                  </h3>
+                  <p className="text-xs font-semibold text-slate-400 mb-4 pb-3 border-b border-slate-100">
+                    {currentCategory.subtitle}
                   </p>
-                  <ul className="space-y-3 inline-block text-left mt-2">
-                    {karakterData[selected].items.map((it, i) => (
-                      <li key={i} className="flex items-center gap-2">
-                        <CheckCircle2 className="text-teal-400 w-4 h-4 shrink-0 drop-shadow-sm" />
-                        <strong className="text-sm text-slate-200 drop-shadow-sm">{it.name}</strong>
-                      </li>
+
+                  {/* List of Character Points */}
+                  <div className="text-left space-y-2.5 max-h-[220px] overflow-y-auto thin-scrollbar pr-1">
+                    {currentCategory.items.map((it, i) => (
+                      <div key={i} className="p-2.5 rounded-xl bg-slate-50/80 border border-slate-100 flex items-start gap-2.5">
+                        <CheckCircle2 className={`w-4 h-4 shrink-0 mt-0.5 ${currentStyle.text}`} strokeWidth={2.4} />
+                        <div>
+                          <p className="text-xs font-extrabold text-slate-800 leading-tight">
+                            {it.name}
+                          </p>
+                          <p className="text-[11px] text-slate-500 font-normal leading-normal mt-0.5">
+                            {it.desc}
+                          </p>
+                        </div>
+                      </div>
                     ))}
-                  </ul>
+                  </div>
+
                 </div>
               </div>
+
             </div>
           </div>
 
-          {/* MOBILE & TABLET: ACCORDION (fallback agar tetap nyaman di layar kecil) */}
-          <div className="lg:hidden space-y-4 mb-16">
+          {/* MOBILE & TABLET: iOS INSET GROUPED ACCORDION */}
+          <div className="lg:hidden space-y-3 mb-16">
             {karakterData.map((kategori, idx) => {
               const isOpen = mobileOpen === idx;
+              const catStyle = categoryStyles[kategori.color];
+
               return (
                 <div
-                  key={kategori.title}
-                  className="backdrop-blur-xl bg-gradient-to-b from-teal-900/50 to-teal-950/50 rounded-2xl border border-teal-700/40 shadow-lg overflow-hidden"
+                  key={kategori.id}
+                  className="bg-white rounded-2xl border border-slate-200/90 shadow-[0_1px_3px_rgba(0,0,0,0.02)] overflow-hidden transition-all duration-200"
                 >
                   <button
                     onClick={() => setMobileOpen(isOpen ? null : idx)}
-                    className="w-full flex items-center justify-between gap-4 p-5 text-left"
+                    className="w-full flex items-center justify-between gap-4 p-4 text-left active:bg-slate-50 transition-colors cursor-pointer"
                   >
                     <div className="flex items-center gap-3">
-                      <span className={`w-10 h-10 shrink-0 rounded-full flex items-center justify-center bg-gradient-to-br ${colorStyles[kategori.color].grad} shadow-inner`}>
-                        {React.cloneElement(kategori.icon, { className: "text-white w-5 h-5 mb-0" })}
-                      </span>
+                      <div className={`w-10 h-10 shrink-0 rounded-xl flex items-center justify-center ${catStyle.lightBg} ${catStyle.text} border ${catStyle.border}`}>
+                        {React.cloneElement(kategori.icon, { className: "w-5 h-5" })}
+                      </div>
                       <div>
-                        <h3 className="text-sm font-bold text-white drop-shadow-sm">{kategori.title}</h3>
-                        <p className="text-[11px] text-slate-300 drop-shadow-sm">{kategori.subtitle}</p>
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-sm font-bold text-slate-900 tracking-tight">
+                            {kategori.title}
+                          </h3>
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${catStyle.badgeBg}`}>
+                            {kategori.badge}
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-400 mt-0.5 font-medium">{kategori.subtitle}</p>
                       </div>
                     </div>
-                    <ChevronDownIcon
-                      className={`w-5 h-5 text-white/60 shrink-0 transition-transform duration-500 ${isOpen ? "rotate-180" : ""}`}
+                    
+                    <ChevronDown
+                      size={18}
+                      className={`text-slate-400 shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180 text-slate-700" : ""}`}
                     />
                   </button>
-                  <div
-                    className={`grid transition-all duration-500 ease-out ${
-                      isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-                    }`}
-                  >
-                    <div className="overflow-hidden text-center">
-                      <ul className="space-y-3 px-5 pb-5 inline-block text-left">
+
+                  {/* Accordion Content */}
+                  {isOpen && (
+                    <div className="px-4 pb-4 pt-1 border-t border-slate-100 bg-[#fbfcfd]">
+                      <div className="space-y-2 mt-2">
                         {kategori.items.map((item, itemIdx) => (
-                          <li key={itemIdx} className="flex items-center gap-3">
-                            <CheckCircle2 className="text-teal-400 w-4 h-4 shrink-0 drop-shadow-sm" />
-                            <strong className="text-sm text-slate-200 drop-shadow-sm">{item.name}</strong>
-                          </li>
+                          <div key={itemIdx} className="p-3 rounded-xl bg-white border border-slate-200/60 shadow-2xs flex items-start gap-3">
+                            <CheckCircle2 className={`w-4 h-4 shrink-0 mt-0.5 ${catStyle.text}`} strokeWidth={2.4} />
+                            <div>
+                              <p className="text-xs font-bold text-slate-800 leading-snug">
+                                {item.name}
+                              </p>
+                              <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">
+                                {item.desc}
+                              </p>
+                            </div>
+                          </div>
                         ))}
-                      </ul>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               );
             })}
           </div>
 
-          {/* SECTION PENERAPAN */}
-          <div className="backdrop-blur-2xl bg-gradient-to-b from-teal-900/50 to-teal-950/50 rounded-2xl sm:rounded-3xl md:rounded-[3rem] p-6 sm:p-10 md:p-16 text-white relative overflow-hidden border border-teal-700/40 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)]">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-teal-400/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-teal-400/20 rounded-full blur-2xl translate-y-1/3 -translate-x-1/4 pointer-events-none"></div>
-
+          {/* ============================================================== */}
+          {/* 4. Section Penerapan dalam Kehidupan                           */}
+          {/* ============================================================== */}
+          <div id="penerapan" className="bg-white border border-slate-200/90 rounded-[28px] sm:rounded-[36px] p-6 sm:p-10 md:p-12 shadow-[0_2px_12px_rgba(0,0,0,0.03)] relative overflow-hidden">
+            
             <div className="relative z-10 max-w-4xl mx-auto">
-              <h2 className="text-2xl md:text-3xl font-bold mb-8 text-center drop-shadow-md">Penerapan dalam Kehidupan</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="text-center mb-10">
+                <span className="text-[11px] font-bold text-[#168a53] uppercase tracking-wider bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">
+                  Implementasi Nyata
+                </span>
+                <h3 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-3 mb-2">
+                  Penerapan dalam Kehidupan Sehari-hari
+                </h3>
+                <p className="text-slate-500 text-sm max-w-xl mx-auto">
+                  Nilai 29 Karakter Luhur tidak sekadar dihafal, melainkan diwujudkan dalam setiap sendi pergaulan dan rutinitas.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 {penerapanData.map((item, idx) => (
-                  <div key={idx} className="bg-teal-900/40 backdrop-blur-md rounded-2xl p-6 border border-teal-700/40 shadow-inner">
-                    <h4 className="text-lg font-bold mb-3 text-white drop-shadow-sm">{item.title}</h4>
-                    <p className="text-sm text-slate-200 leading-relaxed drop-shadow-sm">{item.desc}</p>
+                  <div 
+                    key={idx} 
+                    className="bg-[#f8fafc] rounded-2xl p-6 border border-slate-200/80 shadow-2xs hover:bg-white hover:border-slate-300 hover:shadow-md transition-all duration-300 flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200/80 shadow-2xs flex items-center justify-center mb-4">
+                        {item.icon}
+                      </div>
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
+                        {item.tag}
+                      </span>
+                      <h4 className="text-base font-extrabold text-slate-900 mb-2">
+                        {item.title}
+                      </h4>
+                      <p className="text-xs text-slate-500 leading-relaxed font-normal">
+                        {item.desc}
+                      </p>
+                    </div>
                   </div>
                 ))}
               </div>
-              <p className="text-center mt-12 text-slate-200 font-medium leading-relaxed max-w-3xl mx-auto border-t border-white/20 pt-8 drop-shadow-sm">
-                29 Karakter luhur ini menjadi fondasi moral, spiritual, dan sosial bagi generasi muda, membentuk pribadi yang tangguh, berakhlak mulia, dan siap berkontribusi bagi masyarakat dan agama.
-              </p>
+
+              <div className="mt-10 pt-8 border-t border-slate-100 text-center">
+                <p className="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed max-w-2xl mx-auto">
+                  Melalui sinergi orang tua, dewan guru, dan pengurus kelompok, 29 karakter luhur membentuk pribadi yang tangguh, berbudi pekerti luhur, dan siap bermanfaat bagi bangsa serta agama.
+                </p>
+              </div>
             </div>
+
           </div>
 
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="relative z-10 backdrop-blur-lg bg-black/40 border-t border-white/10 text-slate-300 py-8 text-center text-sm">
-        <p>© {new Date().getFullYear()} DesaSlogo. Sistem Manajemen Generus.</p>
-      </footer>
-    </div>
-  );
-}
+      {/* ============================================================== */}
+      {/* 5. Footer (iOS Clean Footnote)                                 */}
+      {/* ============================================================== */}
+      <footer className="border-t border-slate-200/80 bg-white py-8 text-slate-500 text-xs text-center">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-lg bg-white border border-slate-200 p-0.5 flex items-center justify-center">
+              <img src={logoImg} alt="Logo" className="w-full h-full object-contain" />
+            </div>
+            <span className="font-bold text-slate-700">DesaSlogo</span>
+            <span className="text-slate-300">•</span>
+            <span>Sistem Manajemen Generus</span>
+          </div>
 
-// Icon ringan pembantu
-function ChevronDownIcon(props) {
-  return (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="m6 9 6 6 6-6"/>
-    </svg>
+          <p className="text-slate-400">
+            &copy; {new Date().getFullYear()} DesaSlogo. All rights reserved.
+          </p>
+
+          <div className="flex items-center gap-4 text-slate-500 font-medium">
+            <a href="#karakter" className="hover:text-slate-800 transition-colors">29 Karakter</a>
+            <Link to="/login" className="hover:text-[#168a53] transition-colors">Login</Link>
+          </div>
+        </div>
+      </footer>
+
+    </div>
   );
 }

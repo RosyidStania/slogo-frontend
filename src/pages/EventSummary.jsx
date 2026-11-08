@@ -1,9 +1,18 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
-import { ArrowLeft, Users, CheckCircle, XCircle, AlertCircle, Clock, Filter, ChevronDown, Download, MapPin, Upload } from 'lucide-react';
-import { BarChart, Bar, LineChart, Line, PieChart, Pie, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LabelList, Cell, Sector } from 'recharts';
-import { read, utils } from 'xlsx';
+import {
+  ChevronLeft, Users, CheckCircle2, XCircle, AlertCircle, Clock,
+  Filter, ChevronDown, Download, MapPin, BarChart3, TrendingUp,
+  PieChart as PieChartIcon, Coins, Check, Loader2,
+  ArrowUpRight, ArrowDownRight
+} from 'lucide-react';
+import {
+  BarChart, Bar, LineChart, Line, PieChart, Pie, XAxis, YAxis,
+  CartesianGrid, Tooltip, Legend, ResponsiveContainer, LabelList, Cell, Sector
+} from 'recharts';
+
+// ─── Helpers & Custom Chart Shapes ───────────────────────────────────────────
 
 const renderRoseShape = (props) => {
   const { cx, cy, startAngle, endAngle, fill, percent } = props;
@@ -17,7 +26,7 @@ const renderRoseShape = (props) => {
       startAngle={startAngle}
       endAngle={endAngle}
       fill={fill}
-      cornerRadius={3}
+      cornerRadius={4}
     />
   );
 };
@@ -27,20 +36,73 @@ const renderCustomizedLabel = (props) => {
   if (percent < 0.05) return null;
   const RADIAN = Math.PI / 180;
   const dynamicOuterRadius = 45 + (percent * 35);
-  const radius = 10 + (dynamicOuterRadius - 10) * 0.65; 
+  const radius = 10 + (dynamicOuterRadius - 10) * 0.65;
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
   const y = cy + radius * Math.sin(-midAngle * RADIAN);
   return (
-    <text x={x} y={y} fill="white" textAnchor="middle" dominantBaseline="central" fontSize="13" fontWeight="900" style={{ textShadow: '0px 1px 3px rgba(0,0,0,0.5)' }}>
+    <text
+      x={x}
+      y={y}
+      fill="white"
+      textAnchor="middle"
+      dominantBaseline="central"
+      fontSize="12"
+      fontWeight="800"
+      style={{ textShadow: '0px 1px 3px rgba(0,0,0,0.45)' }}
+    >
       {`${(percent * 100).toFixed(0)}%`}
     </text>
   );
 };
 
+const AVATAR_PALETTE_MALE = [
+  'bg-blue-100 text-blue-700',
+  'bg-sky-100 text-sky-700',
+  'bg-teal-100 text-teal-700',
+  'bg-emerald-100 text-emerald-700',
+  'bg-indigo-100 text-indigo-700',
+  'bg-cyan-100 text-cyan-700',
+];
+
+const AVATAR_PALETTE_FEMALE = [
+  'bg-pink-100 text-pink-700',
+  'bg-purple-100 text-purple-700',
+  'bg-rose-100 text-rose-700',
+  'bg-fuchsia-100 text-fuchsia-700',
+];
+
+function getAvatarColor(name = '', gender = '') {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const isFemale = gender?.toUpperCase() === 'P';
+  const palette = isFemale ? AVATAR_PALETTE_FEMALE : AVATAR_PALETTE_MALE;
+  return palette[Math.abs(hash) % palette.length];
+}
+
+function UserAvatar({ name, gender }) {
+  const colorClass = getAvatarColor(name, gender);
+  return (
+    <div className={`w-8 h-8 sm:w-9 sm:h-9 ${colorClass} rounded-full flex items-center justify-center font-extrabold text-xs shrink-0 select-none shadow-2xs`}>
+      {name?.charAt(0)?.toUpperCase() ?? '?'}
+    </div>
+  );
+}
+
+const getPercentageBadge = (percentage) => {
+  if (percentage >= 80) return 'bg-emerald-50 text-emerald-700 border-emerald-200/70';
+  if (percentage >= 50) return 'bg-blue-50 text-blue-700 border-blue-200/70';
+  if (percentage > 0) return 'bg-amber-50 text-amber-700 border-amber-200/70';
+  return 'bg-slate-100 text-slate-500 border-slate-200/70';
+};
+
+// ─── Main Component ───────────────────────────────────────────────────────────
+
 export default function EventSummary() {
   const { eventId } = useParams();
   const navigate = useNavigate();
-  
+
   const [event, setEvent] = useState(null);
   const [attendances, setAttendances] = useState([]);
   const [targetGenerus, setTargetGenerus] = useState([]);
@@ -51,10 +113,10 @@ export default function EventSummary() {
   const [originalInfaqAmount, setOriginalInfaqAmount] = useState("");
   const [isSavingInfaq, setIsSavingInfaq] = useState(false);
   const [loading, setLoading] = useState(true);
-  
+
   const [filterKelompok, setFilterKelompok] = useState('Semua');
   const [filterStatus, setFilterStatus] = useState('Semua');
-  
+
   const kelompokList = ['Semua', 'Slogo', 'Gabugan', 'Jekani', 'Gawan', 'Pengkruk', 'Sidomulyo', 'Karangasem'];
   const statusList = ['Semua', 'Hadir', 'Izin', 'Sakit', 'Alpa', 'Terlambat'];
 
@@ -76,8 +138,6 @@ export default function EventSummary() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const fileInputRef = useRef(null);
-
   const handleExport = async () => {
     try {
       const response = await api.get(`/admin/attendance/export/${eventId}`, { responseType: 'blob' });
@@ -92,65 +152,6 @@ export default function EventSummary() {
       alert('Gagal mengekspor data');
     }
   };
-
-  const handleImport = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    try {
-      setLoading(true);
-      const reader = new FileReader();
-      reader.onload = async (evt) => {
-        const bstr = evt.target.result;
-        const wb = read(bstr, { type: 'binary' });
-        const wsname = wb.SheetNames[0];
-        const ws = wb.Sheets[wsname];
-        
-        const data = utils.sheet_to_json(ws);
-        
-        const mappedAttendances = data.map(row => {
-            const eventIdRow = row['ID Acara'] || row.event_id || eventId;
-            const kodeUnik = row['Kode Unik Peserta'] || row.kode_unik;
-            const generusId = row['ID Peserta'] || row.generus_id || row['ID Peserta (Abaikan saat import)'];
-            const status = row['Status Kehadiran'] || row.status || 'hadir';
-            const timeArrived = row['Waktu Datang'] || row.time_arrived || null;
-            const isLate = row['Terlambat'] === 'Ya' || row.is_late === 1 || row.is_late === 'true' ? 1 : 0;
-            
-            return {
-                event_id: eventIdRow,
-                kode_unik: kodeUnik,
-                generus_id: generusId,
-                status: status.toLowerCase(),
-                time_arrived: timeArrived,
-                is_late: isLate
-            };
-        }).filter(a => a.kode_unik || a.generus_id);
-
-        if (mappedAttendances.length === 0) {
-            alert('Data kosong atau format tidak sesuai. Pastikan kolom Kode Unik Peserta tersedia.');
-            setLoading(false);
-            return;
-        }
-
-        try {
-            await api.post('/admin/attendance/bulk', { attendances: mappedAttendances });
-            alert('Berhasil mengimpor data absensi');
-            fetchSummaryData(); // refresh data
-        } catch (err) {
-            alert('Gagal menyimpan data absensi ke server');
-            console.error(err);
-            setLoading(false);
-        }
-      };
-      reader.readAsBinaryString(file);
-    } catch (error) {
-      console.error('Gagal import:', error);
-      alert('Gagal membaca file excel/csv');
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => { fetchSummaryData(); }, [eventId]);
 
   const fetchSummaryData = async () => {
     try {
@@ -170,6 +171,8 @@ export default function EventSummary() {
     }
   };
 
+  useEffect(() => { fetchSummaryData(); }, [eventId]);
+
   const filteredData = attendances.filter(item => {
     const matchKelompok = filterKelompok === 'Semua' || (item.generus?.kelompok || '').toLowerCase() === filterKelompok.toLowerCase();
     let matchStatus = true;
@@ -183,7 +186,6 @@ export default function EventSummary() {
     return matchKelompok && matchStatus;
   });
 
-
   const groupStats = kelompokList.filter(k => k !== 'Semua').map(kelompok => {
     const targetGroup = targetGenerus.filter(g => (g.kelompok || '').toLowerCase() === kelompok.toLowerCase());
     const targetPutra = targetGroup.filter(g => g.jenis_kelamin === 'L').length;
@@ -191,14 +193,14 @@ export default function EventSummary() {
     const targetTotal = targetGroup.length;
 
     const attendGroup = attendances.filter(a => (a.generus?.kelompok || '').toLowerCase() === kelompok.toLowerCase());
-      const hadirGroup = attendGroup.filter(a => a.status === 'hadir');
-      
-      const hadirPutra = hadirGroup.filter(a => a.generus?.jenis_kelamin === 'L').length;
-      const hadirPutri = hadirGroup.filter(a => a.generus?.jenis_kelamin === 'P').length;
-      const hadirTotal = hadirGroup.length;
-      
-      const izinSakitTotal = attendGroup.filter(a => a.status === 'izin' || a.status === 'sakit').length;
-      const alpaTotal = Math.max(0, targetTotal - hadirTotal - izinSakitTotal);
+    const hadirGroup = attendGroup.filter(a => a.status === 'hadir');
+
+    const hadirPutra = hadirGroup.filter(a => a.generus?.jenis_kelamin === 'L').length;
+    const hadirPutri = hadirGroup.filter(a => a.generus?.jenis_kelamin === 'P').length;
+    const hadirTotal = hadirGroup.length;
+
+    const izinSakitTotal = attendGroup.filter(a => a.status === 'izin' || a.status === 'sakit').length;
+    const alpaTotal = Math.max(0, targetTotal - hadirTotal - izinSakitTotal);
 
     const percentage = targetTotal > 0 ? Math.round((hadirTotal / targetTotal) * 100) : 0;
 
@@ -206,11 +208,11 @@ export default function EventSummary() {
       name: kelompok,
       targetPutra, targetPutri, targetTotal,
       hadirPutra, hadirPutri, hadirTotal,
-        izinSakitTotal, alpaTotal,
-        percentage
+      izinSakitTotal, alpaTotal,
+      percentage
     };
   }).filter(g => g.targetTotal > 0);
-  
+
   const totalStats = {
     targetPutra: groupStats.reduce((sum, g) => sum + g.targetPutra, 0),
     targetPutri: groupStats.reduce((sum, g) => sum + g.targetPutri, 0),
@@ -237,13 +239,13 @@ export default function EventSummary() {
 
     let previousPercentage = 0;
     if (previousEvent) {
-        const prevTargetGroup = previousTargetGenerus.filter(g => (g.kelompok || '').toLowerCase() === kelompok.toLowerCase());
-        const prevTargetTotal = prevTargetGroup.length;
+      const prevTargetGroup = previousTargetGenerus.filter(g => (g.kelompok || '').toLowerCase() === kelompok.toLowerCase());
+      const prevTargetTotal = prevTargetGroup.length;
 
-        const prevAttendGroup = previousAttendances.filter(a => (a.generus?.kelompok || '').toLowerCase() === kelompok.toLowerCase());
-        const prevHadirTotal = prevAttendGroup.filter(a => a.status === 'hadir').length;
+      const prevAttendGroup = previousAttendances.filter(a => (a.generus?.kelompok || '').toLowerCase() === kelompok.toLowerCase());
+      const prevHadirTotal = prevAttendGroup.filter(a => a.status === 'hadir').length;
 
-        previousPercentage = prevTargetTotal > 0 ? Math.round((prevHadirTotal / prevTargetTotal) * 100) : 0;
+      previousPercentage = prevTargetTotal > 0 ? Math.round((prevHadirTotal / prevTargetTotal) * 100) : 0;
     }
 
     return {
@@ -258,21 +260,21 @@ export default function EventSummary() {
   let prevTotalAlpa = 0;
   let prevHadirPutra = 0;
   let prevHadirPutri = 0;
-  
+
   if (previousEvent) {
-      prevTotalHadir = previousAttendances.filter(a => a.status === 'hadir').length;
-      prevTotalIzin = previousAttendances.filter(a => a.status === 'izin' || a.status === 'sakit').length;
-      prevTotalAlpa = previousAttendances.filter(a => a.status === 'alpa').length;
-      prevHadirPutra = previousAttendances.filter(a => a.status === 'hadir' && a.generus?.jenis_kelamin === 'L').length;
-      prevHadirPutri = previousAttendances.filter(a => a.status === 'hadir' && a.generus?.jenis_kelamin === 'P').length;
+    prevTotalHadir = previousAttendances.filter(a => a.status === 'hadir').length;
+    prevTotalIzin = previousAttendances.filter(a => a.status === 'izin' || a.status === 'sakit').length;
+    prevTotalAlpa = previousAttendances.filter(a => a.status === 'alpa').length;
+    prevHadirPutra = previousAttendances.filter(a => a.status === 'hadir' && a.generus?.jenis_kelamin === 'L').length;
+    prevHadirPutri = previousAttendances.filter(a => a.status === 'hadir' && a.generus?.jenis_kelamin === 'P').length;
   }
 
   const currentMonthName = event ? new Date(event.event_date).toLocaleDateString('id-ID', { month: 'long' }) : 'Bulan Ini';
   const prevMonthName = previousEvent ? new Date(previousEvent.event_date).toLocaleDateString('id-ID', { month: 'long' }) : 'Bulan Lalu';
 
   const globalComparisonData = [
-      { name: prevMonthName, Hadir: prevTotalHadir, Izin: prevTotalIzin, Alpa: prevTotalAlpa },
-      { name: currentMonthName, Hadir: globalStats.hadir, Izin: globalStats.izin, Alpa: globalStats.alpa },
+    { name: prevMonthName, Hadir: prevTotalHadir, Izin: prevTotalIzin, Alpa: prevTotalAlpa },
+    { name: currentMonthName, Hadir: globalStats.hadir, Izin: globalStats.izin, Alpa: globalStats.alpa },
   ];
 
   const genderData = [
@@ -286,30 +288,30 @@ export default function EventSummary() {
   ].filter(d => d.value > 0);
 
   const getChangeStats = (current, prev, type) => {
-    let percent = 0;
+    let percent;
     let sign = '';
-    let colorClass = 'text-slate-500 bg-slate-100';
-    let icon = <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14" /></svg>;
+    let colorClass = 'text-slate-500 bg-slate-100 border-slate-200/80';
+    let icon = <span className="w-1.5 h-1.5 rounded-full bg-slate-400"></span>;
 
     if (prev === 0) {
-        if (current === 0) return { text: '0%', colorClass, icon };
-        percent = 100;
+      if (current === 0) return { text: '0%', colorClass, icon };
+      percent = 100;
     } else {
-        percent = Math.round(((current - prev) / prev) * 100);
+      percent = Math.round(((current - prev) / prev) * 100);
     }
 
     if (percent > 0) {
-        sign = '+';
-        if (type === 'hadir') colorClass = 'text-teal-700 bg-teal-100';
-        else if (type === 'izin') colorClass = 'text-amber-700 bg-amber-100';
-        else colorClass = 'text-rose-700 bg-rose-100';
-        icon = <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 15l7-7 7 7" /></svg>;
+      sign = '+';
+      if (type === 'hadir') colorClass = 'text-emerald-700 bg-emerald-50 border-emerald-200/60';
+      else if (type === 'izin') colorClass = 'text-amber-700 bg-amber-50 border-amber-200/60';
+      else colorClass = 'text-rose-700 bg-rose-50 border-rose-200/60';
+      icon = <ArrowUpRight className="w-3.5 h-3.5" />;
     } else if (percent < 0) {
-        if (type === 'hadir') colorClass = 'text-rose-700 bg-rose-100';
-        else colorClass = 'text-teal-700 bg-teal-100';
-        icon = <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" /></svg>;
+      if (type === 'hadir') colorClass = 'text-rose-700 bg-rose-50 border-rose-200/60';
+      else colorClass = 'text-emerald-700 bg-emerald-50 border-emerald-200/60';
+      icon = <ArrowDownRight className="w-3.5 h-3.5" />;
     } else {
-        return { text: '0%', colorClass, icon };
+      return { text: '0%', colorClass, icon };
     }
     return { text: `${sign}${Math.abs(percent)}%`, colorClass, icon };
   };
@@ -323,7 +325,6 @@ export default function EventSummary() {
       setIsSavingInfaq(true);
       await api.patch(`/admin/events/${eventId}/infaq`, { infaq: infaqAmount });
       setOriginalInfaqAmount(infaqAmount);
-      alert('Infaq berhasil disimpan');
     } catch (error) {
       console.error('Gagal menyimpan infaq:', error);
       alert('Gagal menyimpan infaq');
@@ -332,478 +333,931 @@ export default function EventSummary() {
     }
   };
 
-  if (loading) return (
-    <div className="h-64 flex items-center justify-center">
-      <div className="flex flex-col items-center gap-3">
-        <div className="w-8 h-8 border-4 border-teal-200 border-t-teal-500 rounded-full animate-spin"></div>
-        <p className="text-sm text-slate-400 font-medium">Memuat rekapan...</p>
+  // ─── Loading & Error Guards ─────────────────────────────────────────────────
+
+  if (loading) {
+    return (
+      <div className="min-h-[50vh] flex flex-col items-center justify-center gap-3">
+        <div className="w-10 h-10 rounded-2xl bg-white shadow-sm border border-slate-200/80 flex items-center justify-center">
+          <Loader2 className="w-5 h-5 text-[#168a53] animate-spin" />
+        </div>
+        <p className="text-xs font-semibold text-slate-500">Memuat rekapan absensi...</p>
       </div>
-    </div>
-  );
-  if (!event) return <div className="p-10 text-center text-red-500">Acara tidak ditemukan.</div>;
+    );
+  }
+
+  if (!event) {
+    return (
+      <div className="p-8 max-w-md mx-auto my-12 bg-white rounded-3xl border border-rose-200/80 shadow-sm text-center">
+        <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-500 mx-auto flex items-center justify-center mb-3">
+          <AlertCircle size={24} />
+        </div>
+        <h2 className="text-base font-extrabold text-slate-900">Acara Tidak Ditemukan</h2>
+        <p className="text-xs text-slate-500 mt-1 mb-4">Data acara yang Anda cari tidak tersedia atau telah dihapus.</p>
+        <button
+          onClick={() => navigate('/admin/events')}
+          className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-full text-xs font-bold transition-all"
+        >
+          Kembali ke Daftar Acara
+        </button>
+      </div>
+    );
+  }
+
+  const isChangedInfaq = String(infaqAmount) !== String(originalInfaqAmount);
 
   return (
-    <div className="animate-in fade-in duration-300 pb-10">
-      
-      {/* HEADER */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-        <div className="flex items-center gap-4">
-          <button onClick={() => navigate('/admin/events')} className="p-3 bg-white border border-slate-200 hover:bg-teal-50 hover:text-teal-600 hover:border-teal-200 rounded-xl transition-colors text-slate-500 shadow-sm"><ArrowLeft size={20} /></button>
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Rekapan Absensi</h1>
-            <p className="text-slate-500 text-sm mt-0.5">{event.name} • {new Date(event.event_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+    <div className="w-full py-4 sm:py-6 space-y-4 sm:space-y-5 animate-in fade-in duration-200 pb-10">
+
+      {/* ── 1. iOS Top Navigation Bar ─────────────────────────────────────────── */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5">
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => navigate('/admin/events')}
+            className="w-10 h-10 rounded-full bg-white border border-slate-200/80 shadow-2xs flex items-center justify-center text-slate-700 hover:text-slate-900 hover:bg-slate-50 active:scale-95 transition-all cursor-pointer shrink-0"
+            title="Kembali ke Acara"
+          >
+            <ChevronLeft size={20} strokeWidth={2.4} />
+          </button>
+          <div className="min-w-0">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-tight">
+              Rekapan Absensi
+            </h1>
+            <div className="flex items-center gap-2 mt-0.5 text-xs text-slate-500 font-medium truncate">
+              <span className="font-semibold text-slate-700 truncate">{event.name}</span>
+              <span className="text-slate-300">•</span>
+              <span className="text-slate-500 shrink-0">
+                {new Date(event.event_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+              </span>
+            </div>
           </div>
         </div>
-        <div className="flex items-center gap-3 w-full md:w-auto">
-          <button onClick={handleExport} className="flex-1 md:flex-none flex items-center justify-center gap-2 px-5 py-3 bg-white border border-slate-200 text-slate-700 font-bold text-sm rounded-xl hover:bg-slate-50 transition-all shadow-sm">
-            <Download size={18} /> Export
+
+        {/* Action Buttons */}
+        <div className="flex items-center gap-2 self-end sm:self-center w-full sm:w-auto">
+          <button
+            onClick={handleExport}
+            className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 bg-white hover:bg-slate-50 active:scale-95 text-slate-700 border border-slate-200/90 rounded-full font-bold text-xs sm:text-sm shadow-2xs transition-all cursor-pointer select-none"
+          >
+            <Download size={15} strokeWidth={2.2} />
+            <span>Export</span>
           </button>
-          <button onClick={() => fileInputRef.current?.click()} className="flex-1 md:flex-none flex items-center justify-center gap-2 px-5 py-3 bg-teal-600 border border-teal-500 text-white font-bold text-sm rounded-xl hover:bg-teal-700 transition-all shadow-sm">
-            <Upload size={18} /> Import
-          </button>
-          <input type="file" ref={fileInputRef} accept=".xlsx, .xls, .csv" className="hidden" onChange={handleImport} />
         </div>
       </div>
 
-      {/* STAT CARDS */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 mb-8">
-        <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col items-center text-center">
-          <div className="w-10 h-10 bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center mb-2"><Users size={20} /></div>
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total</p>
-          <h3 className="text-2xl font-black text-slate-800">{globalStats.total}</h3>
-        </div>
-        <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-emerald-100 shadow-sm flex flex-col items-center text-center">
-          <div className="w-10 h-10 bg-emerald-50 text-emerald-500 rounded-xl flex items-center justify-center mb-2"><CheckCircle size={20} /></div>
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Hadir</p>
-          <h3 className="text-2xl font-black text-emerald-600">{globalStats.hadir}</h3>
-        </div>
-        <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-red-100 shadow-sm flex flex-col items-center text-center">
-          <div className="w-10 h-10 bg-red-50 text-red-500 rounded-xl flex items-center justify-center mb-2"><Clock size={20} /></div>
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Terlambat</p>
-          <h3 className="text-2xl font-black text-red-600">{globalStats.terlambat}</h3>
-        </div>
-        <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-amber-100 shadow-sm flex flex-col items-center text-center">
-          <div className="w-10 h-10 bg-amber-50 text-amber-500 rounded-xl flex items-center justify-center mb-2"><AlertCircle size={20} /></div>
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Izin/Sakit</p>
-          <h3 className="text-2xl font-black text-amber-600">{globalStats.izin}</h3>
-        </div>
-        <div className="col-span-2 sm:col-span-1 bg-white p-3.5 sm:p-5 rounded-2xl border border-rose-100 shadow-sm flex flex-col items-center text-center">
-          <div className="w-10 h-10 bg-rose-50 text-rose-500 rounded-xl flex items-center justify-center mb-2"><XCircle size={20} /></div>
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Alpa</p>
-          <h3 className="text-2xl font-black text-rose-600">{globalStats.alpa}</h3>
-        </div>
-      </div>
-
-      {/* REKAPAN KEHADIRAN & INFAQ */}
-      <div className="mb-8 bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm">
-        <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
-          <div className="flex items-center gap-2">
-            <MapPin size={18} className="text-teal-500" />
-            <h2 className="text-base font-bold text-slate-800 uppercase tracking-wide">Rekapan Kehadiran & Infaq</h2>
-          </div>
-        </div>
+      {/* ── 2. iOS Widget Stat Tiles (5 Summary Cards) ───────────────────────── */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-3.5">
         
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-sm">
-            <thead>
-              <tr className="bg-slate-50 text-slate-500 border-b border-slate-200">
-                <th rowSpan="2" className="px-4 py-3 font-bold uppercase text-center border-r border-slate-200">No</th>
-                <th rowSpan="2" className="px-4 py-3 font-bold uppercase text-center border-r border-slate-200">Kelompok</th>
-                <th colSpan="3" className="px-4 py-2 font-bold uppercase text-center border-r border-slate-200 border-b border-slate-200">Jumlah Generus</th>
-                <th colSpan="3" className="px-4 py-2 font-bold uppercase text-center border-r border-slate-200 border-b border-slate-200">Kehadiran {new Date(event.event_date).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }).toUpperCase()}</th>
-                <th rowSpan="2" className="px-4 py-3 font-bold uppercase text-center">%</th>
-              </tr>
-              <tr className="bg-slate-50 text-slate-500 border-b border-slate-200">
-                <th className="px-4 py-2 font-bold text-center border-r border-slate-200">Putra</th>
-                <th className="px-4 py-2 font-bold text-center border-r border-slate-200">Putri</th>
-                <th className="px-4 py-2 font-bold text-center border-r border-slate-200">Jumlah</th>
-                <th className="px-4 py-2 font-bold text-center border-r border-slate-200">Putra</th>
-                <th className="px-4 py-2 font-bold text-center border-r border-slate-200">Putri</th>
-                <th className="px-4 py-2 font-bold text-center border-r border-slate-200">Jumlah</th>
-              </tr>
-            </thead>
-            <tbody>
-              {groupStats.map((stat, index) => (
-                <tr key={index} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                  <td className="px-4 py-3 text-center border-r border-slate-100">{index + 1}</td>
-                  <td className="px-4 py-3 font-semibold text-slate-700 uppercase border-r border-slate-100">{stat.name}</td>
-                  <td className="px-4 py-3 text-center border-r border-slate-100">{stat.targetPutra}</td>
-                  <td className="px-4 py-3 text-center border-r border-slate-100">{stat.targetPutri}</td>
-                  <td className="px-4 py-3 font-bold text-center border-r border-slate-100">{stat.targetTotal}</td>
-                  <td className="px-4 py-3 text-center border-r border-slate-100">{stat.hadirPutra}</td>
-                  <td className="px-4 py-3 text-center border-r border-slate-100">{stat.hadirPutri}</td>
-                  <td className="px-4 py-3 font-bold text-center border-r border-slate-100">{stat.hadirTotal}</td>
-                  <td className="px-4 py-3 font-bold text-center">{stat.percentage}%</td>
-                </tr>
-              ))}
-              
-              {/* Total Row */}
-              <tr className="bg-slate-50 border-b border-slate-200">
-                <td colSpan="2" className="px-4 py-3 font-black text-center text-slate-800 uppercase border-r border-slate-200">Jumlah</td>
-                <td className="px-4 py-3 font-bold text-center text-slate-800 border-r border-slate-200">{totalStats.targetPutra}</td>
-                <td className="px-4 py-3 font-bold text-center text-slate-800 border-r border-slate-200">{totalStats.targetPutri}</td>
-                <td className="px-4 py-3 font-black text-center text-slate-800 border-r border-slate-200">{totalStats.targetTotal}</td>
-                <td className="px-4 py-3 font-bold text-center text-slate-800 border-r border-slate-200">{totalStats.hadirPutra}</td>
-                <td className="px-4 py-3 font-bold text-center text-slate-800 border-r border-slate-200">{totalStats.hadirPutri}</td>
-                <td className="px-4 py-3 font-black text-center text-slate-800 border-r border-slate-200">{totalStats.hadirTotal}</td>
-                <td className="px-4 py-3 font-black text-center text-slate-800">{totalStats.percentage}%</td>
-              </tr>
-
-              {/* Infaq Row */}
-              <tr className="bg-amber-50">
-                <td colSpan="2" className="px-4 py-3 font-black text-slate-800 uppercase flex items-center gap-2">
-                  <div className="w-5 h-5 rounded-full border-2 border-slate-800 flex items-center justify-center text-[10px] font-bold">R</div>
-                  INFAQ
-                </td>
-                <td colSpan="7" className="px-4 py-3 font-black text-slate-800">
-                  <div className="flex items-center gap-3">
-                    <div className="flex-1 max-w-xs relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">Rp</span>
-                      <input 
-                        type="number" 
-                        value={infaqAmount} 
-                        onChange={(e) => setInfaqAmount(e.target.value)} 
-                        className="w-full pl-9 pr-3 py-1.5 rounded-lg border border-slate-300 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none"
-                        placeholder="0"
-                      />
-                    </div>
-                    <button 
-                      onClick={handleSaveInfaq}
-                      disabled={isSavingInfaq || String(infaqAmount) === String(originalInfaqAmount)}
-                      className="px-4 py-1.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {isSavingInfaq ? 'Menyimpan...' : (String(infaqAmount) === String(originalInfaqAmount) ? 'Tersimpan' : 'Simpan')}
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        {/* TOTAL */}
+        <div className="bg-white border border-slate-200/80 rounded-2xl sm:rounded-[22px] p-3.5 sm:p-4 shadow-[0_2px_8px_rgba(0,0,0,0.02)] flex flex-col justify-between hover:shadow-sm transition-shadow">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total</span>
+            <div className="w-8 h-8 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center">
+              <Users size={16} strokeWidth={2.2} />
+            </div>
+          </div>
+          <div className="mt-2.5">
+            <h3 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight tabular-nums">
+              {globalStats.total}
+            </h3>
+            <p className="text-[11px] font-medium text-slate-400 mt-0.5">Peserta tercatat</p>
           </div>
         </div>
 
-        {/* GRAFIK PERBANDINGAN BULAN LALU */}
-        {previousEvent && comparisonData.length > 0 && (
-          <div className="mb-8 bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm">
-            <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
-              <div className="flex items-center gap-2">
-                <svg className="w-5 h-5 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                <h2 className="text-base font-bold text-slate-800 uppercase tracking-wide">Perbandingan Kehadiran dengan {new Date(previousEvent.event_date).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}</h2>
-              </div>
-            </div>
-            <div className="p-6 h-[350px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={comparisonData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12, fontWeight: 600 }} dy={10} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} dx={-10} domain={[0, 100]} tickFormatter={(value) => `${value}%`} />
-                  <Tooltip 
-                    cursor={{ fill: '#f1f5f9' }}
-                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)' }}
-                    formatter={(value) => [`${value}%`, '']}
-                  />
-                  <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
-                  <Bar dataKey="Sekarang" name={currentMonthName} fill="#14b8a6" radius={[4, 4, 0, 0]} barSize={32}>
-                    <LabelList dataKey="Sekarang" position="top" formatter={(value) => `${value}%`} style={{ fill: '#14b8a6', fontSize: 11, fontWeight: 'bold' }} />
-                  </Bar>
-                  <Bar dataKey="BulanLalu" name={prevMonthName} fill="#94a3b8" radius={[4, 4, 0, 0]} barSize={32}>
-                    <LabelList dataKey="BulanLalu" position="top" formatter={(value) => `${value}%`} style={{ fill: '#94a3b8', fontSize: 11, fontWeight: 'bold' }} />
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+        {/* HADIR */}
+        <div className="bg-white border border-emerald-100/80 rounded-2xl sm:rounded-[22px] p-3.5 sm:p-4 shadow-[0_2px_8px_rgba(0,0,0,0.02)] flex flex-col justify-between hover:shadow-sm transition-shadow">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider">Hadir</span>
+            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-[#168a53] flex items-center justify-center border border-emerald-100/60">
+              <CheckCircle2 size={16} strokeWidth={2.2} />
             </div>
           </div>
-        )}
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* GRAFIK PERBANDINGAN TOTAL STATUS */}
-          {previousEvent && globalComparisonData.length > 0 ? (
-            <div className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm flex flex-col">
-              <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
-                <div className="flex items-center gap-2">
-                  <svg className="w-5 h-5 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                  <h2 className="text-base font-bold text-slate-800 uppercase tracking-wide">Perbandingan Total Status</h2>
-                </div>
-              </div>
-              <div className="p-6 w-full flex-grow flex flex-col">
-                {/* BADGES PERSENTASE PERUBAHAN */}
-                <div className="flex gap-6 mb-6 justify-center flex-wrap border-b border-slate-100 pb-4">
-                  <div className="flex flex-col items-center">
-                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Hadir</span>
-                    <div className={`flex items-center gap-1 text-xs font-bold px-2.5 py-0.5 rounded-full mt-1 ${hadirChange?.colorClass}`}>
-                      {hadirChange?.icon} {hadirChange?.text}
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Izin/Sakit</span>
-                    <div className={`flex items-center gap-1 text-xs font-bold px-2.5 py-0.5 rounded-full mt-1 ${izinChange?.colorClass}`}>
-                      {izinChange?.icon} {izinChange?.text}
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Alpa</span>
-                    <div className={`flex items-center gap-1 text-xs font-bold px-2.5 py-0.5 rounded-full mt-1 ${alpaChange?.colorClass}`}>
-                      {alpaChange?.icon} {alpaChange?.text}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="w-full h-[250px] flex-grow">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={globalComparisonData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                      <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12, fontWeight: 600 }} dy={10} />
-                      <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} dx={-10} />
-                      <Tooltip 
-                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)' }}
-                      />
-                      <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
-                      <Line type="monotone" dataKey="Hadir" stroke="#14b8a6" strokeWidth={3} activeDot={{ r: 6 }} />
-                      <Line type="monotone" dataKey="Izin" name="Izin/Sakit" stroke="#f59e0b" strokeWidth={3} activeDot={{ r: 6 }} />
-                      <Line type="monotone" dataKey="Alpa" stroke="#ef4444" strokeWidth={3} activeDot={{ r: 6 }} />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="hidden lg:block"></div>
-          )}
-
-          {/* GRAFIK KOMPOSISI GENDER */}
-          {(genderData.length > 0 || (previousEvent && prevGenderData.length > 0)) ? (
-            <div className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm flex flex-col">
-              <div className="p-4 border-b border-slate-100 flex items-center gap-2 bg-slate-50">
-                <svg className="w-5 h-5 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                <h2 className="text-base font-bold text-slate-800 uppercase tracking-wide">Komposisi Kehadiran (Putra vs Putri)</h2>
-              </div>
-              <div className="p-6 flex flex-col items-center flex-grow">
-                <div className="w-full h-[300px] grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  
-                  {/* BULAN LALU */}
-                  {previousEvent && prevGenderData.length > 0 ? (
-                    <div className="flex flex-col items-center h-full w-full">
-                      <div className="text-sm font-bold text-slate-500 mb-2">{prevMonthName}</div>
-                      <div className="w-full flex-grow relative">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <PieChart>
-                            <Pie
-                              data={prevGenderData}
-                              cx="50%" cy="50%" innerRadius={50} outerRadius={75} paddingAngle={5} dataKey="value"
-                              label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                              labelLine={false}
-                            >
-                              {prevGenderData.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={entry.color} />
-                              ))}
-                            </Pie>
-                            <Tooltip formatter={(value) => [value, 'Peserta']} contentStyle={{ borderRadius: '12px', border: 'none' }} />
-                          </PieChart>
-                        </ResponsiveContainer>
-                        <div className="absolute flex flex-col items-center justify-center pointer-events-none" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
-                          <span className="text-2xl font-black text-slate-800">{prevTotalHadir}</span>
-                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Hadir</span>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center h-full w-full text-slate-400 italic text-sm">Belum ada data bulan lalu</div>
-                  )}
-
-                  {/* BULAN INI */}
-                  {genderData.length > 0 ? (
-                    <div className="flex flex-col items-center h-full w-full">
-                      <div className="text-sm font-bold text-slate-700 mb-2">{currentMonthName}</div>
-                      <div className="w-full flex-grow relative">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <PieChart>
-                            <Pie
-                              data={genderData}
-                              cx="50%" cy="50%" innerRadius={50} outerRadius={75} paddingAngle={5} dataKey="value"
-                              label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                              labelLine={false}
-                            >
-                              {genderData.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={entry.color} />
-                              ))}
-                            </Pie>
-                            <Tooltip formatter={(value) => [value, 'Peserta']} contentStyle={{ borderRadius: '12px', border: 'none' }} />
-                          </PieChart>
-                        </ResponsiveContainer>
-                        <div className="absolute flex flex-col items-center justify-center pointer-events-none" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
-                          <span className="text-2xl font-black text-slate-800">{totalStats.hadirTotal}</span>
-                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Hadir</span>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center h-full w-full text-slate-400 italic text-sm">Belum ada data bulan ini</div>
-                  )}
-
-                </div>
-
-                {/* SINGLE LEGEND */}
-                <div className="flex items-center justify-center gap-6 mt-4">
-                  <div className="flex items-center gap-2">
-                    <span className="w-3 h-3 rounded-full bg-[#3b82f6]"></span>
-                    <span className="text-sm font-medium text-slate-600">Putra</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="w-3 h-3 rounded-full bg-[#ec4899]"></span>
-                    <span className="text-sm font-medium text-slate-600">Putri</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ) : (
-             <div className="hidden lg:block"></div>
-          )}
+          <div className="mt-2.5">
+            <h3 className="text-2xl sm:text-3xl font-black text-[#168a53] tracking-tight tabular-nums">
+              {globalStats.hadir}
+            </h3>
+            <p className="text-[11px] font-medium text-emerald-600/80 mt-0.5">{totalStats.percentage}% dari target</p>
+          </div>
         </div>
 
-        {/* GRAFIK PIE PER KELOMPOK */}
-        {groupStats.length > 0 && (
-          <div className="mb-8 bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm">
-            <div className="p-4 border-b border-slate-100 flex items-center gap-2 bg-slate-50">
-              <svg className="w-5 h-5 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
-              <h2 className="text-base font-bold text-slate-800 uppercase tracking-wide">Rasio Kehadiran per Kelompok</h2>
-            </div>
-            <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {groupStats.map((stat, idx) => {
-                const pieData = [
-                  { name: 'Hadir', value: stat.hadirTotal, color: '#14b8a6' },
-                  { name: 'Izin/Sakit', value: stat.izinSakitTotal, color: '#f59e0b' },
-                  { name: 'Alpa', value: stat.alpaTotal < 0 ? 0 : stat.alpaTotal, color: '#ef4444' }
-                ].filter(d => d.value > 0);
-
-                return (
-                  <div key={idx} className="flex flex-col items-center bg-slate-50/50 p-4 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-                    <h3 className="font-extrabold text-slate-700 mb-2 uppercase tracking-wide">{stat.name}</h3>
-                    <div className="w-full h-[180px]">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                          <Pie
-                            data={pieData}
-                            cx="50%"
-                            cy="50%"
-                            dataKey="value"
-                            stroke="none"
-                            activeIndex={pieData.map((_, i) => i)}
-                            activeShape={renderRoseShape}
-                            labelLine={false}
-                            label={renderCustomizedLabel}
-                          >
-                            {pieData.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={entry.color} />
-                            ))}
-                          </Pie>
-                          <Tooltip 
-                            contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
-                            itemStyle={{ fontWeight: 'bold' }}
-                          />
-                        </PieChart>
-                      </ResponsiveContainer>
-                    </div>
-                    <div className="flex flex-wrap justify-center gap-3 mt-4 w-full text-[10px] font-bold">
-                      <div className="flex items-center gap-1.5 px-2 py-1 bg-teal-50 text-teal-700 rounded-lg"><div className="w-2 h-2 rounded-full bg-teal-500"></div>Hadir: {stat.hadirTotal}</div>
-                      <div className="flex items-center gap-1.5 px-2 py-1 bg-amber-50 text-amber-700 rounded-lg"><div className="w-2 h-2 rounded-full bg-amber-500"></div>Izin: {stat.izinSakitTotal}</div>
-                      <div className="flex items-center gap-1.5 px-2 py-1 bg-red-50 text-red-700 rounded-lg"><div className="w-2 h-2 rounded-full bg-red-500"></div>Alpa: {stat.alpaTotal}</div>
-                    </div>
-                  </div>
-                );
-              })}
+        {/* TERLAMBAT */}
+        <div className="bg-white border border-amber-100/80 rounded-2xl sm:rounded-[22px] p-3.5 sm:p-4 shadow-[0_2px_8px_rgba(0,0,0,0.02)] flex flex-col justify-between hover:shadow-sm transition-shadow">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-amber-600 uppercase tracking-wider">Terlambat</span>
+            <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center border border-amber-100/60">
+              <Clock size={16} strokeWidth={2.2} />
             </div>
           </div>
-        )}
-
-      {/* FILTERS */}
-      <div className="grid grid-cols-2 sm:flex sm:flex-row gap-2 sm:gap-3 mb-4">
-        <div className="relative w-full sm:w-56 shrink-0" ref={dropdownKelRef}>
-          <button type="button" onClick={() => setIsDropdownKelompokOpen(!isDropdownKelompokOpen)} className="w-full pl-8 sm:pl-12 pr-2 sm:pr-4 py-3 sm:py-3.5 bg-white border border-slate-200 rounded-xl outline-none shadow-sm text-slate-800 font-bold text-xs sm:text-sm transition-all text-left flex justify-between items-center hover:bg-slate-50">
-            <div className="absolute inset-y-0 left-0 pl-2.5 sm:pl-4 flex items-center pointer-events-none"><Filter className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-slate-400" /></div>
-            <span className="truncate">{filterKelompok === 'Semua' ? 'Kelompok' : filterKelompok}</span>
-            <ChevronDown className={`h-3.5 w-3.5 sm:h-4 sm:w-4 text-slate-400 transition-transform ${isDropdownKelompokOpen ? 'rotate-180' : ''} shrink-0 ml-1`} />
-          </button>
-          {isDropdownKelompokOpen && (
-            <div className="absolute z-50 w-[200px] sm:w-full mt-2 bg-white border border-slate-100 rounded-2xl shadow-xl overflow-hidden py-2 animate-in fade-in">
-              {kelompokList.map(k => (
-                <button key={k} onClick={() => { setFilterKelompok(k); setIsDropdownKelompokOpen(false); }} className={`w-full text-left px-4 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-medium transition-colors ${filterKelompok === k ? 'bg-teal-50 text-teal-600' : 'text-slate-700 hover:bg-slate-50'}`}>
-                  {k === 'Semua' ? 'Semua Kelompok' : k}
-                </button>
-              ))}
-            </div>
-          )}
+          <div className="mt-2.5">
+            <h3 className="text-2xl sm:text-3xl font-black text-amber-600 tracking-tight tabular-nums">
+              {globalStats.terlambat}
+            </h3>
+            <p className="text-[11px] font-medium text-amber-600/80 mt-0.5">Melewati jadwal</p>
+          </div>
         </div>
 
-        <div className="relative w-full sm:w-48 shrink-0" ref={dropdownStatusRef}>
-          <button type="button" onClick={() => setIsDropdownStatusOpen(!isDropdownStatusOpen)} className="w-full pl-8 sm:pl-12 pr-2 sm:pr-4 py-3 sm:py-3.5 bg-white border border-slate-200 rounded-xl outline-none shadow-sm text-slate-800 font-bold text-xs sm:text-sm transition-all text-left flex justify-between items-center hover:bg-slate-50">
-            <div className="absolute inset-y-0 left-0 pl-2.5 sm:pl-4 flex items-center pointer-events-none"><CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-slate-400" /></div>
-            <span className="truncate">{filterStatus === 'Semua' ? 'Status' : filterStatus}</span>
-            <ChevronDown className={`h-3.5 w-3.5 sm:h-4 sm:w-4 text-slate-400 transition-transform ${isDropdownStatusOpen ? 'rotate-180' : ''} shrink-0 ml-1`} />
-          </button>
-          {isDropdownStatusOpen && (
-            <div className="absolute z-50 w-[200px] sm:w-full mt-2 bg-white border border-slate-100 rounded-2xl shadow-xl overflow-hidden py-2 animate-in fade-in right-0 sm:right-auto">
-              {statusList.map(s => (
-                <button key={s} onClick={() => { setFilterStatus(s); setIsDropdownStatusOpen(false); }} className={`w-full text-left px-4 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-medium transition-colors ${filterStatus === s ? 'bg-teal-50 text-teal-600' : 'text-slate-700 hover:bg-slate-50'}`}>
-                  {s === 'Semua' ? 'Semua Status' : s}
-                </button>
-              ))}
+        {/* IZIN/SAKIT */}
+        <div className="bg-white border border-blue-100/80 rounded-2xl sm:rounded-[22px] p-3.5 sm:p-4 shadow-[0_2px_8px_rgba(0,0,0,0.02)] flex flex-col justify-between hover:shadow-sm transition-shadow">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-blue-600 uppercase tracking-wider">Izin/Sakit</span>
+            <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100/60">
+              <AlertCircle size={16} strokeWidth={2.2} />
             </div>
-          )}
+          </div>
+          <div className="mt-2.5">
+            <h3 className="text-2xl sm:text-3xl font-black text-blue-600 tracking-tight tabular-nums">
+              {globalStats.izin}
+            </h3>
+            <p className="text-[11px] font-medium text-blue-500 mt-0.5">Izin atau sakit</p>
+          </div>
         </div>
+
+        {/* ALPA */}
+        <div className="col-span-2 sm:col-span-1 bg-white border border-rose-100/80 rounded-2xl sm:rounded-[22px] p-3.5 sm:p-4 shadow-[0_2px_8px_rgba(0,0,0,0.02)] flex flex-col justify-between hover:shadow-sm transition-shadow">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-rose-600 uppercase tracking-wider">Alpa</span>
+            <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center border border-rose-100/60">
+              <XCircle size={16} strokeWidth={2.2} />
+            </div>
+          </div>
+          <div className="mt-2.5">
+            <h3 className="text-2xl sm:text-3xl font-black text-rose-600 tracking-tight tabular-nums">
+              {globalStats.alpa}
+            </h3>
+            <p className="text-[11px] font-medium text-rose-500 mt-0.5">Tanpa keterangan</p>
+          </div>
+        </div>
+
       </div>
 
-      {/* TABLE */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm">
+      {/* ── 3. iOS Inset Grouped Table: REKAPAN KEHADIRAN & INFAQ ─────────────── */}
+      <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-[0_2px_12px_rgba(0,0,0,0.03)] overflow-hidden">
+        
+        {/* Card Header */}
+        <div className="px-5 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-slate-50/60">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-[#168a53] flex items-center justify-center shrink-0 border border-emerald-100/60">
+              <MapPin size={17} strokeWidth={2.2} />
+            </div>
+            <div>
+              <h2 className="text-sm sm:text-base font-extrabold text-slate-900 tracking-tight uppercase">
+                Rekapan Kehadiran & Infaq
+              </h2>
+              <p className="text-[11px] sm:text-xs text-slate-500 font-medium">
+                Distribusi kehadiran per kelompok santri/generus
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 self-start sm:self-center">
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 text-slate-600 border border-slate-200/70">
+              Target: {totalStats.targetTotal} Generus
+            </span>
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-[#168a53] border border-emerald-200/70">
+              Hadir: {totalStats.hadirTotal} ({totalStats.percentage}%)
+            </span>
+          </div>
+        </div>
+
+        {/* Table View */}
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-50 text-slate-500 border-b border-slate-100">
-                <th className="px-3 py-2.5 sm:px-6 sm:py-3.5 text-xs font-bold uppercase tracking-wider text-center w-12">No</th>
-                <th className="px-3 py-2.5 sm:px-6 sm:py-3.5 text-xs font-bold uppercase tracking-wider">Biodata Peserta</th>
-                <th className="px-3 py-2.5 sm:px-6 sm:py-3.5 text-xs font-bold uppercase tracking-wider">Status</th>
-                <th className="px-3 py-2.5 sm:px-6 sm:py-3.5 text-xs font-bold uppercase tracking-wider">Waktu</th>
+              {/* Header Level 1 */}
+              <tr className="bg-slate-50/80 text-slate-500 text-[11px] font-bold uppercase tracking-wider border-b border-slate-200/80">
+                <th rowSpan="2" className="px-3.5 py-3 text-center w-12 border-r border-slate-100">No</th>
+                <th rowSpan="2" className="px-4 py-3 border-r border-slate-100 min-w-[130px]">Kelompok</th>
+                <th colSpan="3" className="px-4 py-2.5 text-center border-r border-slate-100 border-b border-slate-200/60 bg-slate-50/90 text-slate-600">
+                  Jumlah Generus
+                </th>
+                <th colSpan="3" className="px-4 py-2.5 text-center border-r border-slate-100 border-b border-slate-200/60 bg-emerald-50/30 text-emerald-800">
+                  Kehadiran {new Date(event.event_date).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase()}
+                </th>
+                <th rowSpan="2" className="px-4 py-3 text-center min-w-[80px]">Capaian %</th>
+              </tr>
+              {/* Header Level 2 */}
+              <tr className="bg-slate-50/50 text-slate-400 text-[10px] font-bold uppercase tracking-wider border-b border-slate-200/80">
+                <th className="px-3 py-2 text-center border-r border-slate-100">Putra</th>
+                <th className="px-3 py-2 text-center border-r border-slate-100">Putri</th>
+                <th className="px-3 py-2 text-center font-extrabold text-slate-600 border-r border-slate-100">Total</th>
+                <th className="px-3 py-2 text-center text-emerald-700 border-r border-slate-100">Putra</th>
+                <th className="px-3 py-2 text-center text-emerald-700 border-r border-slate-100">Putri</th>
+                <th className="px-3 py-2 text-center font-extrabold text-emerald-800 border-r border-slate-100">Total</th>
               </tr>
             </thead>
-            <tbody>
-              {filteredData.length === 0 ? (
-                <tr><td colSpan="4" className="px-6 py-12 text-center text-slate-400 text-sm">Tidak ada data yang sesuai filter.</td></tr>
-              ) : (
-                filteredData.map((item, index) => (
-                  <tr key={item.id} className="hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-0">
-                    <td className="px-3 py-2.5 sm:px-6 sm:py-3.5 text-center font-medium text-slate-500 text-sm">{index + 1}</td>
-                    <td className="px-3 py-2.5 sm:px-6 sm:py-3.5">
-                      <p className="font-bold text-slate-800 text-sm">{item.generus?.nama_lengkap || '-'}</p>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase mt-0.5">{item.generus?.kelompok || '-'} • {item.generus?.jenjang || '-'}</p>
-                    </td>
-                    <td className="px-3 py-2.5 sm:px-6 sm:py-3.5">
-                      <span className={`text-[11px] font-bold uppercase px-3 py-1.5 rounded-lg border flex w-fit items-center gap-1.5 ${
-                        item.status === 'hadir' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
-                        item.status === 'izin' || item.status === 'sakit' ? 'bg-amber-50 text-amber-600 border-amber-100' :
-                        'bg-rose-50 text-rose-600 border-rose-100'
-                      }`}>
-                        {item.status === 'hadir' && <CheckCircle size={14}/>}
-                        {item.status === 'alpa' && <XCircle size={14}/>}
-                        {(item.status === 'izin' || item.status === 'sakit') && <AlertCircle size={14}/>}
-                        {item.status}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2.5 sm:px-6 sm:py-3.5">
-                      {item.status === 'hadir' ? (
-                        <div className="flex flex-col">
-                          <span className="text-sm font-bold text-slate-700">{item.time_arrived?.substring(0,5)} WIB</span>
-                          {Number(item.is_late) === 1 ? <span className="text-[10px] font-bold text-red-500 uppercase mt-0.5">Terlambat</span> : null}
-                        </div>
-                      ) : (
-                        <span className="text-sm text-slate-400 font-medium">-</span>
-                      )}
-                    </td>
-                  </tr>
-                ))
-              )}
+            <tbody className="divide-y divide-slate-100 text-xs sm:text-sm">
+              {groupStats.map((stat, index) => (
+                <tr key={stat.name} className="hover:bg-slate-50/70 transition-colors">
+                  <td className="px-3.5 py-3 text-center font-semibold text-slate-400 border-r border-slate-100 tabular-nums">
+                    {index + 1}
+                  </td>
+                  <td className="px-4 py-3 font-extrabold text-slate-900 border-r border-slate-100">
+                    {stat.name}
+                  </td>
+                  <td className="px-3 py-3 text-center text-slate-600 border-r border-slate-100 tabular-nums">
+                    {stat.targetPutra}
+                  </td>
+                  <td className="px-3 py-3 text-center text-slate-600 border-r border-slate-100 tabular-nums">
+                    {stat.targetPutri}
+                  </td>
+                  <td className="px-3 py-3 text-center font-bold text-slate-900 bg-slate-50/30 border-r border-slate-100 tabular-nums">
+                    {stat.targetTotal}
+                  </td>
+                  <td className="px-3 py-3 text-center text-slate-700 border-r border-slate-100 tabular-nums">
+                    {stat.hadirPutra}
+                  </td>
+                  <td className="px-3 py-3 text-center text-slate-700 border-r border-slate-100 tabular-nums">
+                    {stat.hadirPutri}
+                  </td>
+                  <td className="px-3 py-3 text-center font-extrabold text-[#168a53] bg-emerald-50/20 border-r border-slate-100 tabular-nums">
+                    {stat.hadirTotal}
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-black tabular-nums ${getPercentageBadge(stat.percentage)}`}>
+                      {stat.percentage}%
+                    </span>
+                  </td>
+                </tr>
+              ))}
+
+              {/* Total Summary Row */}
+              <tr className="bg-slate-100/60 border-t-2 border-slate-200/90 font-extrabold text-slate-900">
+                <td colSpan="2" className="px-4 py-3 text-center uppercase tracking-wider text-xs border-r border-slate-200/60">
+                  Jumlah Total
+                </td>
+                <td className="px-3 py-3 text-center border-r border-slate-200/60 tabular-nums">
+                  {totalStats.targetPutra}
+                </td>
+                <td className="px-3 py-3 text-center border-r border-slate-200/60 tabular-nums">
+                  {totalStats.targetPutri}
+                </td>
+                <td className="px-3 py-3 text-center text-slate-900 font-black border-r border-slate-200/60 tabular-nums bg-slate-200/40">
+                  {totalStats.targetTotal}
+                </td>
+                <td className="px-3 py-3 text-center text-[#168a53] border-r border-slate-200/60 tabular-nums">
+                  {totalStats.hadirPutra}
+                </td>
+                <td className="px-3 py-3 text-center text-[#168a53] border-r border-slate-200/60 tabular-nums">
+                  {totalStats.hadirPutri}
+                </td>
+                <td className="px-3 py-3 text-center text-[#168a53] font-black border-r border-slate-200/60 tabular-nums bg-emerald-50/50">
+                  {totalStats.hadirTotal}
+                </td>
+                <td className="px-4 py-3 text-center">
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-black bg-[#168a53] text-white shadow-2xs tabular-nums">
+                    {totalStats.percentage}%
+                  </span>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
+
+        {/* ── iOS Inset Wallet / Infaq Card Section ────────────────────────── */}
+        <div className="border-t border-slate-200/80 bg-amber-50/40 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 border border-amber-200/60 shadow-2xs">
+              <Coins size={20} strokeWidth={2.2} />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-extrabold text-slate-900 tracking-tight uppercase">Infaq Acara</h3>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100/80 text-amber-800 border border-amber-200/60">
+                  Kas Kegiatan
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 font-medium mt-0.5">
+                Total penerimaan infaq sukarela dari peserta pada kegiatan ini
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2.5 w-full sm:w-auto">
+            <div className="relative flex-1 sm:w-56">
+              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">
+                Rp
+              </span>
+              <input
+                type="number"
+                value={infaqAmount}
+                onChange={(e) => setInfaqAmount(e.target.value)}
+                placeholder="0"
+                className="w-full pl-10 pr-3.5 py-2 rounded-full border border-slate-300/80 focus:border-[#168a53] focus:ring-2 focus:ring-[#168a53]/15 outline-none text-xs sm:text-sm font-bold text-slate-900 bg-white shadow-2xs transition-all"
+              />
+            </div>
+
+            <button
+              onClick={handleSaveInfaq}
+              disabled={isSavingInfaq || !isChangedInfaq}
+              className={`px-4 py-2 rounded-full font-bold text-xs sm:text-sm transition-all flex items-center gap-1.5 shrink-0 shadow-xs cursor-pointer select-none active:scale-95 ${
+                !isChangedInfaq
+                  ? 'bg-slate-200/80 text-slate-600 cursor-default opacity-90'
+                  : 'bg-[#168a53] hover:bg-[#127344] text-white'
+              }`}
+            >
+              {isSavingInfaq ? (
+                <>
+                  <Loader2 size={14} className="animate-spin" />
+                  <span>Menyimpan...</span>
+                </>
+              ) : !isChangedInfaq ? (
+                <>
+                  <Check size={14} strokeWidth={2.5} className="text-[#168a53]" />
+                  <span>Tersimpan</span>
+                </>
+              ) : (
+                <span>Simpan Infaq</span>
+              )}
+            </button>
+          </div>
+        </div>
+
       </div>
+
+      {/* ── 4. iOS Comparison Charts ─────────────────────────────────────────── */}
+      {previousEvent && comparisonData.length > 0 && (
+        <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-[0_2px_12px_rgba(0,0,0,0.03)] overflow-hidden">
+          <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/60">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100/60">
+                <BarChart3 size={17} strokeWidth={2.2} />
+              </div>
+              <div>
+                <h2 className="text-sm sm:text-base font-extrabold text-slate-900 tracking-tight uppercase">
+                  Perbandingan Kehadiran dengan {new Date(previousEvent.event_date).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}
+                </h2>
+                <p className="text-[11px] sm:text-xs text-slate-500 font-medium">
+                  Persentase capaian kehadiran per kelompok dibandingkan bulan sebelumnya
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-4 sm:p-6 h-[340px] sm:h-[370px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={comparisonData} margin={{ top: 20, right: 20, left: -10, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <XAxis
+                  dataKey="name"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#64748b', fontSize: 12, fontWeight: 700 }}
+                  dy={10}
+                />
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#94a3b8', fontSize: 11 }}
+                  dx={-5}
+                  domain={[0, 100]}
+                  tickFormatter={(val) => `${val}%`}
+                />
+                <Tooltip
+                  cursor={{ fill: '#f8fafc' }}
+                  content={({ active, payload, label }) => {
+                    if (active && payload && payload.length) {
+                      return (
+                        <div className="bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-2xl shadow-xl p-3 text-xs min-w-[140px]">
+                          <p className="font-extrabold text-slate-900 pb-1 mb-1.5 border-b border-slate-100">
+                            Kelompok {label}
+                          </p>
+                          <div className="space-y-1 font-semibold">
+                            <p className="text-[#168a53] flex items-center justify-between">
+                              <span>{currentMonthName}:</span>
+                              <span className="font-black tabular-nums">{payload[0]?.value}%</span>
+                            </p>
+                            <p className="text-slate-500 flex items-center justify-between">
+                              <span>{prevMonthName}:</span>
+                              <span className="font-black tabular-nums">{payload[1]?.value}%</span>
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
+                />
+                <Legend
+                  iconType="circle"
+                  wrapperStyle={{ paddingTop: '20px', fontSize: '12px', fontWeight: 600 }}
+                />
+                <Bar dataKey="Sekarang" name={currentMonthName} fill="#168a53" radius={[6, 6, 0, 0]} barSize={28}>
+                  <LabelList
+                    dataKey="Sekarang"
+                    position="top"
+                    formatter={(val) => `${val}%`}
+                    style={{ fill: '#168a53', fontSize: 11, fontWeight: '800' }}
+                  />
+                </Bar>
+                <Bar dataKey="BulanLalu" name={prevMonthName} fill="#cbd5e1" radius={[6, 6, 0, 0]} barSize={28}>
+                  <LabelList
+                    dataKey="BulanLalu"
+                    position="top"
+                    formatter={(val) => `${val}%`}
+                    style={{ fill: '#64748b', fontSize: 11, fontWeight: '700' }}
+                  />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
+
+      {/* ── 5. Trend & Gender Cards (Grid 2 Col) ──────────────────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6">
+        
+        {/* Trend Status (Line Chart) */}
+        {previousEvent && globalComparisonData.length > 0 ? (
+          <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-[0_2px_12px_rgba(0,0,0,0.03)] overflow-hidden flex flex-col">
+            <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/60">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0 border border-purple-100/60">
+                  <TrendingUp size={17} strokeWidth={2.2} />
+                </div>
+                <div>
+                  <h2 className="text-sm sm:text-base font-extrabold text-slate-900 tracking-tight uppercase">
+                    Perbandingan Total Status
+                  </h2>
+                  <p className="text-[11px] sm:text-xs text-slate-500 font-medium">
+                    Tren perubahan jumlah status dibanding bulan lalu
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-5 flex-grow flex flex-col justify-between">
+              {/* iOS Trend Badges */}
+              <div className="flex gap-4 sm:gap-6 mb-4 justify-center flex-wrap pb-3 border-b border-slate-100">
+                <div className="flex flex-col items-center">
+                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Hadir</span>
+                  <div className={`flex items-center gap-1 text-xs font-bold px-3 py-1 rounded-full mt-1 border ${hadirChange?.colorClass}`}>
+                    {hadirChange?.icon}
+                    <span>{hadirChange?.text}</span>
+                  </div>
+                </div>
+                <div className="flex flex-col items-center">
+                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Izin/Sakit</span>
+                  <div className={`flex items-center gap-1 text-xs font-bold px-3 py-1 rounded-full mt-1 border ${izinChange?.colorClass}`}>
+                    {izinChange?.icon}
+                    <span>{izinChange?.text}</span>
+                  </div>
+                </div>
+                <div className="flex flex-col items-center">
+                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Alpa</span>
+                  <div className={`flex items-center gap-1 text-xs font-bold px-3 py-1 rounded-full mt-1 border ${alpaChange?.colorClass}`}>
+                    {alpaChange?.icon}
+                    <span>{alpaChange?.text}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="w-full h-[240px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={globalComparisonData} margin={{ top: 20, right: 20, left: -10, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                    <XAxis
+                      dataKey="name"
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fill: '#64748b', fontSize: 12, fontWeight: 700 }}
+                      dy={10}
+                    />
+                    <YAxis
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fill: '#94a3b8', fontSize: 11 }}
+                      dx={-5}
+                    />
+                    <Tooltip
+                      content={({ active, payload, label }) => {
+                        if (active && payload && payload.length) {
+                          return (
+                            <div className="bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-2xl shadow-xl p-3 text-xs min-w-[130px]">
+                              <p className="font-extrabold text-slate-900 pb-1 mb-1.5 border-b border-slate-100">
+                                {label}
+                              </p>
+                              <div className="space-y-1 font-semibold">
+                                {payload.map((item, idx) => (
+                                  <div key={idx} className="flex items-center justify-between gap-3">
+                                    <span className="flex items-center gap-1.5" style={{ color: item.color }}>
+                                      <span className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }} />
+                                      {item.name}:
+                                    </span>
+                                    <span className="font-black text-slate-900 tabular-nums">{item.value}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          );
+                        }
+                        return null;
+                      }}
+                    />
+                    <Legend iconType="circle" wrapperStyle={{ paddingTop: '15px', fontSize: '12px', fontWeight: 600 }} />
+                    <Line type="monotone" dataKey="Hadir" stroke="#168a53" strokeWidth={3} activeDot={{ r: 6 }} />
+                    <Line type="monotone" dataKey="Izin" name="Izin/Sakit" stroke="#f59e0b" strokeWidth={3} activeDot={{ r: 6 }} />
+                    <Line type="monotone" dataKey="Alpa" stroke="#ef4444" strokeWidth={3} activeDot={{ r: 6 }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
+        ) : null}
+
+        {/* Komposisi Gender (Putra vs Putri) */}
+        {(genderData.length > 0 || (previousEvent && prevGenderData.length > 0)) ? (
+          <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-[0_2px_12px_rgba(0,0,0,0.03)] overflow-hidden flex flex-col">
+            <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/60">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center shrink-0 border border-pink-100/60">
+                  <PieChartIcon size={17} strokeWidth={2.2} />
+                </div>
+                <div>
+                  <h2 className="text-sm sm:text-base font-extrabold text-slate-900 tracking-tight uppercase">
+                    Komposisi Kehadiran
+                  </h2>
+                  <p className="text-[11px] sm:text-xs text-slate-500 font-medium">
+                    Perbandingan santri Putra vs Putri yang hadir
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-5 flex flex-col items-center justify-between flex-grow">
+              <div className="w-full h-[230px] grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
+                
+                {/* Previous Event Donut */}
+                {previousEvent && prevGenderData.length > 0 ? (
+                  <div className="flex flex-col items-center h-full w-full">
+                    <span className="text-xs font-bold text-slate-500 mb-1">{prevMonthName}</span>
+                    <div className="w-full flex-grow relative">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                          <Pie
+                            data={prevGenderData}
+                            cx="50%"
+                            cy="50%"
+                            innerRadius={46}
+                            outerRadius={68}
+                            paddingAngle={4}
+                            dataKey="value"
+                            stroke="none"
+                          >
+                            {prevGenderData.map((entry, index) => (
+                              <Cell key={`cell-prev-${index}`} fill={entry.color} />
+                            ))}
+                          </Pie>
+                          <Tooltip
+                            content={({ active, payload }) => {
+                              if (active && payload && payload.length) {
+                                return (
+                                  <div className="bg-white/95 backdrop-blur-md border border-slate-200/80 rounded-xl p-2 text-xs shadow-md">
+                                    <span className="font-bold">{payload[0].name}: {payload[0].value} Santri</span>
+                                  </div>
+                                );
+                              }
+                              return null;
+                            }}
+                          />
+                        </PieChart>
+                      </ResponsiveContainer>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                        <span className="text-xl font-black text-slate-800 tabular-nums">{prevTotalHadir}</span>
+                        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Hadir</span>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center h-full text-xs text-slate-400 italic">
+                    Belum ada data bulan lalu
+                  </div>
+                )}
+
+                {/* Current Event Donut */}
+                {genderData.length > 0 ? (
+                  <div className="flex flex-col items-center h-full w-full">
+                    <span className="text-xs font-bold text-slate-800 mb-1">{currentMonthName}</span>
+                    <div className="w-full flex-grow relative">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                          <Pie
+                            data={genderData}
+                            cx="50%"
+                            cy="50%"
+                            innerRadius={46}
+                            outerRadius={68}
+                            paddingAngle={4}
+                            dataKey="value"
+                            stroke="none"
+                          >
+                            {genderData.map((entry, index) => (
+                              <Cell key={`cell-curr-${index}`} fill={entry.color} />
+                            ))}
+                          </Pie>
+                          <Tooltip
+                            content={({ active, payload }) => {
+                              if (active && payload && payload.length) {
+                                return (
+                                  <div className="bg-white/95 backdrop-blur-md border border-slate-200/80 rounded-xl p-2 text-xs shadow-md">
+                                    <span className="font-bold">{payload[0].name}: {payload[0].value} Santri</span>
+                                  </div>
+                                );
+                              }
+                              return null;
+                            }}
+                          />
+                        </PieChart>
+                      </ResponsiveContainer>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                        <span className="text-xl font-black text-slate-800 tabular-nums">{totalStats.hadirTotal}</span>
+                        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Hadir</span>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center h-full text-xs text-slate-400 italic">
+                    Belum ada data hadir
+                  </div>
+                )}
+
+              </div>
+
+              {/* Shared Legend */}
+              <div className="flex items-center justify-center gap-6 mt-3 pt-3 border-t border-slate-100 w-full">
+                <div className="flex items-center gap-2">
+                  <span className="w-3 h-3 rounded-full bg-[#3b82f6] shadow-2xs"></span>
+                  <span className="text-xs font-bold text-slate-700">Putra</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-3 h-3 rounded-full bg-[#ec4899] shadow-2xs"></span>
+                  <span className="text-xs font-bold text-slate-700">Putri</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : null}
+
+      </div>
+
+      {/* ── 6. Rasio Kehadiran per Kelompok ──────────────────────────────────── */}
+      {groupStats.length > 0 && (
+        <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-[0_2px_12px_rgba(0,0,0,0.03)] overflow-hidden">
+          <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/60">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 border border-amber-100/60">
+                <PieChartIcon size={17} strokeWidth={2.2} />
+              </div>
+              <div>
+                <h2 className="text-sm sm:text-base font-extrabold text-slate-900 tracking-tight uppercase">
+                  Rasio Kehadiran per Kelompok
+                </h2>
+                <p className="text-[11px] sm:text-xs text-slate-500 font-medium">
+                  Rincian perbandingan status kehadiran tiap-tiap kelompok santri
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+            {groupStats.map((stat, idx) => {
+              const pieData = [
+                { name: 'Hadir', value: stat.hadirTotal, color: '#168a53' },
+                { name: 'Izin/Sakit', value: stat.izinSakitTotal, color: '#f59e0b' },
+                { name: 'Alpa', value: stat.alpaTotal < 0 ? 0 : stat.alpaTotal, color: '#ef4444' }
+              ].filter(d => d.value > 0);
+
+              return (
+                <div
+                  key={idx}
+                  className="flex flex-col items-center bg-slate-50/70 border border-slate-200/70 rounded-2xl p-4 hover:shadow-sm transition-all"
+                >
+                  <div className="flex items-center justify-between w-full mb-1">
+                    <h3 className="font-extrabold text-slate-800 text-xs sm:text-sm tracking-tight uppercase">
+                      {stat.name}
+                    </h3>
+                    <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${getPercentageBadge(stat.percentage)}`}>
+                      {stat.percentage}%
+                    </span>
+                  </div>
+
+                  <div className="w-full h-[170px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={pieData}
+                          cx="50%"
+                          cy="50%"
+                          dataKey="value"
+                          stroke="none"
+                          activeIndex={pieData.map((_, i) => i)}
+                          activeShape={renderRoseShape}
+                          labelLine={false}
+                          label={renderCustomizedLabel}
+                        >
+                          {pieData.map((entry, index) => (
+                            <Cell key={`cell-group-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip
+                          contentStyle={{
+                            borderRadius: '16px',
+                            border: '1px solid #e2e8f0',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.06)',
+                            fontSize: '12px',
+                            fontWeight: 'bold'
+                          }}
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  {/* Status Pills */}
+                  <div className="flex flex-wrap justify-center gap-1.5 mt-3 w-full text-[10px] font-bold">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-50 text-[#168a53] rounded-md border border-emerald-100">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#168a53]"></span>
+                      Hadir: {stat.hadirTotal}
+                    </span>
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-50 text-amber-700 rounded-md border border-amber-100">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                      Izin: {stat.izinSakitTotal}
+                    </span>
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-rose-50 text-rose-700 rounded-md border border-rose-100">
+                      <span className="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                      Alpa: {stat.alpaTotal}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ── 7. iOS Inset Grouped Detail Attendee Table & Filters ─────────────── */}
+      <div className="space-y-3.5">
+        
+        {/* iOS Filter Buttons & Result Count */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            {/* Kelompok Dropdown */}
+            <div className="relative shrink-0" ref={dropdownKelRef}>
+              <button
+                type="button"
+                onClick={() => setIsDropdownKelompokOpen(!isDropdownKelompokOpen)}
+                className="flex items-center gap-2 px-3.5 sm:px-4 py-2 bg-white border border-slate-200/90 rounded-full shadow-2xs text-slate-700 font-bold text-xs sm:text-sm hover:bg-slate-50 active:scale-95 transition-all select-none cursor-pointer"
+              >
+                <Filter size={14} className="text-slate-400" />
+                <span>{filterKelompok === 'Semua' ? 'Semua Kelompok' : filterKelompok}</span>
+                <ChevronDown size={14} className={`text-slate-400 transition-transform ${isDropdownKelompokOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {isDropdownKelompokOpen && (
+                <div className="absolute z-50 left-0 mt-2 w-48 bg-white border border-slate-200/80 rounded-2xl shadow-xl overflow-hidden py-1.5 animate-in fade-in zoom-in-95 duration-100">
+                  {kelompokList.map(k => (
+                    <button
+                      key={k}
+                      onClick={() => { setFilterKelompok(k); setIsDropdownKelompokOpen(false); }}
+                      className={`w-full text-left px-4 py-2 text-xs font-semibold transition-colors flex items-center justify-between cursor-pointer ${
+                        filterKelompok === k
+                          ? 'bg-emerald-50 text-[#168a53] font-bold'
+                          : 'text-slate-700 hover:bg-slate-50'
+                      }`}
+                    >
+                      <span>{k === 'Semua' ? 'Semua Kelompok' : k}</span>
+                      {filterKelompok === k && <Check size={14} className="text-[#168a53]" strokeWidth={2.5} />}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Status Dropdown */}
+            <div className="relative shrink-0" ref={dropdownStatusRef}>
+              <button
+                type="button"
+                onClick={() => setIsDropdownStatusOpen(!isDropdownStatusOpen)}
+                className="flex items-center gap-2 px-3.5 sm:px-4 py-2 bg-white border border-slate-200/90 rounded-full shadow-2xs text-slate-700 font-bold text-xs sm:text-sm hover:bg-slate-50 active:scale-95 transition-all select-none cursor-pointer"
+              >
+                <CheckCircle2 size={14} className="text-slate-400" />
+                <span>{filterStatus === 'Semua' ? 'Semua Status' : filterStatus}</span>
+                <ChevronDown size={14} className={`text-slate-400 transition-transform ${isDropdownStatusOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {isDropdownStatusOpen && (
+                <div className="absolute z-50 left-0 mt-2 w-44 bg-white border border-slate-200/80 rounded-2xl shadow-xl overflow-hidden py-1.5 animate-in fade-in zoom-in-95 duration-100">
+                  {statusList.map(s => (
+                    <button
+                      key={s}
+                      onClick={() => { setFilterStatus(s); setIsDropdownStatusOpen(false); }}
+                      className={`w-full text-left px-4 py-2 text-xs font-semibold transition-colors flex items-center justify-between cursor-pointer ${
+                        filterStatus === s
+                          ? 'bg-emerald-50 text-[#168a53] font-bold'
+                          : 'text-slate-700 hover:bg-slate-50'
+                      }`}
+                    >
+                      <span>{s === 'Semua' ? 'Semua Status' : s}</span>
+                      {filterStatus === s && <Check size={14} className="text-[#168a53]" strokeWidth={2.5} />}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <span className="text-xs font-medium text-slate-400 self-end sm:self-center">
+            Menampilkan <strong className="text-slate-700 font-bold">{filteredData.length}</strong> peserta
+          </span>
+        </div>
+
+        {/* Inset Grouped Detail Table */}
+        <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-[0_2px_12px_rgba(0,0,0,0.03)] overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-slate-50/80 text-slate-500 text-xs font-bold uppercase tracking-wider border-b border-slate-100">
+                  <th className="px-4 py-3.5 text-center w-12">No</th>
+                  <th className="px-4 py-3.5">Biodata Peserta</th>
+                  <th className="px-4 py-3.5">Status Kehadiran</th>
+                  <th className="px-4 py-3.5">Waktu Kehadiran</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-xs sm:text-sm">
+                {filteredData.length === 0 ? (
+                  <tr>
+                    <td colSpan="4" className="px-6 py-12 text-center text-slate-400">
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <Users size={28} className="text-slate-300 stroke-[1.5]" />
+                        <p className="font-semibold text-slate-500 text-xs sm:text-sm">
+                          Tidak ada data yang sesuai filter
+                        </p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  filteredData.map((item, index) => (
+                    <tr key={item.id} className="hover:bg-slate-50/70 transition-colors">
+                      <td className="px-4 py-3 text-center font-semibold text-slate-400 tabular-nums">
+                        {index + 1}
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          <UserAvatar
+                            name={item.generus?.nama_lengkap}
+                            gender={item.generus?.jenis_kelamin}
+                          />
+                          <div className="min-w-0">
+                            <p className="font-extrabold text-slate-900 truncate">
+                              {item.generus?.nama_lengkap || '-'}
+                            </p>
+                            <p className="text-[11px] font-medium text-slate-400 uppercase tracking-wide mt-0.5">
+                              {item.generus?.kelompok || '-'} • {item.generus?.jenjang || '-'}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span
+                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold capitalize border ${
+                            item.status === 'hadir'
+                              ? 'bg-emerald-50 text-[#168a53] border-emerald-200/70'
+                              : item.status === 'izin' || item.status === 'sakit'
+                              ? 'bg-amber-50 text-amber-700 border-amber-200/70'
+                              : 'bg-rose-50 text-rose-700 border-rose-200/70'
+                          }`}
+                        >
+                          {item.status === 'hadir' && <CheckCircle2 size={13} strokeWidth={2.5} />}
+                          {item.status === 'alpa' && <XCircle size={13} strokeWidth={2.5} />}
+                          {(item.status === 'izin' || item.status === 'sakit') && <AlertCircle size={13} strokeWidth={2.5} />}
+                          <span>{item.status}</span>
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        {item.status === 'hadir' ? (
+                          <div className="flex items-center gap-2">
+                            <Clock size={14} className="text-slate-400 shrink-0" />
+                            <span className="font-bold text-slate-700 tabular-nums">
+                              {item.time_arrived?.substring(0, 5)} WIB
+                            </span>
+                            {Number(item.is_late) === 1 && (
+                              <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-rose-50 text-rose-600 border border-rose-200/70">
+                                Terlambat
+                              </span>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-slate-300 font-bold ml-4">—</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 }

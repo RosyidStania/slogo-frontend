@@ -1,8 +1,16 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import api from '../api/axios';
-import { LogIn, Eye, EyeOff } from 'lucide-react';
-import bgImage from '../assets/Generus.jpeg';
+import { 
+  LogIn, 
+  Eye, 
+  EyeOff, 
+  User, 
+  Lock, 
+  ChevronLeft, 
+  AlertCircle, 
+  Loader2
+} from 'lucide-react';
 import logoImg from '../assets/logo.png';
 
 export default function Login() {
@@ -20,13 +28,15 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setError('');
+    
     try {
       const response = await api.post('/login', { username, password });
       if (response.data.access_token) {
         localStorage.setItem('token', response.data.access_token);
         localStorage.setItem('role', response.data.role);
-          localStorage.setItem('kelompok', response.data.user?.kelompok || response.data.user?.generus?.kelompok || '');
-          localStorage.setItem('name', response.data.user?.name || '');
+        localStorage.setItem('kelompok', response.data.user?.kelompok || response.data.user?.generus?.kelompok || '');
+        localStorage.setItem('name', response.data.user?.name || '');
         
         setTimeout(() => {
           const role = response.data.role;
@@ -39,7 +49,7 @@ export default function Login() {
           } else {
             navigate('/users');
           }
-        }, 500); // Small delay for smooth button animation
+        }, 400); // Small delay for smooth button animation
       }
     } catch (err) {
       setIsLoading(false);
@@ -48,131 +58,149 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex w-full font-sans bg-slate-50 text-slate-800">
-      {/* Left section: Visuals & Branding using Teal theme and Background Image */}
-      <div className="hidden lg:flex w-1/2 relative overflow-hidden flex-col justify-between p-12">
-        {/* Background Image with Teal Overlay */}
-        <div 
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${bgImage})` }}
-        ></div>
-        <div className="absolute inset-0 bg-teal-900/80 mix-blend-multiply"></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-teal-950 via-teal-900/80 to-transparent opacity-90"></div>
-        
-        {/* Decorative elements */}
-        <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-teal-400 rounded-full mix-blend-overlay filter blur-[100px] opacity-40 animate-pulse"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-emerald-300 rounded-full mix-blend-overlay filter blur-[100px] opacity-30 animate-pulse" style={{ animationDelay: '2s' }}></div>
-        
-        <div className="relative z-10 flex items-center space-x-3 text-white">
-          <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-xl border border-white/30 flex items-center justify-center shadow-xl p-1.5">
-            <img src={logoImg} alt="Logo Desa Slogo" className="w-full h-full object-contain" />
-          </div>
-          <span className="text-2xl font-bold tracking-tight">Desa Slogo</span>
-        </div>
+    <div className="min-h-screen bg-[#f8fafc] text-slate-800 font-sans flex flex-col justify-between selection:bg-[#168a53] selection:text-white relative overflow-hidden">
+      
+      {/* iOS Soft Ambient Gradient Orbs */}
+      <div className="fixed top-[-100px] left-1/2 -translate-x-1/2 w-[650px] h-[350px] bg-gradient-to-b from-emerald-100/40 via-teal-50/20 to-transparent rounded-full blur-[100px] pointer-events-none -z-10" />
+      <div className="fixed bottom-[-100px] right-[-100px] w-[450px] h-[450px] bg-emerald-100/30 rounded-full blur-[120px] pointer-events-none -z-10" />
 
-        <div className="relative z-10 mb-20">
+      {/* Top Bar Navigation */}
+      <header className="w-full max-w-6xl mx-auto px-4 sm:px-6 pt-6 flex items-center justify-between z-10">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-white/80 border border-transparent hover:border-slate-200/80 transition-all duration-200 active:scale-95 shadow-2xs"
+        >
+          <ChevronLeft size={16} strokeWidth={2.4} className="text-slate-500" />
+          <span>Kembali ke Beranda</span>
+        </Link>
+      </header>
 
-          <h1 className="text-5xl font-extrabold text-white leading-[1.15] tracking-tight mb-6">
-            Sistem Pendataan <br />
-            <span className="text-teal-300">
-              Modern & Akurat
-            </span>
-          </h1>
-          <p className="text-teal-50 text-lg max-w-md leading-relaxed font-light">
-            Kelola dan pantau data Anda dengan efisien. Platform Slogo dirancang untuk memberikan wawasan terbaik bagi produktivitas tim Anda.
-          </p>
-        </div>
-
-        <div className="relative z-10 flex items-center justify-between text-teal-200/80 text-sm font-medium">
-          <span>&copy; {new Date().getFullYear()} Desa Slogo Data System.</span>
-
-        </div>
-      </div>
-
-      {/* Right section: Login form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 relative bg-white">
-        {/* Subtle dot pattern background */}
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMCwwLDAsMC4wMykiLz48L3N2Zz4=')]"></div>
-        
-        <div className="w-full max-w-[420px] relative z-10">
+      {/* Main Login Card Container */}
+      <main className="flex-1 flex items-center justify-center px-4 py-8 sm:py-12 z-10">
+        <div className="w-full max-w-[420px]">
           
-          <div className="lg:hidden flex items-center justify-center space-x-3 text-slate-900 mb-10">
-            <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg shadow-teal-500/10 border border-slate-100 p-1.5">
-              <img src={logoImg} alt="Logo Desa Slogo" className="w-full h-full object-contain" />
-            </div>
-            <span className="text-2xl sm:text-3xl font-bold tracking-tight">Desa Slogo</span>
-          </div>
-
-          <div className="mb-10 lg:text-left text-center">
-            <h2 className="text-2xl sm:text-3xl font-bold text-slate-800 tracking-tight mb-3">
-              Selamat Datang
-            </h2>
-            <p className="text-slate-500 font-medium">
-              Silakan masukkan kredensial Anda untuk masuk.
-            </p>
-          </div>
-          
-          {error && (
-            <div className="bg-red-50/80 border-l-4 border-red-500 text-red-700 p-4 rounded-r-xl mb-8 text-sm font-medium flex items-start shadow-sm">
-              <svg className="w-5 h-5 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" /></svg>
-              <span>{error}</span>
-            </div>
-          )}
-
-          <form onSubmit={handleLogin} className="space-y-6">
-            <div className="space-y-2.5">
-              <label className="text-sm font-semibold text-slate-700">Username</label>
-              <div className="relative group">
-                <input 
-                  type="text" 
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="w-full px-5 py-3.5 bg-slate-50/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 focus:bg-white transition-all duration-300 outline-none text-slate-800 hover:border-slate-300 shadow-sm"
-                  placeholder="Masukkan username"
-                  required 
+          {/* iOS Card */}
+          <div className="bg-white/95 backdrop-blur-2xl border border-slate-200/90 rounded-[28px] sm:rounded-[36px] p-6 sm:p-9 shadow-[0_12px_40px_rgba(0,0,0,0.04)] animate-in fade-in zoom-in-95 duration-400">
+            
+            {/* iOS App Icon */}
+            <div className="flex flex-col items-center text-center mb-6 sm:mb-8">
+              <div className="w-18 h-18 sm:w-20 sm:h-20 rounded-[22px] bg-white p-3 shadow-md shadow-slate-200/50 border border-slate-200/80 flex items-center justify-center mb-3.5 group hover:scale-105 transition-transform duration-300">
+                <img 
+                  src={logoImg} 
+                  alt="Logo Desa Slogo" 
+                  className="w-full h-full object-contain drop-shadow-2xs" 
                 />
               </div>
+
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                Selamat Datang
+              </h1>
+              <p className="text-slate-400 text-xs sm:text-sm mt-1 font-normal">
+                Masuk untuk mengelola data & presensi generus
+              </p>
             </div>
 
-            <div className="space-y-2.5">
-              <label className="text-sm font-semibold text-slate-700">Password</label>
-              <div className="relative group">
-                <input 
-                  type={showPassword ? "text" : "password"} 
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-5 py-3.5 bg-slate-50/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 focus:bg-white transition-all duration-300 outline-none text-slate-800 pr-12 hover:border-slate-300 shadow-sm"
-                  placeholder="••••••••"
-                  required 
-                />
+            {/* Error Notification (Apple Alert Callout) */}
+            {error && (
+              <div className="mb-6 p-3.5 rounded-2xl bg-rose-50 border border-rose-200/80 text-rose-700 text-xs sm:text-sm font-medium flex items-start gap-2.5 animate-in fade-in slide-in-from-top-1 duration-200 shadow-2xs">
+                <AlertCircle size={18} className="shrink-0 text-rose-500 mt-0.5" />
+                <span className="leading-snug">{error}</span>
+              </div>
+            )}
+
+            {/* Login Form */}
+            <form onSubmit={handleLogin} className="space-y-4">
+              
+              {/* Field: Username */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider ml-1">
+                  Username
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                    <User size={17} strokeWidth={2} />
+                  </div>
+                  <input
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 bg-[#f8fafc] border border-slate-200/90 rounded-2xl text-slate-800 placeholder-slate-400 text-sm focus:outline-none focus:bg-white focus:border-[#168a53] focus:ring-4 focus:ring-emerald-500/15 transition-all shadow-2xs font-medium"
+                    placeholder="Masukkan username Anda"
+                    required
+                    autoComplete="username"
+                  />
+                </div>
+              </div>
+
+              {/* Field: Password */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider ml-1">
+                  Password
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                    <Lock size={17} strokeWidth={2} />
+                  </div>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full pl-10 pr-11 py-3 bg-[#f8fafc] border border-slate-200/90 rounded-2xl text-slate-800 placeholder-slate-400 text-sm focus:outline-none focus:bg-white focus:border-[#168a53] focus:ring-4 focus:ring-emerald-500/15 transition-all shadow-2xs font-medium"
+                    placeholder="••••••••"
+                    required
+                    autoComplete="current-password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 transition-colors cursor-pointer active:scale-90"
+                    title={showPassword ? "Sembunyikan Password" : "Tampilkan Password"}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <div className="pt-2">
                 <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-5 flex items-center text-slate-400 hover:text-teal-600 transition-colors"
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full py-3.5 bg-[#168a53] hover:bg-[#137747] text-white font-bold text-sm sm:text-base rounded-2xl shadow-sm shadow-emerald-700/25 active:scale-[0.98] transition-all duration-150 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed"
                 >
-                  {showPassword ? <EyeOff size={22} /> : <Eye size={22} />}
+                  {isLoading ? (
+                    <>
+                      <Loader2 size={18} className="animate-spin" />
+                      <span>Memverifikasi...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Masuk</span>
+                      <LogIn size={17} strokeWidth={2.4} />
+                    </>
+                  )}
                 </button>
               </div>
-            </div>
 
-            <button 
-              type="submit" 
-              disabled={isLoading}
-              className={`w-full group relative flex justify-center items-center gap-3 bg-teal-600 hover:bg-teal-700 text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-300 active:scale-[0.98] mt-6 shadow-lg shadow-teal-600/20 ${isLoading ? 'opacity-80 cursor-not-allowed' : ''}`}
-            >
-              {isLoading ? (
-                <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-              ) : (
-                <>
-                  <span className="text-[15px]">Masuk ke Sistem</span>
-                  <LogIn size={20} className="group-hover:translate-x-1 transition-transform" />
-                </>
-              )}
-            </button>
-          </form>
+            </form>
+
+          </div>
+
+          {/* Quick Help Card */}
+          <div className="mt-4 text-center">
+            <p className="text-xs text-slate-400">
+              Belum memiliki akun atau lupa password? Hubungi <span className="text-slate-600 font-semibold">Admin Desa Slogo</span>.
+            </p>
+          </div>
 
         </div>
-      </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="w-full max-w-6xl mx-auto px-4 py-6 text-center text-xs text-slate-400 z-10">
+        <p>&copy; {new Date().getFullYear()} DesaSlogo. Sistem Manajemen Generus.</p>
+      </footer>
+
     </div>
   );
 }
