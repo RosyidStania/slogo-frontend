@@ -17,6 +17,9 @@ import MtMembers from './pages/MtMembers';
 import MtStatistics from './pages/MtStatistics';
 import MtAttendance from './pages/MtAttendance';
 import ManageSchedules from './pages/ManageSchedules';
+import ManageNotulen from './pages/ManageNotulen';
+import NotulenEditor from './pages/NotulenEditor';
+import ManagePengurus from './pages/ManagePengurus';
 // PrivateRoute untuk menjaga keamanan rute
 const PrivateRoute = ({ children, allowedRole, allowedRoles }) => {
   const token = localStorage.getItem('token');
@@ -66,8 +69,11 @@ function App() {
           
           {/* Rute Khusus Admin Saja */}
           <Route path="/admin" element={<PrivateRoute allowedRole="admin"><Dashboard /></PrivateRoute>} />
+          <Route path="/admin/notulen" element={<PrivateRoute allowedRole="admin"><ManageNotulen /></PrivateRoute>} />
+          <Route path="/admin/notulen/:id" element={<PrivateRoute allowedRole="admin"><NotulenEditor /></PrivateRoute>} />
           <Route path="/admin/users" element={<PrivateRoute allowedRole="admin"><ManageUsers /></PrivateRoute>} />
           <Route path="/admin/generus" element={<PrivateRoute allowedRole="admin"><ManageGenerus /></PrivateRoute>} />
+          <Route path="/admin/pengurus" element={<PrivateRoute allowedRole="admin"><ManagePengurus /></PrivateRoute>} />
           <Route path="/admin/event-types" element={<PrivateRoute allowedRole="admin"><ManageEventTypes /></PrivateRoute>} />
           <Route path="/admin/reports" element={<PrivateRoute allowedRole="admin"><ReportByType /></PrivateRoute>} />
 

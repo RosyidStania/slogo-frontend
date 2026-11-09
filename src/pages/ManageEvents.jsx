@@ -8,7 +8,7 @@ import {
   BookOpen, Layers, ChevronDown, ChevronLeft, ChevronRight,
   CheckSquare, Square, Search, HelpCircle,
   Loader2, CalendarDays, Lock, Unlock, Check, CheckCircle2, List,
-  MoreVertical
+  MoreVertical, FileText
 } from 'lucide-react';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -192,6 +192,7 @@ export default function ManageEvents() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData();
     const id = requestAnimationFrame(() => {
       setHeaderSlot(document.getElementById('layout-header-actions'));
@@ -1014,6 +1015,19 @@ export default function ManageEvents() {
                           <>
                             <div className="fixed inset-0 z-40" onClick={() => setMobileMenuId(null)} />
                             <div className="absolute right-0 bottom-full mb-1 z-50 w-36 bg-white border border-slate-200/90 rounded-xl shadow-lg py-1 animate-in fade-in zoom-in-95 duration-100">
+                              {role === 'admin' && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setMobileMenuId(null);
+                                    navigate(`/admin/notulen?eventId=${event.id}`);
+                                  }}
+                                  className="w-full text-left px-3.5 py-2 text-xs font-semibold text-emerald-700 hover:bg-emerald-50 flex items-center gap-2 cursor-pointer"
+                                >
+                                  <FileText size={13} className="text-[#168a53]" />
+                                  <span>Notulen</span>
+                                </button>
+                              )}
                               <button
                                 type="button"
                                 onClick={() => {
@@ -1082,6 +1096,17 @@ export default function ManageEvents() {
                           <BookOpen size={13} />
                           <span>Rekapan</span>
                         </button>
+
+                        {role === 'admin' && (
+                          <button
+                            onClick={() => navigate(`/admin/notulen?eventId=${event.id}`)}
+                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-50/80 hover:bg-emerald-100 text-[#168a53] border border-emerald-200/60 text-xs font-bold transition-all cursor-pointer"
+                            title="Notulen Musyawarah"
+                          >
+                            <FileText size={13} />
+                            <span>Notulen</span>
+                          </button>
+                        )}
 
                         <div className="flex items-center gap-0.5 ml-1">
                           <button
@@ -1363,7 +1388,7 @@ export default function ManageEvents() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <p className="text-sm text-slate-500">
-                  Pilih kelompok yang <span className="font-semibold text-slate-700">wajib hadir</span>.
+                  Pilih kategori / jenjang yang <span className="font-semibold text-slate-700">wajib hadir</span>.
                 </p>
                 <span className="text-sm font-bold text-[#168a53]">{formData.target_kategori.length} dipilih</span>
               </div>
@@ -1434,7 +1459,7 @@ export default function ManageEvents() {
 
               {formData.target_kategori.length === 0 && (
                 <p className="text-xs text-red-500 font-semibold text-center py-1">
-                  Pilih minimal satu kelompok peserta.
+                  Pilih minimal satu kategori peserta.
                 </p>
               )}
 

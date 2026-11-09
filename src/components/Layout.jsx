@@ -17,6 +17,8 @@ import {
   ClipboardCheck,
   Settings,
   UserPlus,
+  ShieldCheck,
+  FileText,
   X
 } from 'lucide-react';
 
@@ -61,8 +63,10 @@ export default function Layout() {
     ? [
         { name: 'Dashboard', path: '/admin', icon: <LayoutGrid size={19} strokeWidth={1.9} /> },
         { name: 'Acara', path: '/admin/events', icon: <Calendar size={19} strokeWidth={1.9} /> },
+        { name: 'Notulen', path: '/admin/notulen', icon: <FileText size={19} strokeWidth={1.9} /> },
         { name: 'Acara Kelompok', path: '/admin/schedules', icon: <UsersRound size={19} strokeWidth={1.9} /> },
         { name: 'Generus', path: '/admin/generus', icon: <UserPlus size={19} strokeWidth={1.9} /> },
+        { name: 'Pengurus', path: '/admin/pengurus', icon: <ShieldCheck size={19} strokeWidth={1.9} /> },
         { name: 'Kategori Acara', path: '/admin/event-types', icon: <Tag size={19} strokeWidth={1.9} /> },
         { name: 'Rekapan Absensi', path: '/admin/reports', icon: <ClipboardCheck size={19} strokeWidth={1.9} /> },
       ]
@@ -103,8 +107,9 @@ export default function Layout() {
 
   const pageTitle = (() => {
     if (location.pathname.match(/\/admin\/attendance\//)) return 'Live Absensi';
+    if (location.pathname.match(/\/admin\/notulen\/\d+/)) return 'Kanvas Notulen';
     const seg = location.pathname.split('/').filter(Boolean).pop() || 'dashboard';
-    const map = { admin: 'Dashboard', mt: 'Dashboard', events: 'Acara', schedules: 'Acara Kelompok', generus: 'Data Generus', 'event-types': 'Kategori Acara', reports: 'Rekapan Absensi', users: 'Users', members: 'Data Anggota', statistics: 'Statistik Kelompok', attendance: 'Rekapan Absensi' };
+    const map = { admin: 'Dashboard', mt: 'Dashboard', events: 'Acara', notulen: 'Notulen Musyawarah', schedules: 'Acara Kelompok', generus: 'Data Generus', pengurus: 'Data Pengurus', 'event-types': 'Kategori Acara', reports: 'Rekapan Absensi', users: 'Users', members: 'Data Anggota', statistics: 'Statistik Kelompok', attendance: 'Rekapan Absensi' };
     return map[seg] || seg.replace(/-/g, ' ');
   })();
 
@@ -357,7 +362,6 @@ export default function Layout() {
                 </div>
                 <div>
                   <p className="font-bold text-slate-800 text-sm leading-tight">{userDisplayName}</p>
-                  <p className="text-emerald-600 text-xs font-medium">DesaSlogo · Online</p>
                 </div>
               </div>
               <button

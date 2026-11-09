@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import ReactDOM from 'react-dom';
 import api from '../api/axios';
 import CustomSelect from '../components/CustomSelect';
@@ -8,7 +8,7 @@ import {
   Users, FileUp, FileDown,
   Loader2, TrendingUp, TrendingDown, Search, Filter,
   QrCode, Download, AlertTriangle, Check, ChevronRight, ChevronLeft,
-  SlidersHorizontal, RotateCw, Clock
+  SlidersHorizontal, RotateCw, Clock, ShieldCheck
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { QRCodeCanvas } from 'qrcode.react';
@@ -142,7 +142,9 @@ function calcAge(birthDate, dbUmur) {
 const FORM_DEFAULT = {
   id: '', nama_lengkap: '', kelompok: 'Slogo', status: 'aktif',
   tempat_lahir: '', tanggal_lahir: '', umur: '', jenis_kelamin: 'L',
-  jenjang: 'PAUD', is_pengurus: false, is_pengurus_muda_mudi: false, is_ketua_wakil_kelompok: false, keterangan: '', libur: '', nama_ayah: '', nama_ibu: '',
+  jenjang: 'PAUD', is_pengurus: false, is_pengurus_muda_mudi: false, is_ketua_wakil_kelompok: false,
+  pengurus_type_ids: [],
+  keterangan: '', libur: '', nama_ayah: '', nama_ibu: '',
   no_hp: '', akun_media: '', hobi: ''
 };
 
@@ -237,6 +239,7 @@ export default function ManageGenerus() {
   const [showSettings, setShowSettings]   = useState(() => location.search.includes('openSettings=1'));
   const [showQrZipModal, setShowQrZipModal] = useState(false);
   const [selectedQrZipJenjang, setSelectedQrZipJenjang] = useState(['Semua']);
+  const [pengurusTypes, setPengurusTypes] = useState([]);
 
   const fileInputRef   = useRef(null);
   const idCardRef      = useRef(null);
@@ -255,6 +258,10 @@ export default function ManageGenerus() {
 
   useEffect(() => {
     fetchData();
+    api.get('/admin/pengurus-types')
+      .then(res => setPengurusTypes(res.data.data || []))
+      .catch(err => console.error('Gagal mengambil jenis pengurus:', err));
+
     const id = requestAnimationFrame(() => {
       setHeaderSlot(document.getElementById('layout-header-actions'));
     });
@@ -537,17 +544,48 @@ export default function ManageGenerus() {
     setModalMode('add');
     const nonEnumJenjang = ['Semua', 'PENGURUS USMAN', 'PENGURUS MUDA MUDI', 'KETUA/WAKIL KELOMPOK'];
     const defaultJenjang = (filterJenjang.length === 1 && !nonEnumJenjang.includes(filterJenjang[0])) ? filterJenjang[0] : 'PAUD';
+    const isUsman = filterJenjang.length === 1 && filterJenjang[0] === 'PENGURUS USMAN';
+    const isMudaMudi = filterJenjang.length === 1 && filterJenjang[0] === 'PENGURUS MUDA MUDI';
+    const isKetua = filterJenjang.length === 1 && filterJenjang[0] === 'KETUA/WAKIL KELOMPOK';
+
+    const initialTypeIds = [];
+    if (isUsman) {
+      const t = pengurusTypes.find(x => x.code === 'PENGURUS_USMAN');
+      if (t) initialTypeIds.push(t.id);
+    }
+    if (isMudaMudi) {
+      const t = pengurusTypes.find(x => x.code === 'PENGURUS_MUDA_MUDI');
+      if (t) initialTypeIds.push(t.id);
+    }
+    if (isKetua) {
+      const t = pengurusTypes.find(x => x.code === 'KETUA_WAKIL_KELOMPOK');
+      if (t) initialTypeIds.push(t.id);
+    }
+
     setFormData({
       ...FORM_DEFAULT,
       kelompok: (filterKelompok.includes('Semua') || filterKelompok.length !== 1) ? 'Slogo' : filterKelompok[0],
       jenjang:  defaultJenjang,
-      is_pengurus: filterJenjang.length === 1 && filterJenjang[0] === 'PENGURUS USMAN',
-      is_pengurus_muda_mudi: filterJenjang.length === 1 && filterJenjang[0] === 'PENGURUS MUDA MUDI',
-      is_ketua_wakil_kelompok: filterJenjang.length === 1 && filterJenjang[0] === 'KETUA/WAKIL KELOMPOK',
+      is_pengurus: isUsman,
+      is_pengurus_muda_mudi: isMudaMudi,
+      is_ketua_wakil_kelompok: isKetua,
+      pengurus_type_ids: initialTypeIds,
     });
     setShowForm(true);
   };
-  const openEdit = (item) => { setModalMode('edit'); setFormData({ ...FORM_DEFAULT, ...item }); setShowForm(true); };
+  const openEdit = (item) => {
+    setModalMode('edit');
+    const pIds = item.pengurus_types && item.pengurus_types.length > 0
+      ? item.pengurus_types.map(p => p.id)
+      : [
+          item.is_pengurus && pengurusTypes.find(t => t.code === 'PENGURUS_USMAN')?.id,
+          item.is_pengurus_muda_mudi && pengurusTypes.find(t => t.code === 'PENGURUS_MUDA_MUDI')?.id,
+          item.is_ketua_wakil_kelompok && pengurusTypes.find(t => t.code === 'KETUA_WAKIL_KELOMPOK')?.id,
+        ].filter(Boolean);
+
+    setFormData({ ...FORM_DEFAULT, ...item, pengurus_type_ids: pIds });
+    setShowForm(true);
+  };
   const openDetail = (item) => { setSelected(item); setShowDetail(true); };
   const openQr = (item) => { setSelected(item); setShowQr(true); };
   const openDel = (item) => { setSelected(item); setShowDelete(true); };
@@ -608,6 +646,14 @@ export default function ManageGenerus() {
 
       {/* Desktop Header Buttons: Export, Import, + Tambah Peserta */}
       <div className="hidden lg:flex items-center gap-2">
+        <Link
+          to="/admin/pengurus"
+          className="flex items-center gap-1.5 px-3.5 py-1.5 bg-white border border-slate-200/90 rounded-full text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-2xs"
+        >
+          <ShieldCheck size={13} className="text-emerald-600" />
+          <span>Kelola Pengurus</span>
+        </Link>
+
         <button
           onClick={handleExport}
           disabled={exporting}
@@ -1055,9 +1101,13 @@ export default function ManageGenerus() {
               </div>
             ) : paginatedRows.map((item) => {
               const roleBadges = [];
-              if (item.is_pengurus) roleBadges.push('PENGURUS USMAN');
-              if (item.is_pengurus_muda_mudi) roleBadges.push('PENGURUS MUDA MUDI');
-              if (item.is_ketua_wakil_kelompok) roleBadges.push('KETUA/WAKIL KELOMPOK');
+              if (item.pengurus_types && item.pengurus_types.length > 0) {
+                item.pengurus_types.forEach(pt => roleBadges.push(pt.name.toUpperCase()));
+              } else {
+                if (item.is_pengurus) roleBadges.push('PENGURUS USMAN');
+                if (item.is_pengurus_muda_mudi) roleBadges.push('PENGURUS MUDA MUDI');
+                if (item.is_ketua_wakil_kelompok) roleBadges.push('KETUA/WAKIL KELOMPOK');
+              }
 
               return (
                 <div
@@ -1144,9 +1194,13 @@ export default function ManageGenerus() {
                 ) : paginatedRows.map((item, idx) => {
                   const rowNum = startIndex + idx + 1;
                   const roleBadges = [];
-                  if (item.is_pengurus) roleBadges.push('PENGURUS USMAN');
-                  if (item.is_pengurus_muda_mudi) roleBadges.push('PENGURUS MUDA MUDI');
-                  if (item.is_ketua_wakil_kelompok) roleBadges.push('KETUA/WAKIL KELOMPOK');
+                  if (item.pengurus_types && item.pengurus_types.length > 0) {
+                    item.pengurus_types.forEach(pt => roleBadges.push(pt.name.toUpperCase()));
+                  } else {
+                    if (item.is_pengurus) roleBadges.push('PENGURUS USMAN');
+                    if (item.is_pengurus_muda_mudi) roleBadges.push('PENGURUS MUDA MUDI');
+                    if (item.is_ketua_wakil_kelompok) roleBadges.push('KETUA/WAKIL KELOMPOK');
+                  }
 
                   return (
                     <tr key={item.id} className="border-b border-slate-100/80 hover:bg-slate-50/70 transition-colors">
@@ -1310,24 +1364,66 @@ export default function ManageGenerus() {
             <Field label="Jenjang">
               <CustomSelect name="jenjang" value={formData.jenjang} onChange={inp}
                 options={JENJANG_LIST.filter(j => j !== 'Semua' && j !== 'PENGURUS USMAN' && j !== 'PENGURUS MUDA MUDI' && j !== 'KETUA/WAKIL KELOMPOK').map(j => ({ value: j, label: j }))} />
-              <label className="flex items-center gap-2 mt-2 cursor-pointer select-none">
-                <input type="checkbox" name="is_pengurus" checked={!!formData.is_pengurus}
-                  onChange={(e) => setFormData(prev => ({ ...prev, is_pengurus: e.target.checked }))}
-                  className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 w-4 h-4" />
-                <span className="text-sm font-semibold text-slate-700">Pengurus Usman</span>
-              </label>
-              <label className="flex items-center gap-2 mt-2 cursor-pointer select-none">
-                <input type="checkbox" name="is_pengurus_muda_mudi" checked={!!formData.is_pengurus_muda_mudi}
-                  onChange={(e) => setFormData(prev => ({ ...prev, is_pengurus_muda_mudi: e.target.checked }))}
-                  className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 w-4 h-4" />
-                <span className="text-sm font-semibold text-slate-700">Pengurus Muda Mudi</span>
-              </label>
-              <label className="flex items-center gap-2 mt-2 cursor-pointer select-none">
-                <input type="checkbox" name="is_ketua_wakil_kelompok" checked={!!formData.is_ketua_wakil_kelompok}
-                  onChange={(e) => setFormData(prev => ({ ...prev, is_ketua_wakil_kelompok: e.target.checked }))}
-                  className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 w-4 h-4" />
-                <span className="text-sm font-semibold text-slate-700">Ketua/Wakil Kelompok</span>
-              </label>
+              <div className="mt-2.5 pt-2 border-t border-slate-100 space-y-1.5">
+                <span className="text-[10.5px] font-bold text-slate-400 uppercase tracking-wider block">
+                  Status Pengurus
+                </span>
+                {pengurusTypes.length > 0 ? (
+                  pengurusTypes.map(pt => {
+                    const isChecked = (formData.pengurus_type_ids || []).includes(pt.id);
+                    return (
+                      <label key={pt.id} className="flex items-center gap-2.5 p-1.5 rounded-lg hover:bg-slate-50 cursor-pointer select-none transition-colors">
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={(e) => {
+                            const checked = e.target.checked;
+                            setFormData(prev => {
+                              const currentIds = prev.pengurus_type_ids || [];
+                              const newIds = checked
+                                ? [...currentIds, pt.id]
+                                : currentIds.filter(id => id !== pt.id);
+
+                              return {
+                                ...prev,
+                                pengurus_type_ids: newIds,
+                                is_pengurus: pt.code === 'PENGURUS_USMAN' ? checked : prev.is_pengurus,
+                                is_pengurus_muda_mudi: pt.code === 'PENGURUS_MUDA_MUDI' ? checked : prev.is_pengurus_muda_mudi,
+                                is_ketua_wakil_kelompok: pt.code === 'KETUA_WAKIL_KELOMPOK' ? checked : prev.is_ketua_wakil_kelompok,
+                              };
+                            });
+                          }}
+                          className="rounded-md border-slate-300 text-[#168a53] focus:ring-[#168a53] w-4 h-4"
+                        />
+                        <span className="text-xs sm:text-sm font-semibold text-slate-800">
+                          {pt.name}
+                        </span>
+                      </label>
+                    );
+                  })
+                ) : (
+                  <>
+                    <label className="flex items-center gap-2.5 p-1.5 rounded-lg hover:bg-slate-50 cursor-pointer select-none transition-colors">
+                      <input type="checkbox" name="is_pengurus" checked={!!formData.is_pengurus}
+                        onChange={(e) => setFormData(prev => ({ ...prev, is_pengurus: e.target.checked }))}
+                        className="rounded-md border-slate-300 text-[#168a53] focus:ring-[#168a53] w-4 h-4" />
+                      <span className="text-xs sm:text-sm font-semibold text-slate-800">Pengurus Usman</span>
+                    </label>
+                    <label className="flex items-center gap-2.5 p-1.5 rounded-lg hover:bg-slate-50 cursor-pointer select-none transition-colors">
+                      <input type="checkbox" name="is_pengurus_muda_mudi" checked={!!formData.is_pengurus_muda_mudi}
+                        onChange={(e) => setFormData(prev => ({ ...prev, is_pengurus_muda_mudi: e.target.checked }))}
+                        className="rounded-md border-slate-300 text-[#168a53] focus:ring-[#168a53] w-4 h-4" />
+                      <span className="text-xs sm:text-sm font-semibold text-slate-800">Pengurus Muda Mudi</span>
+                    </label>
+                    <label className="flex items-center gap-2.5 p-1.5 rounded-lg hover:bg-slate-50 cursor-pointer select-none transition-colors">
+                      <input type="checkbox" name="is_ketua_wakil_kelompok" checked={!!formData.is_ketua_wakil_kelompok}
+                        onChange={(e) => setFormData(prev => ({ ...prev, is_ketua_wakil_kelompok: e.target.checked }))}
+                        className="rounded-md border-slate-300 text-[#168a53] focus:ring-[#168a53] w-4 h-4" />
+                      <span className="text-xs sm:text-sm font-semibold text-slate-800">Ketua/Wakil Kelompok</span>
+                    </label>
+                  </>
+                )}
+              </div>
             </Field>
             <Field label="Status">
               <CustomSelect name="status" value={formData.status} onChange={inp}
