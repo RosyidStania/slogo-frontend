@@ -148,20 +148,23 @@ export default function UserProfile() {
     );
   }
 
-  const renderField = ({ label, name, icon: Icon, type = 'text', required = false, options = [], placeholder = '' }) => {
-    if (!isEditing) {
+  const renderField = ({ label, name, icon: Icon, type = 'text', required = false, options = [], placeholder = '', disabled = false }) => {
+    if (!isEditing || disabled) {
       let displayValue = formData[name] || '-';
       if (type === 'select' && displayValue !== '-') {
         const opt = options.find(o => o.value === displayValue);
         if (opt) displayValue = opt.label;
       }
       return (
-        <div className="bg-white border border-slate-200 rounded-2xl px-4 py-3 flex items-center gap-3 hover:border-teal-200 hover:shadow-sm transition-all">
+        <div className={`bg-white border ${disabled && isEditing ? 'border-slate-200/70 bg-slate-50/60' : 'border-slate-200'} rounded-2xl px-4 py-3 flex items-center gap-3 hover:border-teal-200 hover:shadow-sm transition-all`}>
           <div className="w-10 h-10 bg-teal-50 text-teal-600 rounded-xl flex items-center justify-center shrink-0">
             <Icon size={18} />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">{label}</p>
+            <div className="flex items-center justify-between">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">{label}</p>
+              {disabled && isEditing && <span className="text-[9px] text-slate-400 font-medium italic">Terkunci</span>}
+            </div>
             <p className="text-sm font-bold text-slate-800 leading-tight truncate">
               {displayValue}
             </p>
@@ -313,10 +316,13 @@ export default function UserProfile() {
 
               {/* Card: Organisasi & Pendidikan */}
               <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-4 sm:p-6 transition-all">
-                <h3 className="text-lg font-bold text-slate-800 mb-6 border-b pb-4">Kelompok & Jenjang</h3>
+                <div className="flex items-center justify-between mb-4 border-b pb-4">
+                  <h3 className="text-lg font-bold text-slate-800">Kelompok & Jenjang</h3>
+                  <span className="text-[11px] font-medium text-slate-400 bg-slate-100 px-2.5 py-1 rounded-full">Dikelola Pengurus / Admin</span>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {renderField({ label: 'Kelompok', name: 'kelompok', icon: Users, type: 'select', options: [{ value: '', label: '- Pilih Kelompok -' }, ...KELOMPOK_OPTIONS] })}
-                  {renderField({ label: 'Jenjang', name: 'jenjang', icon: BookOpen, type: 'select', options: [{ value: '', label: '- Pilih Jenjang -' }, ...JENJANG_OPTIONS] })}
+                  {renderField({ label: 'Kelompok', name: 'kelompok', icon: Users, type: 'select', disabled: profile?.role !== 'admin', options: [{ value: '', label: '- Pilih Kelompok -' }, ...KELOMPOK_OPTIONS] })}
+                  {renderField({ label: 'Jenjang', name: 'jenjang', icon: BookOpen, type: 'select', disabled: profile?.role !== 'admin', options: [{ value: '', label: '- Pilih Jenjang -' }, ...JENJANG_OPTIONS] })}
                 </div>
               </div>
 
