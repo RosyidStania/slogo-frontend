@@ -13,8 +13,8 @@ import {
 import CustomMultiSelect from '../components/CustomMultiSelect';
 
 const PIE_COLORS = [
-  '#10b981', '#0ea5e9', '#f59e0b', '#8b5cf6', '#ef4444',
-  '#06b6d4', '#3b82f6', '#d97706', '#14b8a6', '#6366f1',
+  '#14b8a6', '#0ea5e9', '#f59e0b', '#8b5cf6', '#ef4444',
+  '#06b6d4', '#3b82f6', '#d97706', '#0d9488', '#6366f1',
   '#ec4899', '#64748b', '#eab308', '#a855f7', '#f97316'
 ];
 
@@ -37,7 +37,7 @@ const CustomPieTooltip = ({ active, payload }) => {
   return (
     <div className="bg-slate-900 text-white px-3 py-1.5 rounded-xl text-xs font-bold shadow-xl">
       <span className="capitalize">{data.name}: </span>
-      <span className="text-emerald-400 font-extrabold">{data.value} Generus</span>
+      <span className="text-teal-400 font-extrabold">{data.value} Generus</span>
     </div>
   );
 };
@@ -116,7 +116,7 @@ export default function Dashboard() {
   const mobileTopActions = headerSlot && ReactDOM.createPortal(
     <div className="flex lg:hidden items-center gap-1.5 sm:gap-2">
       <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full border border-slate-200/90 bg-white text-[11px] font-semibold text-slate-600 shadow-2xs">
-        <Calendar size={12} className="text-emerald-600" />
+        <Calendar size={12} className="text-teal-600" />
         <span>{new Date().toLocaleDateString('id-ID', { month: 'short', year: 'numeric' })}</span>
       </div>
       <button
@@ -124,14 +124,14 @@ export default function Dashboard() {
         onClick={() => setShowFilterDrawer(v => !v)}
         className={`w-8 h-8 rounded-full border flex items-center justify-center transition-colors shadow-2xs relative cursor-pointer active:scale-95 ${
           showFilterDrawer || selectedEventTypes.length > 0 || excludeMT
-            ? 'bg-emerald-50 border-emerald-200 text-[#168a53]'
+            ? 'bg-teal-50 border-teal-200 text-[#0d9488]'
             : 'bg-white border-slate-200/90 text-slate-600 hover:bg-slate-50'
         }`}
         title="Filter Statistik"
       >
         <Filter size={13} />
         {(selectedEventTypes.length > 0 || excludeMT) && (
-          <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#168a53]" />
+          <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#14b8a6]" />
         )}
       </button>
     </div>,
@@ -141,7 +141,7 @@ export default function Dashboard() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
-        <Loader2 size={32} className="animate-spin text-[#168a53]" />
+        <Loader2 size={32} className="animate-spin text-[#14b8a6]" />
         <p className="text-slate-400 text-xs font-medium">Memuat statistik dashboard...</p>
       </div>
     );
@@ -162,7 +162,7 @@ export default function Dashboard() {
     if (idx === 0) return 'bg-amber-50 text-amber-700 border-amber-200/80';
     if (idx === 1) return 'bg-slate-100 text-slate-600 border-slate-200';
     if (idx === 2) return 'bg-amber-50/60 text-amber-600 border-amber-200/60';
-    return 'bg-emerald-50 text-[#168a53] border-emerald-200/80';
+    return 'bg-teal-50 text-[#0d9488] border-teal-200/80';
   };
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -188,14 +188,14 @@ export default function Dashboard() {
             onClick={() => setShowFilterDrawer(v => !v)}
             className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full border text-xs font-bold transition-all shadow-2xs cursor-pointer ${
               showFilterDrawer || selectedEventTypes.length > 0 || excludeMT
-                ? 'bg-emerald-50 border-emerald-200 text-[#168a53]'
+                ? 'bg-teal-50 border-teal-200 text-[#0d9488]'
                 : 'bg-white border-slate-200/90 text-slate-600 hover:bg-slate-50'
             }`}
           >
             <Filter size={13} />
             <span>Filter Statistik</span>
             {(selectedEventTypes.length > 0 || excludeMT) && (
-              <span className="w-2 h-2 rounded-full bg-[#168a53]" />
+              <span className="w-2 h-2 rounded-full bg-[#14b8a6]" />
             )}
           </button>
         </div>
@@ -209,7 +209,7 @@ export default function Dashboard() {
               type="checkbox"
               checked={excludeMT}
               onChange={(e) => setExcludeMT(e.target.checked)}
-              className="w-4 h-4 text-[#168a53] rounded border-slate-300 focus:ring-[#168a53]"
+              className="w-4 h-4 text-[#14b8a6] rounded border-slate-300 focus:ring-[#14b8a6]"
             />
             <span className="text-xs font-bold text-slate-700">
               Kecualikan MT dari Peringkat Kehadiran
@@ -235,7 +235,7 @@ export default function Dashboard() {
             <span className="text-[10px] sm:text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">
               TOTAL GENERUS
             </span>
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center text-[#168a53]">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center text-[#14b8a6]">
               <Users size={18} className="sm:w-[22px] sm:h-[22px]" strokeWidth={2.2} />
             </div>
           </div>
@@ -243,7 +243,7 @@ export default function Dashboard() {
             <p className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-none">
               {stats.totalGenerus}
             </p>
-            <p className="text-[11px] sm:text-xs font-bold text-[#168a53] mt-1.5 sm:mt-2 truncate">
+            <p className="text-[11px] sm:text-xs font-bold text-[#0d9488] mt-1.5 sm:mt-2 truncate">
               {stats.aktifGenerus} aktif ({persenAktif}%)
             </p>
           </div>
@@ -296,7 +296,7 @@ export default function Dashboard() {
         {/* Bar Chart — Demografi per Kelompok (Aktif) */}
         <div className="lg:col-span-7 bg-white border border-slate-200/80 rounded-2xl p-4 sm:p-6 shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between overflow-hidden">
           <div className="flex items-center gap-2 mb-3 sm:mb-4">
-            <div className="w-1.5 h-4.5 bg-[#168a53] rounded-full" />
+            <div className="w-1.5 h-4.5 bg-[#14b8a6] rounded-full" />
             <h3 className="font-extrabold text-sm sm:text-base text-slate-900">
               Demografi per Kelompok (Aktif)
             </h3>
@@ -421,7 +421,7 @@ export default function Dashboard() {
                 <p className="font-extrabold text-slate-900 text-sm leading-snug">
                   {firstEvent.name}
                 </p>
-                <p className="text-xs font-bold text-[#168a53] flex items-center gap-1.5">
+                <p className="text-xs font-bold text-[#0d9488] flex items-center gap-1.5">
                   <Clock size={13} />
                   <span>
                     {new Date(firstEvent.event_date).toLocaleDateString('id-ID', {
@@ -437,7 +437,7 @@ export default function Dashboard() {
                     {firstEventTargets.map(t => (
                       <span
                         key={t}
-                        className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide bg-emerald-50 text-[#168a53] border border-emerald-200/80"
+                        className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide bg-teal-50 text-[#0d9488] border border-teal-200/80"
                       >
                         {t}
                       </span>
@@ -458,7 +458,7 @@ export default function Dashboard() {
                 className={`w-full py-2.5 rounded-xl text-xs font-bold transition-all ${
                   firstEvent.is_closed
                     ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                    : 'bg-[#168a53] hover:bg-[#127344] text-white shadow-xs cursor-pointer active:scale-95'
+                    : 'bg-[#14b8a6] hover:bg-[#0d9488] text-white shadow-xs cursor-pointer active:scale-95'
                 }`}
               >
                 {firstEvent.is_closed ? 'Acara Ditutup' : 'Buka Absensi'}
@@ -495,14 +495,14 @@ export default function Dashboard() {
                         {item.kelompok}
                       </span>
                       <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase ${
-                        item.is_pengurus ? 'bg-emerald-50 text-[#168a53]' : 'bg-slate-100 text-slate-500'
+                        item.is_pengurus ? 'bg-teal-50 text-[#0d9488]' : 'bg-slate-100 text-slate-500'
                       }`}>
                         {item.is_pengurus ? `${item.jenjang || ''}, PENGURUS` : item.jenjang}
                       </span>
                     </div>
                   </div>
                   <div className="text-right shrink-0">
-                    <p className="font-extrabold text-sm sm:text-base text-[#168a53] leading-none">{item.total_hadir}</p>
+                    <p className="font-extrabold text-sm sm:text-base text-[#0d9488] leading-none">{item.total_hadir}</p>
                     <p className="text-[9px] font-bold text-slate-400 uppercase mt-0.5">HADIR</p>
                   </div>
                 </div>
@@ -515,7 +515,7 @@ export default function Dashboard() {
         <div className="bg-white border border-slate-200/80 rounded-2xl p-4 sm:p-5 shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-full bg-emerald-50 text-[#168a53] flex items-center justify-center">
+              <div className="w-6 h-6 rounded-full bg-teal-50 text-[#14b8a6] flex items-center justify-center">
                 <Medal size={14} strokeWidth={2.4} />
               </div>
               <h3 className="font-extrabold text-sm text-slate-900">Kelompok Paling Rajin</h3>
@@ -531,7 +531,7 @@ export default function Dashboard() {
                 <div key={idx} className="flex items-center gap-2.5 sm:gap-3 py-2 sm:py-2.5">
                   <div className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full font-extrabold text-xs flex items-center justify-center shrink-0 ${
                     idx === 0
-                      ? 'bg-[#168a53] text-white shadow-2xs'
+                      ? 'bg-[#14b8a6] text-white shadow-2xs'
                       : 'bg-slate-100 text-slate-600'
                   }`}>
                     {idx + 1}
@@ -545,7 +545,7 @@ export default function Dashboard() {
                     </p>
                   </div>
                   <div className="text-right shrink-0">
-                    <p className={`font-extrabold text-sm sm:text-base leading-none ${idx === 0 ? 'text-[#168a53]' : 'text-slate-800'}`}>
+                    <p className={`font-extrabold text-sm sm:text-base leading-none ${idx === 0 ? 'text-[#0d9488]' : 'text-slate-800'}`}>
                       {group.total_hadir}
                     </p>
                     <p className="text-[9px] font-bold text-slate-400 uppercase mt-0.5">HADIR</p>

@@ -54,7 +54,7 @@ function PillSelect({ value, onChange, options, className = '' }) {
         type="button"
         onClick={() => setIsOpen(v => !v)}
         className={`w-full flex items-center justify-between gap-1.5 px-3 py-1.5 bg-white border ${
-          isOpen ? 'border-[#168a53] ring-2 ring-[#168a53]/15' : 'border-slate-200/90 hover:border-slate-300'
+          isOpen ? 'border-[#14b8a6] ring-2 ring-[#14b8a6]/15' : 'border-slate-200/90 hover:border-slate-300'
         } rounded-full text-xs font-bold text-slate-700 transition-all cursor-pointer shadow-2xs`}
       >
         <span className="truncate">{displayLabel}</span>
@@ -73,7 +73,7 @@ function PillSelect({ value, onChange, options, className = '' }) {
               }}
               className={`w-full text-left px-3.5 py-2 text-xs font-semibold transition-colors ${
                 String(value) === String(opt.value)
-                  ? 'bg-emerald-50 text-[#168a53] font-bold'
+                  ? 'bg-teal-50 text-[#14b8a6] font-bold'
                   : 'text-slate-700 hover:bg-slate-50'
               }`}
             >
@@ -268,14 +268,14 @@ export default function ManageSchedules() {
   const mobileTopActions = headerSlot && ReactDOM.createPortal(
     <div className="flex lg:hidden items-center gap-1.5 sm:gap-2">
       <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full border border-slate-200/90 bg-white text-[11px] font-semibold text-slate-600 shadow-2xs">
-        <Sparkles size={12} className="text-emerald-600" />
+        <Sparkles size={12} className="text-teal-600" />
         <span>{activeCount} Aktif</span>
       </div>
       {['admin', 'absen_kelompok'].includes(role) && (
         <button
           type="button"
           onClick={() => openModal('add')}
-          className="flex items-center gap-1 px-3 py-1.5 bg-[#168a53] hover:bg-[#127344] text-white rounded-full text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95"
+          className="flex items-center gap-1 px-3 py-1.5 bg-[#14b8a6] hover:bg-[#0d9488] text-white rounded-full text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95"
         >
           <Plus size={13} strokeWidth={2.5} />
           <span>Jadwal</span>
@@ -294,7 +294,7 @@ export default function ManageSchedules() {
         <div>
           <div className="flex items-center gap-2 flex-wrap">
             <h1 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">Acara Kelompok</h1>
-            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-[#168a53] border border-emerald-200/60">
+            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-teal-50 text-[#14b8a6] border border-teal-200/60">
               {schedules.length} Jadwal
             </span>
             <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600">
@@ -315,7 +315,7 @@ export default function ManageSchedules() {
               placeholder="Cari kelompok, hari..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full pl-8 pr-7 py-1.5 text-xs bg-white rounded-full border border-slate-200/90 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#168a53]/15 focus:border-[#168a53] shadow-2xs transition-all"
+              className="w-full pl-8 pr-7 py-1.5 text-xs bg-white rounded-full border border-slate-200/90 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#14b8a6]/15 focus:border-[#14b8a6] shadow-2xs transition-all"
             />
             {search && (
               <button
@@ -341,7 +341,7 @@ export default function ManageSchedules() {
 
           <button
             onClick={() => openModal('add')}
-            className="flex items-center justify-center gap-1 px-3.5 py-1.5 bg-[#168a53] hover:bg-[#127344] active:scale-95 text-white rounded-full font-bold text-xs shadow-xs transition-all cursor-pointer whitespace-nowrap shrink-0"
+            className="flex items-center justify-center gap-1 px-3.5 py-1.5 bg-[#14b8a6] hover:bg-[#0d9488] active:scale-95 text-white rounded-full font-bold text-xs shadow-xs transition-all cursor-pointer whitespace-nowrap shrink-0"
           >
             <Plus size={13} strokeWidth={2.5} />
             <span>Tambah</span>
@@ -352,7 +352,7 @@ export default function ManageSchedules() {
       {/* ── Content: 2-column Compact Responsive iOS Cards ──────────────── */}
       {loading ? (
         <div className="bg-white border border-slate-200/80 rounded-2xl flex flex-col items-center justify-center py-14 gap-2 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
-          <Loader2 size={24} className="animate-spin text-[#168a53]" />
+          <Loader2 size={24} className="animate-spin text-[#14b8a6]" />
           <p className="text-slate-400 text-xs font-medium">Memuat acara kelompok...</p>
         </div>
       ) : Object.keys(groupedByKelompok).length === 0 ? (
@@ -363,7 +363,7 @@ export default function ManageSchedules() {
           </p>
           <button
             onClick={() => openModal('add')}
-            className="text-[#168a53] text-xs font-bold hover:underline cursor-pointer"
+            className="text-[#14b8a6] text-xs font-bold hover:underline cursor-pointer"
           >
             + Tambah jadwal baru
           </button>
@@ -378,12 +378,12 @@ export default function ManageSchedules() {
               {/* Inset Header */}
               <div className="px-3.5 sm:px-4 py-2 bg-slate-50/80 border-b border-slate-100 flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-[#168a53]" />
+                  <span className="w-2 h-2 rounded-full bg-[#14b8a6]" />
                   <h3 className="font-bold text-slate-800 text-xs sm:text-sm">
                     Kelompok {kelompokName}
                   </h3>
                 </div>
-                <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-[#168a53] border border-emerald-200/60">
+                <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-teal-50 text-[#14b8a6] border border-teal-200/60">
                   {items.length} jadwal / mgg
                 </span>
               </div>
@@ -408,7 +408,7 @@ export default function ManageSchedules() {
                         {/* Day Badge */}
                         <span className={`px-2 sm:px-2.5 py-1 rounded-lg text-center text-xs font-bold shrink-0 min-w-[50px] transition-colors ${
                           item.is_active
-                            ? 'bg-emerald-50 text-[#168a53] border border-emerald-200/80'
+                            ? 'bg-teal-50 text-[#14b8a6] border border-teal-200/80'
                             : 'bg-slate-100 text-slate-500 border border-slate-200'
                         }`}>
                           {dayInfo.label}
@@ -426,7 +426,7 @@ export default function ManageSchedules() {
                                 Libur
                               </span>
                             ) : (
-                              <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-emerald-50 text-[#168a53] border border-emerald-200/60 hidden xs:inline-block sm:inline-block">
+                              <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-teal-50 text-[#14b8a6] border border-teal-200/60 hidden xs:inline-block sm:inline-block">
                                 Aktif
                               </span>
                             )}
@@ -446,7 +446,7 @@ export default function ManageSchedules() {
                           onClick={() => handleToggleActive(item)}
                           title={item.is_active ? 'Klik untuk meliburkan' : 'Klik untuk mengaktifkan'}
                           className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full p-0.5 transition-colors duration-200 ease-in-out focus:outline-none ${
-                            item.is_active ? 'bg-[#168a53]' : 'bg-slate-300'
+                            item.is_active ? 'bg-[#14b8a6]' : 'bg-slate-300'
                           }`}
                         >
                           <span
@@ -549,7 +549,7 @@ export default function ManageSchedules() {
               </div>
             </div>
 
-            <div className="p-3 bg-emerald-50 border border-emerald-100 rounded-xl text-xs text-[#168a53] space-y-1">
+            <div className="p-3 bg-teal-50 border border-teal-100 rounded-xl text-xs text-[#14b8a6] space-y-1">
               <p className="font-bold flex items-center gap-1.5">
                 <Sparkles size={13} />
                 <span>Pembuatan Acara Otomatis</span>
@@ -571,7 +571,7 @@ export default function ManageSchedules() {
             <button
               type="submit"
               disabled={submitLoading}
-              className="flex-1 py-2 rounded-xl bg-[#168a53] hover:bg-[#127344] disabled:bg-slate-200 disabled:text-slate-400 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs cursor-pointer active:scale-95 transition-all"
+              className="flex-1 py-2 rounded-xl bg-[#14b8a6] hover:bg-[#0d9488] disabled:bg-slate-200 disabled:text-slate-400 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs cursor-pointer active:scale-95 transition-all"
             >
               {submitLoading ? (
                 <><Loader2 size={13} className="animate-spin" /> Menyimpan...</>

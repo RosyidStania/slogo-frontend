@@ -134,12 +134,12 @@ export default function Layout() {
         className={`flex items-center rounded-xl transition-all duration-200 group relative
           ${isSidebarOpen ? 'gap-3.5 px-3.5 py-3 w-full' : 'justify-center w-11 h-11'}
           ${isActive 
-            ? 'bg-white text-emerald-700 shadow-[0_1px_2px_rgba(0,0,0,0.06)] border border-slate-200/80 font-semibold' 
+            ? 'bg-white text-teal-700 shadow-[0_1px_2px_rgba(0,0,0,0.06)] border border-slate-200/80 font-semibold' 
             : 'text-slate-600 hover:bg-slate-200/60 hover:text-slate-900 font-medium'
           }
         `}
       >
-        <div className={`shrink-0 transition-colors ${isActive ? 'text-emerald-600' : 'text-slate-500 group-hover:text-slate-700'}`}>
+        <div className={`shrink-0 transition-colors ${isActive ? 'text-teal-600' : 'text-slate-500 group-hover:text-slate-700'}`}>
           {menu.icon}
         </div>
         {isSidebarOpen && (
@@ -253,15 +253,15 @@ export default function Layout() {
         <div className="shrink-0 mt-auto p-4">
           {isSidebarOpen ? (
             <div className="p-3 rounded-2xl bg-white border border-slate-200/80 shadow-[0_1px_2px_rgba(0,0,0,0.03)] flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-[#168a53] flex items-center justify-center text-white font-bold text-sm shrink-0">
+              <div className="w-10 h-10 rounded-full bg-[#14b8a6] flex items-center justify-center text-white font-bold text-sm shrink-0">
                 {userDisplayName.charAt(0).toUpperCase()}
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-slate-800 text-sm font-bold truncate leading-tight">
                   {userDisplayName}
                 </p>
-                <p className="text-emerald-600 text-xs font-medium flex items-center gap-1.5 mt-0.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span> Online
+                <p className="text-teal-600 text-xs font-medium flex items-center gap-1.5 mt-0.5">
+                  <span className="w-2 h-2 rounded-full bg-teal-500"></span> Online
                 </p>
               </div>
               <button 
@@ -354,7 +354,7 @@ export default function Layout() {
           <div className="relative bg-white rounded-t-3xl w-full max-w-md p-6 pb-8 shadow-2xl border-t border-slate-100 animate-in slide-in-from-bottom duration-200">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-full bg-[#168a53] flex items-center justify-center text-white font-bold text-sm">
+                <div className="w-9 h-9 rounded-full bg-[#14b8a6] flex items-center justify-center text-white font-bold text-sm">
                   {userDisplayName.charAt(0).toUpperCase()}
                 </div>
                 <div>
@@ -381,11 +381,11 @@ export default function Layout() {
                     onClick={() => setShowMobileMenuSheet(false)}
                     className={`flex items-center gap-2.5 p-3 rounded-xl border text-xs font-semibold transition-colors ${
                       active
-                        ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
+                        ? 'bg-teal-50 border-teal-200 text-teal-700'
                         : 'bg-slate-50 border-slate-200/70 text-slate-700 hover:bg-slate-100'
                     }`}
                   >
-                    <span className={active ? 'text-emerald-600' : 'text-slate-500'}>{m.icon}</span>
+                    <span className={active ? 'text-teal-600' : 'text-slate-500'}>{m.icon}</span>
                     <span className="truncate">{m.name}</span>
                   </Link>
                 );
@@ -475,7 +475,7 @@ export default function Layout() {
                 key={item.name}
                 to={item.path}
                 className={`flex-1 flex flex-col items-center justify-center gap-1 py-1 transition-colors ${
-                  isActive ? 'text-[#168a53] font-bold' : 'text-slate-400 hover:text-slate-600 font-medium'
+                  isActive ? 'text-teal-600 font-bold' : 'text-slate-400 hover:text-slate-600 font-medium'
                 }`}
               >
                 <div className="relative flex items-center justify-center">

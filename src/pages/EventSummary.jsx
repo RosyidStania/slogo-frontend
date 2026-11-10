@@ -59,7 +59,7 @@ const AVATAR_PALETTE_MALE = [
   'bg-blue-100 text-blue-700',
   'bg-sky-100 text-sky-700',
   'bg-teal-100 text-teal-700',
-  'bg-emerald-100 text-emerald-700',
+  'bg-teal-100 text-teal-700',
   'bg-indigo-100 text-indigo-700',
   'bg-cyan-100 text-cyan-700',
 ];
@@ -91,7 +91,7 @@ function UserAvatar({ name, gender }) {
 }
 
 const getPercentageBadge = (percentage) => {
-  if (percentage >= 80) return 'bg-emerald-50 text-emerald-700 border-emerald-200/70';
+  if (percentage >= 80) return 'bg-teal-50 text-teal-700 border-teal-200/70';
   if (percentage >= 50) return 'bg-blue-50 text-blue-700 border-blue-200/70';
   if (percentage > 0) return 'bg-amber-50 text-amber-700 border-amber-200/70';
   return 'bg-slate-100 text-slate-500 border-slate-200/70';
@@ -302,13 +302,13 @@ export default function EventSummary() {
 
     if (percent > 0) {
       sign = '+';
-      if (type === 'hadir') colorClass = 'text-emerald-700 bg-emerald-50 border-emerald-200/60';
+      if (type === 'hadir') colorClass = 'text-teal-700 bg-teal-50 border-teal-200/60';
       else if (type === 'izin') colorClass = 'text-amber-700 bg-amber-50 border-amber-200/60';
       else colorClass = 'text-rose-700 bg-rose-50 border-rose-200/60';
       icon = <ArrowUpRight className="w-3.5 h-3.5" />;
     } else if (percent < 0) {
       if (type === 'hadir') colorClass = 'text-rose-700 bg-rose-50 border-rose-200/60';
-      else colorClass = 'text-emerald-700 bg-emerald-50 border-emerald-200/60';
+      else colorClass = 'text-teal-700 bg-teal-50 border-teal-200/60';
       icon = <ArrowDownRight className="w-3.5 h-3.5" />;
     } else {
       return { text: '0%', colorClass, icon };
@@ -339,7 +339,7 @@ export default function EventSummary() {
     return (
       <div className="min-h-[50vh] flex flex-col items-center justify-center gap-3">
         <div className="w-10 h-10 rounded-2xl bg-white shadow-sm border border-slate-200/80 flex items-center justify-center">
-          <Loader2 className="w-5 h-5 text-[#168a53] animate-spin" />
+          <Loader2 className="w-5 h-5 text-[#14b8a6] animate-spin" />
         </div>
         <p className="text-xs font-semibold text-slate-500">Memuat rekapan absensi...</p>
       </div>
@@ -426,18 +426,18 @@ export default function EventSummary() {
         </div>
 
         {/* HADIR */}
-        <div className="bg-white border border-emerald-100/80 rounded-2xl sm:rounded-[22px] p-3 sm:p-4 shadow-[0_2px_8px_rgba(0,0,0,0.02)] flex flex-col justify-between hover:shadow-sm transition-shadow">
+        <div className="bg-white border border-teal-100/80 rounded-2xl sm:rounded-[22px] p-3 sm:p-4 shadow-[0_2px_8px_rgba(0,0,0,0.02)] flex flex-col justify-between hover:shadow-sm transition-shadow">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] sm:text-[11px] font-bold text-emerald-600 uppercase tracking-wider">Hadir</span>
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-emerald-50 text-[#168a53] flex items-center justify-center border border-emerald-100/60">
+            <span className="text-[10px] sm:text-[11px] font-bold text-teal-600 uppercase tracking-wider">Hadir</span>
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-teal-50 text-[#14b8a6] flex items-center justify-center border border-teal-100/60">
               <CheckCircle2 size={15} strokeWidth={2.2} />
             </div>
           </div>
           <div className="mt-2 sm:mt-2.5">
-            <h3 className="text-2xl sm:text-3xl font-black text-[#168a53] tracking-tight tabular-nums">
+            <h3 className="text-2xl sm:text-3xl font-black text-[#14b8a6] tracking-tight tabular-nums">
               {globalStats.hadir}
             </h3>
-            <p className="text-[10px] sm:text-[11px] font-medium text-emerald-600/80 mt-0.5">{totalStats.percentage}% dari target</p>
+            <p className="text-[10px] sm:text-[11px] font-medium text-teal-600/80 mt-0.5">{totalStats.percentage}% dari target</p>
           </div>
         </div>
 
@@ -497,7 +497,7 @@ export default function EventSummary() {
         {/* Card Header */}
         <div className="px-4 sm:px-5 py-3.5 sm:py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-slate-50/60">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-[#168a53] flex items-center justify-center shrink-0 border border-emerald-100/60">
+            <div className="w-8 h-8 rounded-xl bg-teal-50 text-[#14b8a6] flex items-center justify-center shrink-0 border border-teal-100/60">
               <MapPin size={17} strokeWidth={2.2} />
             </div>
             <div>
@@ -514,7 +514,7 @@ export default function EventSummary() {
             <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] sm:text-[11px] font-bold bg-slate-100 text-slate-600 border border-slate-200/70">
               Target: {totalStats.targetTotal} Generus
             </span>
-            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] sm:text-[11px] font-bold bg-emerald-50 text-[#168a53] border border-emerald-200/70">
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] sm:text-[11px] font-bold bg-teal-50 text-[#14b8a6] border border-teal-200/70">
               Hadir: {totalStats.hadirTotal} ({totalStats.percentage}%)
             </span>
             <span className="text-[10px] font-semibold text-slate-400 sm:hidden flex items-center gap-1 bg-slate-100/80 px-2 py-0.5 rounded-full border border-slate-200/60 select-none">
@@ -534,7 +534,7 @@ export default function EventSummary() {
                 <th colSpan="3" className="px-4 py-2.5 text-center border-r border-slate-100 border-b border-slate-200/60 bg-slate-50/90 text-slate-600">
                   Jumlah Generus
                 </th>
-                <th colSpan="3" className="px-4 py-2.5 text-center border-r border-slate-100 border-b border-slate-200/60 bg-emerald-50/30 text-emerald-800">
+                <th colSpan="3" className="px-4 py-2.5 text-center border-r border-slate-100 border-b border-slate-200/60 bg-teal-50/30 text-teal-800">
                   Kehadiran {new Date(event.event_date).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase()}
                 </th>
                 <th rowSpan="2" className="px-4 py-3 text-center min-w-[80px]">Capaian %</th>
@@ -544,9 +544,9 @@ export default function EventSummary() {
                 <th className="px-3 py-2 text-center border-r border-slate-100">Putra</th>
                 <th className="px-3 py-2 text-center border-r border-slate-100">Putri</th>
                 <th className="px-3 py-2 text-center font-extrabold text-slate-600 border-r border-slate-100">Total</th>
-                <th className="px-3 py-2 text-center text-emerald-700 border-r border-slate-100">Putra</th>
-                <th className="px-3 py-2 text-center text-emerald-700 border-r border-slate-100">Putri</th>
-                <th className="px-3 py-2 text-center font-extrabold text-emerald-800 border-r border-slate-100">Total</th>
+                <th className="px-3 py-2 text-center text-teal-700 border-r border-slate-100">Putra</th>
+                <th className="px-3 py-2 text-center text-teal-700 border-r border-slate-100">Putri</th>
+                <th className="px-3 py-2 text-center font-extrabold text-teal-800 border-r border-slate-100">Total</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-xs sm:text-sm">
@@ -573,7 +573,7 @@ export default function EventSummary() {
                   <td className="px-3 py-3 text-center text-slate-700 border-r border-slate-100 tabular-nums">
                     {stat.hadirPutri}
                   </td>
-                  <td className="px-3 py-3 text-center font-extrabold text-[#168a53] bg-emerald-50/20 border-r border-slate-100 tabular-nums">
+                  <td className="px-3 py-3 text-center font-extrabold text-[#14b8a6] bg-teal-50/20 border-r border-slate-100 tabular-nums">
                     {stat.hadirTotal}
                   </td>
                   <td className="px-4 py-3 text-center">
@@ -598,17 +598,17 @@ export default function EventSummary() {
                 <td className="px-3 py-3 text-center text-slate-900 font-black border-r border-slate-200/60 tabular-nums bg-slate-200/40">
                   {totalStats.targetTotal}
                 </td>
-                <td className="px-3 py-3 text-center text-[#168a53] border-r border-slate-200/60 tabular-nums">
+                <td className="px-3 py-3 text-center text-[#14b8a6] border-r border-slate-200/60 tabular-nums">
                   {totalStats.hadirPutra}
                 </td>
-                <td className="px-3 py-3 text-center text-[#168a53] border-r border-slate-200/60 tabular-nums">
+                <td className="px-3 py-3 text-center text-[#14b8a6] border-r border-slate-200/60 tabular-nums">
                   {totalStats.hadirPutri}
                 </td>
-                <td className="px-3 py-3 text-center text-[#168a53] font-black border-r border-slate-200/60 tabular-nums bg-emerald-50/50">
+                <td className="px-3 py-3 text-center text-[#14b8a6] font-black border-r border-slate-200/60 tabular-nums bg-teal-50/50">
                   {totalStats.hadirTotal}
                 </td>
                 <td className="px-4 py-3 text-center">
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-black bg-[#168a53] text-white shadow-2xs tabular-nums">
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-black bg-[#14b8a6] text-white shadow-2xs tabular-nums">
                     {totalStats.percentage}%
                   </span>
                 </td>
@@ -646,7 +646,7 @@ export default function EventSummary() {
                 value={infaqAmount}
                 onChange={(e) => setInfaqAmount(e.target.value)}
                 placeholder="0"
-                className="w-full pl-10 pr-3.5 py-2 rounded-full border border-slate-300/80 focus:border-[#168a53] focus:ring-2 focus:ring-[#168a53]/15 outline-none text-xs sm:text-sm font-bold text-slate-900 bg-white shadow-2xs transition-all"
+                className="w-full pl-10 pr-3.5 py-2 rounded-full border border-slate-300/80 focus:border-[#14b8a6] focus:ring-2 focus:ring-[#14b8a6]/15 outline-none text-xs sm:text-sm font-bold text-slate-900 bg-white shadow-2xs transition-all"
               />
             </div>
 
@@ -656,7 +656,7 @@ export default function EventSummary() {
               className={`px-4 py-2 rounded-full font-bold text-xs sm:text-sm transition-all flex items-center gap-1.5 shrink-0 shadow-xs cursor-pointer select-none active:scale-95 ${
                 !isChangedInfaq
                   ? 'bg-slate-200/80 text-slate-600 cursor-default opacity-90'
-                  : 'bg-[#168a53] hover:bg-[#127344] text-white'
+                  : 'bg-[#14b8a6] hover:bg-[#0d9488] text-white'
               }`}
             >
               {isSavingInfaq ? (
@@ -666,7 +666,7 @@ export default function EventSummary() {
                 </>
               ) : !isChangedInfaq ? (
                 <>
-                  <Check size={14} strokeWidth={2.5} className="text-[#168a53]" />
+                  <Check size={14} strokeWidth={2.5} className="text-[#14b8a6]" />
                   <span>Tersimpan</span>
                 </>
               ) : (
@@ -733,7 +733,7 @@ export default function EventSummary() {
                               Kelompok {label}
                             </p>
                             <div className="space-y-1 font-semibold">
-                              <p className="text-[#168a53] flex items-center justify-between">
+                              <p className="text-[#14b8a6] flex items-center justify-between">
                                 <span>{currentMonthName}:</span>
                                 <span className="font-black tabular-nums">{payload[0]?.value}%</span>
                               </p>
@@ -752,12 +752,12 @@ export default function EventSummary() {
                     iconType="circle"
                     wrapperStyle={{ paddingTop: '15px', fontSize: '12px', fontWeight: 600 }}
                   />
-                  <Bar dataKey="Sekarang" name={currentMonthName} fill="#168a53" radius={[5, 5, 0, 0]} maxBarSize={22}>
+                  <Bar dataKey="Sekarang" name={currentMonthName} fill="#14b8a6" radius={[5, 5, 0, 0]} maxBarSize={22}>
                     <LabelList
                       dataKey="Sekarang"
                       position="top"
                       formatter={(val) => `${val}%`}
-                      style={{ fill: '#168a53', fontSize: 10, fontWeight: '800' }}
+                      style={{ fill: '#14b8a6', fontSize: 10, fontWeight: '800' }}
                       offset={4}
                     />
                   </Bar>
@@ -868,7 +868,7 @@ export default function EventSummary() {
                       }}
                     />
                     <Legend iconType="circle" wrapperStyle={{ paddingTop: '15px', fontSize: '12px', fontWeight: 600 }} />
-                    <Line type="monotone" dataKey="Hadir" stroke="#168a53" strokeWidth={3} activeDot={{ r: 6 }} />
+                    <Line type="monotone" dataKey="Hadir" stroke="#14b8a6" strokeWidth={3} activeDot={{ r: 6 }} />
                     <Line type="monotone" dataKey="Izin" name="Izin/Sakit" stroke="#f59e0b" strokeWidth={3} activeDot={{ r: 6 }} />
                     <Line type="monotone" dataKey="Alpa" stroke="#ef4444" strokeWidth={3} activeDot={{ r: 6 }} />
                   </LineChart>
@@ -1035,7 +1035,7 @@ export default function EventSummary() {
           <div className="p-3.5 sm:p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5 sm:gap-5">
             {groupStats.map((stat, idx) => {
               const pieData = [
-                { name: 'Hadir', value: stat.hadirTotal, color: '#168a53' },
+                { name: 'Hadir', value: stat.hadirTotal, color: '#14b8a6' },
                 { name: 'Izin/Sakit', value: stat.izinSakitTotal, color: '#f59e0b' },
                 { name: 'Alpa', value: stat.alpaTotal < 0 ? 0 : stat.alpaTotal, color: '#ef4444' }
               ].filter(d => d.value > 0);
@@ -1087,8 +1087,8 @@ export default function EventSummary() {
 
                   {/* Status Pills */}
                   <div className="flex flex-wrap justify-center gap-1 sm:gap-1.5 mt-2.5 w-full text-[10px] font-bold">
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-50 text-[#168a53] rounded-md border border-emerald-100">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#168a53]"></span>
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-teal-50 text-[#14b8a6] rounded-md border border-teal-100">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#14b8a6]"></span>
                       Hadir: {stat.hadirTotal}
                     </span>
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-50 text-amber-700 rounded-md border border-amber-100">
@@ -1135,12 +1135,12 @@ export default function EventSummary() {
                       onClick={() => { setFilterKelompok(k); setIsDropdownKelompokOpen(false); }}
                       className={`w-full text-left px-4 py-2 text-xs font-semibold transition-colors flex items-center justify-between cursor-pointer ${
                         filterKelompok === k
-                          ? 'bg-emerald-50 text-[#168a53] font-bold'
+                          ? 'bg-teal-50 text-[#14b8a6] font-bold'
                           : 'text-slate-700 hover:bg-slate-50'
                       }`}
                     >
                       <span>{k === 'Semua' ? 'Semua Kelompok' : k}</span>
-                      {filterKelompok === k && <Check size={14} className="text-[#168a53]" strokeWidth={2.5} />}
+                      {filterKelompok === k && <Check size={14} className="text-[#14b8a6]" strokeWidth={2.5} />}
                     </button>
                   ))}
                 </div>
@@ -1169,12 +1169,12 @@ export default function EventSummary() {
                       onClick={() => { setFilterStatus(s); setIsDropdownStatusOpen(false); }}
                       className={`w-full text-left px-4 py-2 text-xs font-semibold transition-colors flex items-center justify-between cursor-pointer ${
                         filterStatus === s
-                          ? 'bg-emerald-50 text-[#168a53] font-bold'
+                          ? 'bg-teal-50 text-[#14b8a6] font-bold'
                           : 'text-slate-700 hover:bg-slate-50'
                       }`}
                     >
                       <span>{s === 'Semua' ? 'Semua Status' : s}</span>
-                      {filterStatus === s && <Check size={14} className="text-[#168a53]" strokeWidth={2.5} />}
+                      {filterStatus === s && <Check size={14} className="text-[#14b8a6]" strokeWidth={2.5} />}
                     </button>
                   ))}
                 </div>
@@ -1242,7 +1242,7 @@ export default function EventSummary() {
                         <span
                           className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-[11px] sm:text-xs font-extrabold capitalize border ${
                             item.status === 'hadir'
-                              ? 'bg-emerald-50 text-[#168a53] border-emerald-200/70'
+                              ? 'bg-teal-50 text-[#14b8a6] border-teal-200/70'
                               : item.status === 'izin' || item.status === 'sakit'
                               ? 'bg-amber-50 text-amber-700 border-amber-200/70'
                               : 'bg-rose-50 text-rose-700 border-rose-200/70'

@@ -167,15 +167,15 @@ export default function LandingPage() {
       orbitActive: "ring-4 ring-sky-500/30 scale-110 shadow-lg shadow-sky-500/20"
     },
     emerald: {
-      bg: "bg-emerald-600",
-      lightBg: "bg-emerald-50",
-      text: "text-[#168a53]",
-      border: "border-emerald-200",
-      ring: "ring-emerald-500/20",
-      badgeBg: "bg-emerald-100 text-emerald-800",
-      iconBg: "bg-emerald-600 text-white",
-      pillActive: "bg-[#168a53] text-white shadow-sm shadow-emerald-700/25",
-      orbitActive: "ring-4 ring-emerald-500/30 scale-110 shadow-lg shadow-emerald-600/20"
+      bg: "bg-teal-600",
+      lightBg: "bg-teal-50",
+      text: "text-[#14b8a6]",
+      border: "border-teal-200",
+      ring: "ring-teal-500/20",
+      badgeBg: "bg-teal-100 text-teal-800",
+      iconBg: "bg-teal-600 text-white",
+      pillActive: "bg-[#14b8a6] text-white shadow-sm shadow-teal-700/25",
+      orbitActive: "ring-4 ring-teal-500/30 scale-110 shadow-lg shadow-teal-600/20"
     },
     indigo: {
       bg: "bg-indigo-600",
@@ -252,7 +252,7 @@ export default function LandingPage() {
     {
       title: "Keluarga Harmonis",
       desc: "Membiasakan etika sopan santun kepada orang tua, ketertiban shalat lima waktu, serta saling menyayangi antar anggota keluarga di rumah.",
-      icon: <Home className="w-6 h-6 text-[#168a53]" strokeWidth={2} />,
+      icon: <Home className="w-6 h-6 text-[#14b8a6]" strokeWidth={2} />,
       tag: "Fondasi Rumah Tangga"
     },
     {
@@ -270,12 +270,12 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-800 font-sans selection:bg-[#168a53] selection:text-white relative overflow-hidden">
+    <div className="min-h-screen bg-[#f8fafc] text-slate-800 font-sans selection:bg-[#14b8a6] selection:text-white relative overflow-hidden">
 
       {/* iOS Soft Ambient Gradient Orbs */}
-      <div className="fixed top-[-100px] left-1/2 -translate-x-1/2 w-[700px] h-[360px] bg-gradient-to-b from-emerald-100/40 via-teal-50/20 to-transparent rounded-full blur-[100px] pointer-events-none -z-10" />
+      <div className="fixed top-[-100px] left-1/2 -translate-x-1/2 w-[700px] h-[360px] bg-gradient-to-b from-teal-100/40 via-teal-50/20 to-transparent rounded-full blur-[100px] pointer-events-none -z-10" />
       <div className="fixed top-[20%] right-[-100px] w-[450px] h-[450px] bg-sky-100/30 rounded-full blur-[120px] pointer-events-none -z-10" />
-      <div className="fixed bottom-[10%] left-[-100px] w-[450px] h-[450px] bg-emerald-50/50 rounded-full blur-[120px] pointer-events-none -z-10" />
+      <div className="fixed bottom-[10%] left-[-100px] w-[450px] h-[450px] bg-teal-50/50 rounded-full blur-[120px] pointer-events-none -z-10" />
 
       {/* ============================================================== */}
       {/* 1. iOS Translucent Frosted Glass Navbar                        */}
@@ -285,13 +285,13 @@ export default function LandingPage() {
           
           {/* Brand Logo & Title */}
           <Link to="/" className="flex items-center gap-3 group active:scale-[0.98] transition-all">
-            <div className="w-10 h-10 rounded-xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-1.5 flex items-center justify-center shrink-0 group-hover:border-emerald-300 transition-colors">
+            <div className="w-10 h-10 rounded-xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-1.5 flex items-center justify-center shrink-0 group-hover:border-teal-300 transition-colors">
               <img src={logoImg} alt="DesaSlogo" className="w-full h-full object-contain" />
             </div>
             <div className="leading-tight">
               <span className="font-extrabold text-slate-900 text-lg tracking-tight flex items-center gap-1.5">
                 DesaSlogo
-                <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#168a53]" />
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#14b8a6]" />
               </span>
               <p className="text-[11px] font-medium text-slate-400">
                 Sistem Generus
@@ -326,7 +326,7 @@ export default function LandingPage() {
           {/* Main Display Headline */}
           <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold text-slate-900 tracking-tight leading-[1.1] mb-6 sm:mb-8">
             Membangun Generasi <br className="hidden sm:inline" />
-            <span className="bg-gradient-to-r from-[#168a53] via-emerald-600 to-teal-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#14b8a6] via-teal-600 to-teal-600 bg-clip-text text-transparent">
               29 Karakter Luhur
             </span>
           </h1>
@@ -335,7 +335,7 @@ export default function LandingPage() {
           <div className="flex items-center justify-center mb-8 sm:mb-12">
             <Link
               to="/login"
-              className="inline-flex items-center justify-center gap-2.5 bg-[#168a53] hover:bg-[#137747] text-white px-8 py-3.5 sm:py-4 rounded-2xl font-bold text-sm sm:text-base shadow-sm shadow-emerald-700/25 active:scale-[0.97] transition-all cursor-pointer"
+              className="inline-flex items-center justify-center gap-2.5 bg-[#14b8a6] hover:bg-[#0d9488] text-white px-8 py-3.5 sm:py-4 rounded-2xl font-bold text-sm sm:text-base shadow-sm shadow-teal-700/25 active:scale-[0.97] transition-all cursor-pointer"
             >
               <span>Login</span>
               <ArrowRight size={17} strokeWidth={2.4} />
@@ -365,7 +365,7 @@ export default function LandingPage() {
           <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 group-hover:text-slate-600">
             Scroll ke Bawah
           </span>
-          <ChevronDown size={16} className="animate-bounce text-[#168a53]" strokeWidth={2.2} />
+          <ChevronDown size={16} className="animate-bounce text-[#14b8a6]" strokeWidth={2.2} />
         </a>
       </section>
 
@@ -592,7 +592,7 @@ export default function LandingPage() {
             
             <div className="relative z-10 max-w-4xl mx-auto">
               <div className="text-center mb-10">
-                <span className="text-[11px] font-bold text-[#168a53] uppercase tracking-wider bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">
+                <span className="text-[11px] font-bold text-[#14b8a6] uppercase tracking-wider bg-teal-50 px-3 py-1 rounded-full border border-teal-100">
                   Implementasi Nyata
                 </span>
                 <h3 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-3 mb-2">
@@ -659,7 +659,7 @@ export default function LandingPage() {
 
           <div className="flex items-center gap-4 text-slate-500 font-medium">
             <a href="#karakter" className="hover:text-slate-800 transition-colors">29 Karakter</a>
-            <Link to="/login" className="hover:text-[#168a53] transition-colors">Login</Link>
+            <Link to="/login" className="hover:text-[#14b8a6] transition-colors">Login</Link>
           </div>
         </div>
       </footer>

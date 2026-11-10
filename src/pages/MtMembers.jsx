@@ -20,7 +20,7 @@ const JENJANG_LIST = [
 ];
 
 const STATUS_META = {
-  'aktif':       { label: 'Aktif',       color: 'text-emerald-700 bg-emerald-50/90 border-emerald-200/60',  dot: 'bg-emerald-500' },
+  'aktif':       { label: 'Aktif',       color: 'text-teal-700 bg-teal-50/90 border-teal-200/60',  dot: 'bg-teal-500' },
   'pasif':       { label: 'Pasif',       color: 'text-amber-700  bg-amber-50/90  border-amber-200/60',   dot: 'bg-amber-500'   },
   'tidak aktif': { label: 'Tidak Aktif', color: 'text-red-700    bg-red-50/90    border-red-200/60',     dot: 'bg-red-500'     },
 };
@@ -44,7 +44,7 @@ const AVATAR_PALETTES = [
   'bg-pink-50 text-pink-600 border-pink-100',
   'bg-sky-50 text-sky-600 border-sky-100',
   'bg-amber-50 text-amber-600 border-amber-100',
-  'bg-emerald-50 text-emerald-600 border-emerald-100',
+  'bg-teal-50 text-teal-600 border-teal-100',
 ];
 
 function Avatar({ name, size = 'md' }) {
@@ -99,12 +99,12 @@ function TextInput({ name, value, onChange, placeholder = '', type = 'text', req
     <input
       type={type} name={name} value={value} onChange={onChange}
       placeholder={placeholder} required={required}
-      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
     />
   );
 }
 
-function ConfirmDialog({ open, onClose, onConfirm, icon, iconBg, title, description, confirmLabel = 'Konfirmasi', confirmClass = 'bg-emerald-600 hover:bg-emerald-700', loading }) {
+function ConfirmDialog({ open, onClose, onConfirm, icon, iconBg, title, description, confirmLabel = 'Konfirmasi', confirmClass = 'bg-teal-600 hover:bg-teal-700', loading }) {
   return (
     <Modal open={open} onClose={onClose} maxWidth="max-w-sm">
       <div className="p-8 text-center">
@@ -413,21 +413,21 @@ export default function MtMembers() {
           onClick={() => setShowFilters(v => !v)}
           className={`w-9 h-9 rounded-full border flex items-center justify-center transition-colors shadow-2xs relative ${
             showFilters
-              ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
+              ? 'bg-teal-50 border-teal-200 text-teal-700'
               : 'bg-white border-slate-200/90 text-slate-600 hover:bg-slate-50'
           }`}
           title="Filter Jenjang"
         >
           <Filter size={15} />
           {!filterJenjang.includes('Semua') && filterJenjang.length > 0 && (
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-600" />
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-teal-600" />
           )}
         </button>
 
         <button
           type="button"
           onClick={openAdd}
-          className="flex items-center gap-1 px-4 py-2 bg-[#168a53] hover:bg-[#127344] text-white rounded-full text-xs font-bold transition-colors shadow-xs cursor-pointer active:scale-95"
+          className="flex items-center gap-1 px-4 py-2 bg-[#14b8a6] hover:bg-[#0d9488] text-white rounded-full text-xs font-bold transition-colors shadow-xs cursor-pointer active:scale-95"
         >
           <Plus size={14} strokeWidth={2.5} />
           <span>Tambah</span>
@@ -447,7 +447,7 @@ export default function MtMembers() {
 
         <button
           onClick={openAdd}
-          className="flex items-center gap-1.5 px-4 py-1.5 bg-[#168a53] hover:bg-[#127344] text-white rounded-full text-xs font-semibold transition-colors shadow-xs cursor-pointer"
+          className="flex items-center gap-1.5 px-4 py-1.5 bg-[#14b8a6] hover:bg-[#0d9488] text-white rounded-full text-xs font-semibold transition-colors shadow-xs cursor-pointer"
         >
           <Plus size={14} strokeWidth={2.5} />
           <span>Tambah Peserta</span>
@@ -459,7 +459,7 @@ export default function MtMembers() {
           className="w-8 h-8 flex items-center justify-center text-slate-500 hover:text-slate-700 bg-white border border-slate-200/80 rounded-full hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
           title="Muat Ulang Data"
         >
-          <RotateCw size={13} className={loading ? 'animate-spin text-emerald-600' : ''} />
+          <RotateCw size={13} className={loading ? 'animate-spin text-teal-600' : ''} />
         </button>
       </div>
     </div>
@@ -475,7 +475,7 @@ export default function MtMembers() {
         <div className="flex items-center justify-between gap-4">
           <div>
             <h1 className="text-[26px] sm:text-2xl font-extrabold text-slate-900 tracking-tight leading-tight">
-              Data Anggota Kelompok {kelompokName && <span className="text-[#168a53]">{kelompokName}</span>}
+              Data Anggota Kelompok {kelompokName && <span className="text-[#14b8a6]">{kelompokName}</span>}
             </h1>
             <p className="sm:hidden text-slate-500 text-xs mt-1 font-medium">
               {new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' })} · Kelola data generus kelompok Anda
@@ -498,7 +498,7 @@ export default function MtMembers() {
             placeholder="Cari nama, jenjang, no hp..."
             value={search}
             onChange={e => { setSearch(e.target.value); setCurrentPage(1); }}
-            className="w-full pl-10 pr-4 py-3 text-xs bg-slate-200/60 rounded-2xl border border-slate-200/80 text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium"
+            className="w-full pl-10 pr-4 py-3 text-xs bg-slate-200/60 rounded-2xl border border-slate-200/80 text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all font-medium"
           />
         </div>
 
@@ -507,7 +507,7 @@ export default function MtMembers() {
           <div className="lg:hidden bg-white border border-slate-200/80 rounded-2xl p-3.5 space-y-3 shadow-xs animate-in fade-in slide-in-from-top-1 duration-150">
             <div>
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                <Filter size={10} className="text-emerald-600" /> Filter Jenjang
+                <Filter size={10} className="text-teal-600" /> Filter Jenjang
               </p>
               <div className="flex flex-wrap gap-1.5">
                 {JENJANG_LIST.map(j => {
@@ -526,7 +526,7 @@ export default function MtMembers() {
                       onClick={() => handleToggleJenjang(j)}
                       className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
                         active
-                          ? 'bg-[#168a53] text-white'
+                          ? 'bg-[#14b8a6] text-white'
                           : 'bg-slate-50 text-slate-600 border border-slate-200/80'
                       }`}
                     >
@@ -570,15 +570,15 @@ export default function MtMembers() {
           <div className="bg-white border border-slate-200/70 rounded-2xl p-4 sm:p-5 shadow-[0_1px_2px_rgba(0,0,0,0.03)] flex flex-col justify-between">
             <div className="flex items-center justify-between gap-1">
               <span className="text-xs font-semibold text-slate-500 truncate">Peserta Aktif</span>
-              <div className="w-7 h-7 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+              <div className="w-7 h-7 rounded-full bg-teal-50 text-teal-600 flex items-center justify-center shrink-0">
                 <Check size={14} strokeWidth={2.5} />
               </div>
             </div>
             <div className="mt-3 sm:mt-4 flex items-baseline justify-between gap-1">
-              <span className="text-2xl sm:text-3xl font-extrabold text-[#168a53] tracking-tight tabular-nums">
+              <span className="text-2xl sm:text-3xl font-extrabold text-[#14b8a6] tracking-tight tabular-nums">
                 {totalAktif}
               </span>
-              <span className="px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-emerald-50 text-emerald-700 whitespace-nowrap">
+              <span className="px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-teal-50 text-teal-700 whitespace-nowrap">
                 {pct(totalAktif, totalAnggota)}% Rasio
               </span>
             </div>
@@ -652,8 +652,8 @@ export default function MtMembers() {
           <p className="text-xs text-slate-500">
             Menampilkan <span className="font-bold text-slate-800">{paginatedRows.length}</span> dari {filtered.length} peserta
           </p>
-          <span className="text-xs font-semibold text-[#168a53] flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#168a53]" />
+          <span className="text-xs font-semibold text-[#14b8a6] flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#14b8a6]" />
             Realtime sync
           </span>
         </div>
@@ -672,7 +672,7 @@ export default function MtMembers() {
                 placeholder="Cari nama peserta, jenjang, no hp... (Ctrl+K)"
                 value={search}
                 onChange={e => { setSearch(e.target.value); setCurrentPage(1); }}
-                className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm bg-slate-50/90 rounded-xl border border-slate-200/70 text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium"
+                className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm bg-slate-50/90 rounded-xl border border-slate-200/70 text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all font-medium"
               />
             </div>
 
@@ -708,14 +708,14 @@ export default function MtMembers() {
                 onClick={() => setShowFilters(!showFilters)}
                 className={`px-4 py-2 text-xs sm:text-sm font-bold rounded-xl border flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
                   showFilters
-                    ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
+                    ? 'bg-teal-50 border-teal-200 text-teal-700'
                     : 'bg-white border-slate-200/90 text-slate-700 hover:bg-slate-50'
                 }`}
               >
                 <Filter size={14} />
                 <span>Filter</span>
                 {!filterJenjang.includes('Semua') && filterJenjang.length > 0 && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-teal-600" />
                 )}
               </button>
             </div>
@@ -726,7 +726,7 @@ export default function MtMembers() {
             <div className="hidden lg:block p-4 bg-slate-50/70 border-b border-slate-100 animate-in fade-in slide-in-from-top-1 duration-150">
               <div className="bg-white border border-slate-200/80 rounded-xl p-3">
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                  <Filter size={10} className="text-emerald-600" /> Jenjang & Jabatan
+                  <Filter size={10} className="text-teal-600" /> Jenjang & Jabatan
                 </p>
                 <div className="flex flex-wrap gap-1.5">
                   {JENJANG_LIST.map(j => {
@@ -745,7 +745,7 @@ export default function MtMembers() {
                         onClick={() => handleToggleJenjang(j)}
                         className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all duration-150 ${
                           active
-                            ? 'bg-[#168a53] text-white shadow-2xs'
+                            ? 'bg-[#14b8a6] text-white shadow-2xs'
                             : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200/80'
                         }`}
                       >
@@ -777,7 +777,7 @@ export default function MtMembers() {
           <div className="md:hidden divide-y divide-slate-100">
             {loading ? (
               <div className="py-16 text-center">
-                <Loader2 size={26} className="animate-spin text-emerald-500 mx-auto mb-2" />
+                <Loader2 size={26} className="animate-spin text-teal-500 mx-auto mb-2" />
                 <p className="text-slate-400 text-sm">Memuat data peserta...</p>
               </div>
             ) : paginatedRows.length === 0 ? (
@@ -814,7 +814,7 @@ export default function MtMembers() {
 
                     <div className="flex items-center gap-1.5 sm:gap-2 mt-1.5 flex-wrap">
                       {roleBadges.map(rb => (
-                        <span key={rb} className="text-[10px] sm:text-xs font-bold uppercase tracking-wider px-1.5 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200/60 rounded">
+                        <span key={rb} className="text-[10px] sm:text-xs font-bold uppercase tracking-wider px-1.5 py-0.5 bg-teal-50 text-teal-700 border border-teal-200/60 rounded">
                           {rb}
                         </span>
                       ))}
@@ -864,7 +864,7 @@ export default function MtMembers() {
                 {loading ? (
                   <tr>
                     <td colSpan={7} className="py-20 text-center">
-                      <Loader2 size={28} className="animate-spin text-emerald-500 mx-auto mb-2" />
+                      <Loader2 size={28} className="animate-spin text-teal-500 mx-auto mb-2" />
                       <p className="text-slate-400 text-sm">Memuat data peserta...</p>
                     </td>
                   </tr>
@@ -898,7 +898,7 @@ export default function MtMembers() {
                       <td className="px-6 py-4">
                         <div className="flex flex-col items-start gap-1">
                           {roleBadges.map(rb => (
-                            <span key={rb} className="text-xs font-bold uppercase tracking-wide px-2.5 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200/60 rounded-md">
+                            <span key={rb} className="text-xs font-bold uppercase tracking-wide px-2.5 py-0.5 bg-teal-50 text-teal-700 border border-teal-200/60 rounded-md">
                               {rb}
                             </span>
                           ))}
@@ -927,7 +927,7 @@ export default function MtMembers() {
                             <QrCode size={16} />
                           </button>
                           <button onClick={() => openDetail(item)}
-                            className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors cursor-pointer" title="Lihat detail">
+                            className="p-2 text-slate-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors cursor-pointer" title="Lihat detail">
                             <Eye size={16} />
                           </button>
                           <button onClick={() => openEdit(item)}
@@ -958,7 +958,7 @@ export default function MtMembers() {
                   setRowsPerPage(val);
                   setCurrentPage(1);
                 }}
-                className="px-2.5 py-1 bg-white border border-slate-200 rounded-lg text-xs sm:text-sm font-bold text-slate-700 focus:outline-none focus:border-emerald-500 cursor-pointer"
+                className="px-2.5 py-1 bg-white border border-slate-200 rounded-lg text-xs sm:text-sm font-bold text-slate-700 focus:outline-none focus:border-teal-500 cursor-pointer"
               >
                 <option value={8}>8</option>
                 <option value={15}>15</option>
@@ -994,7 +994,7 @@ export default function MtMembers() {
                     onClick={() => setCurrentPage(p)}
                     className={`w-7 h-7 rounded-lg text-xs font-bold flex items-center justify-center transition-colors ${
                       safePage === p
-                        ? 'bg-[#168a53] text-white shadow-2xs'
+                        ? 'bg-[#14b8a6] text-white shadow-2xs'
                         : 'text-slate-600 hover:bg-slate-100'
                     }`}
                   >
@@ -1042,19 +1042,19 @@ export default function MtMembers() {
               <label className="flex items-center gap-2 mt-2 cursor-pointer select-none">
                 <input type="checkbox" name="is_pengurus" checked={!!formData.is_pengurus}
                   onChange={(e) => setFormData(prev => ({ ...prev, is_pengurus: e.target.checked }))}
-                  className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 w-4 h-4" />
+                  className="rounded border-slate-300 text-teal-600 focus:ring-teal-500 w-4 h-4" />
                 <span className="text-sm font-semibold text-slate-700">Pengurus Usman</span>
               </label>
               <label className="flex items-center gap-2 mt-2 cursor-pointer select-none">
                 <input type="checkbox" name="is_pengurus_muda_mudi" checked={!!formData.is_pengurus_muda_mudi}
                   onChange={(e) => setFormData(prev => ({ ...prev, is_pengurus_muda_mudi: e.target.checked }))}
-                  className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 w-4 h-4" />
+                  className="rounded border-slate-300 text-teal-600 focus:ring-teal-500 w-4 h-4" />
                 <span className="text-sm font-semibold text-slate-700">Pengurus Muda Mudi</span>
               </label>
               <label className="flex items-center gap-2 mt-2 cursor-pointer select-none">
                 <input type="checkbox" name="is_ketua_wakil_kelompok" checked={!!formData.is_ketua_wakil_kelompok}
                   onChange={(e) => setFormData(prev => ({ ...prev, is_ketua_wakil_kelompok: e.target.checked }))}
-                  className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 w-4 h-4" />
+                  className="rounded border-slate-300 text-teal-600 focus:ring-teal-500 w-4 h-4" />
                 <span className="text-sm font-semibold text-slate-700">Ketua/Wakil Kelompok</span>
               </label>
             </Field>
@@ -1120,7 +1120,7 @@ export default function MtMembers() {
               Batal
             </button>
             <button type="submit" disabled={saving}
-              className="flex-1 py-3 rounded-xl bg-[#168a53] hover:bg-[#127344] text-white font-semibold text-sm transition-colors shadow-sm disabled:opacity-50 flex items-center justify-center gap-2">
+              className="flex-1 py-3 rounded-xl bg-[#14b8a6] hover:bg-[#0d9488] text-white font-semibold text-sm transition-colors shadow-sm disabled:opacity-50 flex items-center justify-center gap-2">
               {saving && <Loader2 size={16} className="animate-spin" />}
               {saving ? 'Menyimpan...' : (modalMode === 'add' ? 'Simpan Peserta' : 'Simpan Perubahan')}
             </button>
@@ -1140,7 +1140,7 @@ export default function MtMembers() {
                   <h2 className="text-xl font-bold text-slate-800">{selected.nama_lengkap}</h2>
                   <div className="flex flex-wrap items-center gap-2 mt-1">
                     <span className="text-xs font-semibold px-2.5 py-1 bg-slate-100 text-slate-600 rounded-lg">{selected.jenjang || '-'}</span>
-                    <span className="text-xs font-medium text-slate-500 flex items-center gap-1"><MapPin size={10} className="text-emerald-600" />{selected.kelompok || kelompokName}</span>
+                    <span className="text-xs font-medium text-slate-500 flex items-center gap-1"><MapPin size={10} className="text-teal-600" />{selected.kelompok || kelompokName}</span>
                     <StatusBadge status={selected.status} />
                   </div>
                 </div>
@@ -1190,7 +1190,7 @@ export default function MtMembers() {
                   <Edit2 size={15} /> Edit Data
                 </button>
                 <button onClick={() => setShowDetail(false)}
-                  className="flex-1 py-2.5 rounded-xl bg-[#168a53] text-white font-semibold text-sm hover:bg-[#127344] transition-colors">
+                  className="flex-1 py-2.5 rounded-xl bg-[#14b8a6] text-white font-semibold text-sm hover:bg-[#0d9488] transition-colors">
                   Tutup
                 </button>
               </div>
@@ -1208,14 +1208,14 @@ export default function MtMembers() {
               <div ref={idCardRef}
                 className="bg-white rounded-xl overflow-hidden border border-slate-200 shadow-lg flex flex-col max-w-full"
                 style={{ width: '54mm', height: '86mm', fontFamily: 'system-ui, sans-serif' }}>
-                <div className="bg-[#168a53] px-3 py-2 flex items-center justify-center gap-1.5 text-white shrink-0">
+                <div className="bg-[#14b8a6] px-3 py-2 flex items-center justify-center gap-1.5 text-white shrink-0">
                   <img src={logoImg} alt="Logo" className="w-3.5 h-3.5 object-contain brightness-0 invert" />
                   <span className="font-black text-[10px] tracking-widest">DESA SLOGO</span>
                 </div>
                 <div className="px-3 py-3 text-center flex-1 flex flex-col items-center justify-center">
                   <p className="text-[7px] font-bold text-slate-400 uppercase tracking-widest mb-1">Kartu Absensi Generus</p>
                   <p className="font-black text-slate-800 text-sm uppercase leading-tight mb-0.5 max-w-full line-clamp-2 px-1">{selected.nama_lengkap}</p>
-                  <p className="text-[9px] font-semibold text-emerald-600 mb-3">{selected.kelompok || kelompokName}</p>
+                  <p className="text-[9px] font-semibold text-teal-600 mb-3">{selected.kelompok || kelompokName}</p>
                   <div className="flex justify-center p-1.5 bg-slate-50 rounded-lg border border-slate-100">
                     <QRCodeCanvas value={`SLOGO-${selected.kode_unik || `GEN-${selected.id}`}`} size={110} level="H" includeMargin={false} />
                   </div>
@@ -1228,7 +1228,7 @@ export default function MtMembers() {
                   Tutup
                 </button>
                 <button onClick={downloadQr}
-                  className="flex-1 py-2.5 rounded-xl bg-[#168a53] hover:bg-[#127344] text-white font-semibold text-sm flex items-center justify-center gap-2 transition-colors">
+                  className="flex-1 py-2.5 rounded-xl bg-[#14b8a6] hover:bg-[#0d9488] text-white font-semibold text-sm flex items-center justify-center gap-2 transition-colors">
                   <Download size={15} /> Unduh
                 </button>
               </div>

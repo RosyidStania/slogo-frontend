@@ -76,7 +76,7 @@ export default function UserQR() {
     <div className="max-w-md mx-auto px-4 py-6 sm:py-12 flex justify-center animate-in fade-in slide-in-from-bottom-8 duration-500">
       <div className="w-full relative group">
         {/* Glow behind the card */}
-        <div className="absolute inset-0 bg-gradient-to-r from-teal-400 to-emerald-500 rounded-3xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-500"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-teal-400 to-teal-600 rounded-3xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-500"></div>
         
         {/* The Card */}
         <div className="relative bg-white rounded-3xl overflow-hidden shadow-2xl border border-slate-100/50 flex flex-col items-center">

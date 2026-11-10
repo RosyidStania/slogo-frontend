@@ -133,7 +133,7 @@ export default function NotulenEditor() {
   if (loading) {
     return (
       <div className="w-full py-24 flex flex-col items-center justify-center gap-3">
-        <Loader2 size={34} className="text-[#168a53] animate-spin" />
+        <Loader2 size={34} className="text-[#14b8a6] animate-spin" />
         <p className="text-xs font-bold text-slate-500">Membuka lembar notulen...</p>
       </div>
     );
@@ -162,7 +162,7 @@ export default function NotulenEditor() {
                 {note.judul}
               </h1>
               {savedNotice && (
-                <span className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/70 shrink-0">
+                <span className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-teal-50 text-teal-700 border border-teal-200/70 shrink-0">
                   <Check size={11} strokeWidth={2.5} /> Tersimpan
                 </span>
               )}
@@ -191,7 +191,7 @@ export default function NotulenEditor() {
                 </span>
               )}
               {note.peserta_hadir_count != null && note.peserta_hadir_count > 0 && (
-                <span className="inline-flex items-center gap-1 text-emerald-700 font-bold">
+                <span className="inline-flex items-center gap-1 text-teal-700 font-bold">
                   <Users size={11} />
                   <span>{note.peserta_hadir_count} Hadir</span>
                 </span>
@@ -207,8 +207,8 @@ export default function NotulenEditor() {
             onClick={handleCopy}
             className={`py-2 px-3 sm:px-3.5 rounded-full text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer active:scale-95 ${
               copied
-                ? 'bg-emerald-600 text-white shadow-2xs'
-                : 'bg-emerald-50 hover:bg-emerald-100 text-[#168a53] border border-emerald-200/60'
+                ? 'bg-teal-600 text-white shadow-2xs'
+                : 'bg-teal-50 hover:bg-teal-100 text-[#14b8a6] border border-teal-200/60'
             }`}
           >
             {copied ? <Check size={13} strokeWidth={2.5} /> : <Copy size={13} />}
@@ -219,7 +219,7 @@ export default function NotulenEditor() {
             type="button"
             onClick={handleSave}
             disabled={saving}
-            className="py-2 px-4 rounded-full bg-[#168a53] hover:bg-[#127344] disabled:bg-slate-200 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-[0_2px_8px_rgba(22,138,83,0.25)] cursor-pointer active:scale-95 transition-all"
+            className="py-2 px-4 rounded-full bg-[#14b8a6] hover:bg-[#0d9488] disabled:bg-slate-200 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-[0_2px_8px_rgba(20,184,166,0.25)] cursor-pointer active:scale-95 transition-all"
           >
             {saving ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />}
             <span>Simpan</span>

@@ -22,7 +22,7 @@ const AVATAR_PALETTE_MALE = [
   'bg-blue-100 text-blue-600',
   'bg-sky-100 text-sky-600',
   'bg-teal-100 text-teal-600',
-  'bg-emerald-100 text-emerald-600',
+  'bg-teal-100 text-teal-600',
   'bg-indigo-100 text-indigo-600',
   'bg-cyan-100 text-cyan-600',
 ];
@@ -76,6 +76,7 @@ function Modal({ open, onClose, children, maxWidth = 'max-w-sm' }) {
 export default function ManageAttendance() {
   const { eventId } = useParams();
   const navigate    = useNavigate();
+  const role        = localStorage.getItem('role');
 
   const [event, setEvent]                 = useState(null);
   const [generusList, setGenerusList]     = useState([]);
@@ -387,12 +388,29 @@ export default function ManageAttendance() {
     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
       <AlertTriangle size={32} className="text-amber-500" />
       <p className="text-slate-700 font-semibold">Acara ini sudah ditutup.</p>
-      <button
-        onClick={() => navigate('/admin/events')}
-        className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-xl transition-colors cursor-pointer"
-      >
-        Kembali ke Daftar Acara
-      </button>
+      <div className="flex flex-wrap items-center justify-center gap-2">
+        <button
+          onClick={() => navigate('/admin/events')}
+          className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors cursor-pointer"
+        >
+          Kembali ke Daftar Acara
+        </button>
+        {['admin', 'absen_kelompok'].includes(role) && (
+          <button
+            onClick={async () => {
+              try {
+                await api.patch(`/admin/events/${event.id}/toggle-status`);
+                fetchData();
+              } catch (err) {
+                alert(err.response?.data?.message || 'Gagal membuka kembali absen acara ini');
+              }
+            }}
+            className="px-4 py-2 bg-[#14b8a6] hover:bg-[#0d9488] text-white text-xs font-bold rounded-xl transition-colors cursor-pointer"
+          >
+            Buka Kembali Absen
+          </button>
+        )}
+      </div>
     </div>
   );
 
@@ -419,7 +437,7 @@ export default function ManageAttendance() {
             {displayCategories.map(cat => (
               <span
                 key={cat}
-                className="inline-flex items-center px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-[#ecfdf5] text-[#059669] border border-[#a7f3d0] uppercase tracking-wider"
+                className="inline-flex items-center px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-[#f0fdfa] text-[#0d9488] border border-[#99f6e4] uppercase tracking-wider"
               >
                 {cat}
               </span>
@@ -435,7 +453,7 @@ export default function ManageAttendance() {
       <div className="grid grid-cols-2 md:grid-cols-3 gap-2.5 sm:gap-3.5">
         {/* Card 1: Tanggal Acara */}
         <div className="col-span-2 md:col-span-1 bg-white border border-slate-200/80 rounded-2xl p-3 sm:p-4 shadow-2xs flex items-center gap-3">
-          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#ecfdf5] text-[#059669] flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#f0fdfa] text-[#0d9488] flex items-center justify-center shrink-0">
             <CalendarDays className="w-[18px] h-[18px] sm:w-5 sm:h-5" strokeWidth={2} />
           </div>
           <div className="min-w-0">
@@ -462,19 +480,19 @@ export default function ManageAttendance() {
         {/* Card 3: Batas Hadir */}
         <div className="col-span-1 bg-white border border-slate-200/80 rounded-2xl p-3 sm:p-4 shadow-2xs flex items-center justify-between">
           <div className="min-w-0">
-            <p className={`text-[10px] font-bold uppercase tracking-wider ${currentlyLate ? 'text-rose-500' : 'text-emerald-600'}`}>
+            <p className={`text-[10px] font-bold uppercase tracking-wider ${currentlyLate ? 'text-rose-500' : 'text-teal-600'}`}>
               BATAS HADIR
             </p>
             <div className="flex flex-wrap sm:flex-nowrap items-center gap-1.5 sm:gap-2 mt-0.5">
-              <span className={`text-lg sm:text-xl md:text-2xl font-black tabular-nums leading-tight ${currentlyLate ? 'text-rose-600' : 'text-emerald-700'}`}>
+              <span className={`text-lg sm:text-xl md:text-2xl font-black tabular-nums leading-tight ${currentlyLate ? 'text-rose-600' : 'text-teal-700'}`}>
                 {event.start_time?.substring(0, 5) || '--:--'}
               </span>
-              <span className={`text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap ${currentlyLate ? 'bg-rose-50 text-rose-600 border border-rose-100' : 'bg-emerald-50 text-emerald-700 border border-emerald-100'}`}>
+              <span className={`text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap ${currentlyLate ? 'bg-rose-50 text-rose-600 border border-rose-100' : 'bg-teal-50 text-teal-700 border border-teal-100'}`}>
                 {currentlyLate ? 'Lewat' : 'Dibuka'}
               </span>
             </div>
           </div>
-          <div className={`hidden sm:flex w-9 h-9 rounded-full items-center justify-center shrink-0 ${currentlyLate ? 'bg-rose-50 text-rose-500' : 'bg-emerald-50 text-emerald-600'}`}>
+          <div className={`hidden sm:flex w-9 h-9 rounded-full items-center justify-center shrink-0 ${currentlyLate ? 'bg-rose-50 text-rose-500' : 'bg-teal-50 text-teal-600'}`}>
             {currentlyLate ? <AlertTriangle size={18} strokeWidth={2} /> : <CheckCircle size={18} strokeWidth={2} />}
           </div>
         </div>
@@ -495,14 +513,14 @@ export default function ManageAttendance() {
         </div>
 
         {/* HADIR */}
-        <div className="bg-[#f0fdf4]/60 border border-emerald-100/90 rounded-2xl p-3 sm:p-4 shadow-2xs flex flex-col justify-between">
+        <div className="bg-[#f0fdfa]/60 border border-teal-100/90 rounded-2xl p-3 sm:p-4 shadow-2xs flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] sm:text-[11px] font-bold text-emerald-600 uppercase tracking-wider">HADIR</span>
-            <UserCheck size={15} className="text-emerald-500" />
+            <span className="text-[10px] sm:text-[11px] font-bold text-teal-600 uppercase tracking-wider">HADIR</span>
+            <UserCheck size={15} className="text-teal-500" />
           </div>
           <div className="mt-1.5 sm:mt-2">
-            <p className="text-2xl sm:text-3xl font-extrabold text-emerald-600 tracking-tight tabular-nums leading-none">{totalHadir}</p>
-            <p className="text-[11px] sm:text-xs text-emerald-600/80 mt-1 font-normal truncate">
+            <p className="text-2xl sm:text-3xl font-extrabold text-teal-600 tracking-tight tabular-nums leading-none">{totalHadir}</p>
+            <p className="text-[11px] sm:text-xs text-teal-600/80 mt-1 font-normal truncate">
               {totalTarget > 0 ? ((totalHadir / totalTarget) * 100).toFixed(1) : 0}% terverifikasi
             </p>
           </div>
@@ -578,10 +596,10 @@ export default function ManageAttendance() {
               : 'text-slate-600 hover:text-slate-900'
           }`}
         >
-          <History size={15} className={activeMobileTab === 'riwayat' ? 'text-emerald-600' : 'text-slate-400'} />
+          <History size={15} className={activeMobileTab === 'riwayat' ? 'text-teal-600' : 'text-slate-400'} />
           <span>Riwayat Absensi</span>
           <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
-            activeMobileTab === 'riwayat' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-300 text-slate-600'
+            activeMobileTab === 'riwayat' ? 'bg-teal-100 text-teal-700' : 'bg-slate-300 text-slate-600'
           }`}>
             {attendedList.length}
           </span>
@@ -732,7 +750,7 @@ export default function ManageAttendance() {
                           action: execHadirSemua,
                         })
                       }
-                      className="px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-[#059669] hover:bg-emerald-700 text-white text-[11px] sm:text-xs font-semibold flex items-center gap-1.5 shadow-2xs transition-colors shrink-0 cursor-pointer"
+                      className="px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-[#0d9488] hover:bg-teal-700 text-white text-[11px] sm:text-xs font-semibold flex items-center gap-1.5 shadow-2xs transition-colors shrink-0 cursor-pointer"
                     >
                       <Check className="w-3.5 h-3.5 sm:w-[15px] sm:h-[15px]" strokeWidth={2.5} />
                       <span>Hadir Semua</span>
@@ -763,7 +781,7 @@ export default function ManageAttendance() {
             <div className="space-y-2 sm:space-y-2.5">
               {displayed.length === 0 ? (
                 <div className="bg-white border border-slate-200/80 rounded-2xl py-10 sm:py-12 px-4 text-center shadow-2xs">
-                  <CheckCircle className="w-8 h-8 sm:w-9 sm:h-9 text-emerald-500 mx-auto mb-2" />
+                  <CheckCircle className="w-8 h-8 sm:w-9 sm:h-9 text-teal-500 mx-auto mb-2" />
                   <p className="text-slate-800 font-bold text-xs sm:text-sm">Semua sudah diabsen</p>
                   <p className="text-slate-400 text-[11px] sm:text-xs mt-0.5">Tidak ada peserta yang tersisa dalam panggilan</p>
                 </div>
@@ -791,7 +809,7 @@ export default function ManageAttendance() {
                       <button
                         type="button"
                         onClick={() => handleAbsen(g, 'hadir')}
-                        className="px-2.5 sm:px-4 py-1.5 rounded-xl bg-[#f0fdf4] hover:bg-[#059669] text-[#059669] hover:text-white border border-[#bbf7d0] hover:border-[#059669] text-[11px] sm:text-xs font-bold transition-all shadow-2xs active:scale-95 cursor-pointer min-h-[30px] flex items-center justify-center"
+                        className="px-2.5 sm:px-4 py-1.5 rounded-xl bg-[#f0fdfa] hover:bg-[#0d9488] text-[#0d9488] hover:text-white border border-[#99f6e4] hover:border-[#0d9488] text-[11px] sm:text-xs font-bold transition-all shadow-2xs active:scale-95 cursor-pointer min-h-[30px] flex items-center justify-center"
                       >
                         Hadir
                       </button>
@@ -858,7 +876,7 @@ export default function ManageAttendance() {
                     <div className="flex items-center gap-2 shrink-0">
                       <div className="text-right">
                         {item.status_absen === 'hadir' && (
-                          <span className="inline-flex items-center px-2 sm:px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-[#f0fdf4] text-[#059669] border border-[#bbf7d0]/60">
+                          <span className="inline-flex items-center px-2 sm:px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-[#f0fdfa] text-[#0d9488] border border-[#99f6e4]/60">
                             HADIR
                           </span>
                         )}
@@ -874,7 +892,7 @@ export default function ManageAttendance() {
                         )}
 
                         {item.status_absen === 'hadir' && (
-                          <p className="text-[10px] text-emerald-600 font-medium text-right mt-0.5">
+                          <p className="text-[10px] text-teal-600 font-medium text-right mt-0.5">
                             {item.time_arrived?.replace(':', '.') || '-'}{Number(item.is_late) === 1 ? ' • Telat' : ''}
                           </p>
                         )}
@@ -916,7 +934,7 @@ export default function ManageAttendance() {
       {/* ══ MODAL: Confirm ════════════════════════════════════════════════════ */}
       <Modal open={confirm.open} onClose={() => setConfirm(c => ({ ...c, open: false }))}>
         <div className="p-5 sm:p-7 text-center">
-          <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4 ${confirm.type === 'success' ? 'bg-emerald-50 text-emerald-500' : 'bg-red-50 text-red-500'}`}>
+          <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4 ${confirm.type === 'success' ? 'bg-teal-50 text-teal-500' : 'bg-red-50 text-red-500'}`}>
             <HelpCircle className="w-6 h-6 sm:w-7 sm:h-7" />
           </div>
           <h3 className="text-base sm:text-lg font-bold text-slate-800 mb-1.5 sm:mb-2">{confirm.title}</h3>
@@ -935,7 +953,7 @@ export default function ManageAttendance() {
               onClick={confirm.action}
               disabled={confirm.loading}
               className={`flex-1 py-2 sm:py-2.5 rounded-xl text-white font-semibold text-xs sm:text-sm transition-colors disabled:opacity-50 cursor-pointer ${
-                confirm.type === 'success' ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-red-600 hover:bg-red-700'
+                confirm.type === 'success' ? 'bg-teal-600 hover:bg-teal-700' : 'bg-red-600 hover:bg-red-700'
               }`}
             >
               {confirm.loading ? <Loader2 size={16} className="animate-spin mx-auto" /> : 'Ya, Lanjutkan'}
@@ -972,12 +990,12 @@ export default function ManageAttendance() {
 
             {/* Overlay messages */}
             {scanStatus === 'success' && (
-              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-emerald-600/85 backdrop-blur-xs">
+              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-teal-600/85 backdrop-blur-xs">
                 <div className="w-12 h-12 sm:w-14 sm:h-14 bg-white rounded-full flex items-center justify-center mb-2 shadow-lg">
-                  <CheckCircle className="text-emerald-600 w-7 h-7 sm:w-8 sm:h-8" />
+                  <CheckCircle className="text-teal-600 w-7 h-7 sm:w-8 sm:h-8" />
                 </div>
                 <p className="text-white font-bold text-sm sm:text-base drop-shadow">Berhasil!</p>
-                <p className="text-emerald-100 text-xs mt-0.5 text-center px-4">{scanMessage}</p>
+                <p className="text-teal-100 text-xs mt-0.5 text-center px-4">{scanMessage}</p>
               </div>
             )}
             {scanStatus === 'already' && (

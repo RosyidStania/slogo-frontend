@@ -11,7 +11,7 @@ import {
 } from 'recharts';
 
 const PIE_COLORS = [
-  '#10b981', '#0ea5e9', '#f59e0b', '#8b5cf6', '#ef4444',
+  '#14b8a6', '#0ea5e9', '#f59e0b', '#8b5cf6', '#ef4444',
   '#06b6d4', '#3b82f6', '#d97706', '#14b8a6', '#6366f1',
   '#ec4899', '#64748b', '#eab308', '#a855f7', '#f97316'
 ];
@@ -33,7 +33,7 @@ const CustomPieTooltip = ({ active, payload }) => {
   return (
     <div className="bg-slate-900 text-white px-3 py-1.5 rounded-xl text-xs font-bold shadow-xl">
       <span className="capitalize">{item.name}: </span>
-      <span className="text-emerald-400 font-extrabold">{item.value} Generus</span>
+      <span className="text-teal-400 font-extrabold">{item.value} Generus</span>
     </div>
   );
 };
@@ -102,7 +102,7 @@ export default function MtStatistics() {
     if (idx === 0) return 'bg-amber-50 text-amber-700 border-amber-200/80';
     if (idx === 1) return 'bg-slate-100 text-slate-600 border-slate-200';
     if (idx === 2) return 'bg-amber-50/60 text-amber-600 border-amber-200/60';
-    return 'bg-emerald-50 text-[#168a53] border-emerald-200/80';
+    return 'bg-teal-50 text-[#14b8a6] border-teal-200/80';
   };
 
   // Header top action buttons portal
@@ -130,7 +130,7 @@ export default function MtStatistics() {
         className="w-8 h-8 flex items-center justify-center text-slate-500 hover:text-slate-700 bg-white border border-slate-200/80 rounded-full hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
         title="Muat Ulang Statistik"
       >
-        <RotateCw size={13} className={loading ? 'animate-spin text-emerald-600' : ''} />
+        <RotateCw size={13} className={loading ? 'animate-spin text-teal-600' : ''} />
       </button>
     </div>
   );
@@ -145,7 +145,7 @@ export default function MtStatistics() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
-              Statistik Kelompok {data.kelompok && <span className="text-[#168a53]">{data.kelompok}</span>}
+              Statistik Kelompok {data.kelompok && <span className="text-[#14b8a6]">{data.kelompok}</span>}
             </h1>
             <p className="text-slate-500 text-xs sm:text-sm mt-0.5 sm:mt-1">
               Pantau performa kehadiran dan sebaran data generus kelompok Anda secara realtime.
@@ -165,7 +165,7 @@ export default function MtStatistics() {
               <span className="text-[10px] sm:text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">
                 TOTAL GENERUS
               </span>
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center text-[#168a53]">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center text-[#14b8a6]">
                 <Users size={18} className="sm:w-[22px] sm:h-[22px]" strokeWidth={2.2} />
               </div>
             </div>
@@ -173,7 +173,7 @@ export default function MtStatistics() {
               <p className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-none tabular-nums">
                 {data.stats.totalAnggota}
               </p>
-              <p className="text-[11px] sm:text-xs font-bold text-[#168a53] mt-1.5 sm:mt-2 truncate">
+              <p className="text-[11px] sm:text-xs font-bold text-[#14b8a6] mt-1.5 sm:mt-2 truncate">
                 {data.stats.anggotaAktif} aktif ({persenAktif}%)
               </p>
             </div>
@@ -226,7 +226,7 @@ export default function MtStatistics() {
           {/* Bar Chart — Kehadiran per Kategori Acara */}
           <div className="lg:col-span-7 bg-white border border-slate-200/80 rounded-2xl p-4 sm:p-6 shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between overflow-hidden">
             <div className="flex items-center gap-2 mb-3 sm:mb-4">
-              <div className="w-1.5 h-4.5 bg-[#168a53] rounded-full" />
+              <div className="w-1.5 h-4.5 bg-[#14b8a6] rounded-full" />
               <h3 className="font-extrabold text-sm sm:text-base text-slate-900">
                 Rata-rata Kehadiran per Kategori (%)
               </h3>
@@ -359,7 +359,7 @@ export default function MtStatistics() {
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-end mb-1 gap-2">
                           <div className="flex items-center gap-2 min-w-0">
-                            <p className="text-xs sm:text-sm font-bold text-slate-800 truncate group-hover:text-[#168a53] transition-colors">
+                            <p className="text-xs sm:text-sm font-bold text-slate-800 truncate group-hover:text-[#14b8a6] transition-colors">
                               {member.nama_lengkap}
                             </p>
                             {member.jenjang && (
@@ -368,7 +368,7 @@ export default function MtStatistics() {
                               </span>
                             )}
                           </div>
-                          <span className="shrink-0 text-[11px] font-extrabold text-[#168a53] bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/60 tabular-nums">
+                          <span className="shrink-0 text-[11px] font-extrabold text-[#14b8a6] bg-teal-50 px-2 py-0.5 rounded-md border border-teal-200/60 tabular-nums">
                             {member.total_hadir} Hadir ({member.percentage}%)
                           </span>
                         </div>
@@ -379,7 +379,7 @@ export default function MtStatistics() {
                               index === 0 ? 'bg-amber-400' :
                               index === 1 ? 'bg-slate-400' :
                               index === 2 ? 'bg-amber-500' :
-                              'bg-[#168a53]'
+                              'bg-[#14b8a6]'
                             }`}
                             style={{ width: `${ratio}%` }}
                           />
@@ -396,7 +396,7 @@ export default function MtStatistics() {
           <div className="lg:col-span-5 bg-white border border-slate-200/80 rounded-2xl p-4 sm:p-5 shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full bg-emerald-50 text-[#168a53] flex items-center justify-center">
+                <div className="w-6 h-6 rounded-full bg-teal-50 text-[#14b8a6] flex items-center justify-center">
                   <Activity size={13} strokeWidth={2.4} />
                 </div>
                 <h3 className="font-extrabold text-sm text-slate-900">Ringkasan Kategori Acara</h3>
@@ -413,10 +413,10 @@ export default function MtStatistics() {
                     <div className="min-w-0">
                       <p className="text-xs font-bold text-slate-800 truncate">{item.name}</p>
                       <p className="text-[11px] text-slate-500 mt-0.5">
-                        <span className="text-emerald-700 font-bold">{item.total_hadir} Hadir</span> · {item.total_izin} Izin · {item.total_alfa} Alfa
+                        <span className="text-teal-700 font-bold">{item.total_hadir} Hadir</span> · {item.total_izin} Izin · {item.total_alfa} Alfa
                       </p>
                     </div>
-                    <span className="shrink-0 px-2.5 py-1 rounded-full text-xs font-extrabold bg-emerald-50 text-[#168a53] border border-emerald-200/60 tabular-nums">
+                    <span className="shrink-0 px-2.5 py-1 rounded-full text-xs font-extrabold bg-teal-50 text-[#14b8a6] border border-teal-200/60 tabular-nums">
                       {item.percentage}%
                     </span>
                   </div>

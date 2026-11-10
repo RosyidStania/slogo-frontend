@@ -170,7 +170,7 @@ export default function ManageEventTypes() {
       <button
         type="button"
         onClick={openAddModal}
-        className="flex items-center gap-1 px-3 py-1.5 bg-[#168a53] hover:bg-[#127344] text-white rounded-full text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95"
+        className="flex items-center gap-1 px-3 py-1.5 bg-[#14b8a6] hover:bg-[#0d9488] text-white rounded-full text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95"
       >
         <Plus size={13} strokeWidth={2.5} />
         <span>Template</span>
@@ -196,7 +196,7 @@ export default function ManageEventTypes() {
         <div className="hidden lg:flex items-center gap-2 shrink-0">
           <button
             onClick={openAddModal}
-            className="flex items-center justify-center gap-1.5 px-4 py-2.5 bg-[#168a53] hover:bg-[#127344] active:scale-95 text-white rounded-full font-bold text-xs shadow-xs transition-all cursor-pointer whitespace-nowrap"
+            className="flex items-center justify-center gap-1.5 px-4 py-2.5 bg-[#14b8a6] hover:bg-[#0d9488] active:scale-95 text-white rounded-full font-bold text-xs shadow-xs transition-all cursor-pointer whitespace-nowrap"
           >
             <Plus size={14} strokeWidth={2.5} />
             <span>Buat Template Baru</span>
@@ -244,21 +244,21 @@ export default function ManageEventTypes() {
         {/* Acara Umum */}
         <div className="bg-white border border-slate-200/80 rounded-2xl p-3.5 sm:p-4 min-w-[130px] flex-1 shrink-0 flex flex-col justify-between sm:flex-row sm:items-center gap-2 sm:gap-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
           <div className="flex items-center justify-between sm:hidden w-full">
-            <div className="w-7 h-7 rounded-lg bg-emerald-50 text-[#168a53] flex items-center justify-center">
+            <div className="w-7 h-7 rounded-lg bg-teal-50 text-[#14b8a6] flex items-center justify-center">
               <Users size={14} strokeWidth={2} />
             </div>
-            <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-50 text-[#168a53] border border-emerald-200/60">
+            <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-teal-50 text-[#14b8a6] border border-teal-200/60">
               Desa
             </span>
           </div>
 
           <div className="hidden sm:flex items-center gap-3.5 min-w-0">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-[#168a53] flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-teal-50 text-[#14b8a6] flex items-center justify-center shrink-0">
               <Users size={18} strokeWidth={2} />
             </div>
             <div className="min-w-0">
               <p className="text-xs font-medium text-slate-500 truncate">Acara Umum</p>
-              <p className="text-lg sm:text-xl font-extrabold text-[#168a53] tracking-tight leading-snug">
+              <p className="text-lg sm:text-xl font-extrabold text-[#14b8a6] tracking-tight leading-snug">
                 {umumCount} Template
               </p>
             </div>
@@ -271,7 +271,7 @@ export default function ManageEventTypes() {
             </p>
           </div>
 
-          <span className="hidden sm:inline-block text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-emerald-50 text-[#168a53] border border-emerald-200/60 shrink-0">
+          <span className="hidden sm:inline-block text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-teal-50 text-[#14b8a6] border border-teal-200/60 shrink-0">
             Tingkat Desa
           </span>
         </div>
@@ -321,7 +321,7 @@ export default function ManageEventTypes() {
             placeholder="Cari nama template, kode..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full pl-9 pr-8 py-2 text-xs bg-white rounded-full border border-slate-200/90 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#168a53]/15 focus:border-[#168a53] shadow-2xs transition-all"
+            className="w-full pl-9 pr-8 py-2 text-xs bg-white rounded-full border border-slate-200/90 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#14b8a6]/15 focus:border-[#14b8a6] shadow-2xs transition-all"
           />
           {search && (
             <button
@@ -374,7 +374,7 @@ export default function ManageEventTypes() {
         <div className="px-4 sm:px-5 py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
           <div className="flex items-center gap-2">
             <h3 className="font-extrabold text-slate-800 text-xs sm:text-sm">Daftar Template Acara</h3>
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-[#168a53] border border-emerald-200/60">
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-50 text-[#14b8a6] border border-teal-200/60">
               {filteredTypes.length} ditampilkan
             </span>
           </div>
@@ -382,7 +382,7 @@ export default function ManageEventTypes() {
 
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 gap-3">
-            <Loader2 size={30} className="animate-spin text-[#168a53]" />
+            <Loader2 size={30} className="animate-spin text-[#14b8a6]" />
             <p className="text-slate-400 text-xs font-medium">Memuat template acara...</p>
           </div>
         ) : filteredTypes.length === 0 ? (
@@ -394,7 +394,7 @@ export default function ManageEventTypes() {
             {!search && (
               <button
                 onClick={openAddModal}
-                className="mt-1 text-[#168a53] text-xs font-bold hover:underline cursor-pointer"
+                className="mt-1 text-[#14b8a6] text-xs font-bold hover:underline cursor-pointer"
               >
                 + Buat template pertama
               </button>
@@ -443,7 +443,7 @@ export default function ManageEventTypes() {
                               <LayoutGrid size={11} /> Kelompok
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-emerald-50 text-[#168a53] border border-emerald-200/60">
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-teal-50 text-[#14b8a6] border border-teal-200/60">
                               <Users size={11} /> Umum Desa
                             </span>
                           )}
@@ -527,7 +527,7 @@ export default function ManageEventTypes() {
                             <LayoutGrid size={10} /> Kelompok
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 text-[9px] font-bold uppercase px-2 py-0.5 rounded-full bg-emerald-50 text-[#168a53] border border-emerald-200/60">
+                          <span className="inline-flex items-center gap-1 text-[9px] font-bold uppercase px-2 py-0.5 rounded-full bg-teal-50 text-[#14b8a6] border border-teal-200/60">
                             <Users size={10} /> Umum
                           </span>
                         )}
@@ -626,7 +626,7 @@ export default function ManageEventTypes() {
                   placeholder="SEMALAMAN, KEAKRABAN"
                   required
                   disabled={modalMode === 'edit'}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono uppercase focus:outline-none focus:ring-2 focus:ring-[#168a53]/20 focus:border-[#168a53] text-slate-800 disabled:opacity-50"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono uppercase focus:outline-none focus:ring-2 focus:ring-[#14b8a6]/20 focus:border-[#14b8a6] text-slate-800 disabled:opacity-50"
                 />
               </div>
 
@@ -653,7 +653,7 @@ export default function ManageEventTypes() {
                 onChange={handleInputChange}
                 placeholder="Contoh: Pengajian Semalaman Rutin"
                 required
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#168a53]/20 focus:border-[#168a53] text-slate-800"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#14b8a6]/20 focus:border-[#14b8a6] text-slate-800"
               />
             </div>
 
@@ -667,7 +667,7 @@ export default function ManageEventTypes() {
                   <button
                     type="button"
                     onClick={() => handleSelectAllKategori(true)}
-                    className="text-[10px] font-bold text-[#168a53] hover:underline cursor-pointer"
+                    className="text-[10px] font-bold text-[#14b8a6] hover:underline cursor-pointer"
                   >
                     Pilih Semua
                   </button>
@@ -690,8 +690,8 @@ export default function ManageEventTypes() {
                       key={kategori}
                       className={`cursor-pointer flex items-center gap-1 px-2.5 py-1 rounded-lg border text-[10px] font-bold uppercase tracking-wider select-none transition-all ${
                         isChecked
-                          ? 'bg-[#168a53] border-[#168a53] text-white shadow-2xs'
-                          : 'bg-white border-slate-200 text-slate-600 hover:border-emerald-300 hover:bg-emerald-50'
+                          ? 'bg-[#14b8a6] border-[#14b8a6] text-white shadow-2xs'
+                          : 'bg-white border-slate-200 text-slate-600 hover:border-teal-300 hover:bg-teal-50'
                       }`}
                     >
                       <input
@@ -709,13 +709,13 @@ export default function ManageEventTypes() {
             </div>
 
             {/* Checkbox Absensi Perkelompok */}
-            <div className="p-3 bg-emerald-50/70 border border-emerald-100 rounded-xl">
+            <div className="p-3 bg-teal-50/70 border border-teal-100 rounded-xl">
               <label className="flex items-start gap-2.5 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={formData.is_group_attendance}
                   onChange={(e) => setFormData({ ...formData, is_group_attendance: e.target.checked })}
-                  className="mt-0.5 w-4 h-4 rounded border-slate-300 text-[#168a53] focus:ring-[#168a53] cursor-pointer shrink-0"
+                  className="mt-0.5 w-4 h-4 rounded border-slate-300 text-[#14b8a6] focus:ring-[#14b8a6] cursor-pointer shrink-0"
                 />
                 <div>
                   <span className="block text-xs font-bold text-slate-800">
@@ -738,7 +738,7 @@ export default function ManageEventTypes() {
                 onChange={handleInputChange}
                 placeholder="Opsional..."
                 rows="2"
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#168a53]/20 focus:border-[#168a53] text-slate-800 resize-none"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#14b8a6]/20 focus:border-[#14b8a6] text-slate-800 resize-none"
               />
             </div>
           </div>
@@ -754,7 +754,7 @@ export default function ManageEventTypes() {
             <button
               type="submit"
               disabled={submitLoading}
-              className="flex-1 py-2.5 rounded-xl bg-[#168a53] hover:bg-[#127344] disabled:bg-slate-200 disabled:text-slate-400 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs cursor-pointer active:scale-95 transition-all"
+              className="flex-1 py-2.5 rounded-xl bg-[#14b8a6] hover:bg-[#0d9488] disabled:bg-slate-200 disabled:text-slate-400 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs cursor-pointer active:scale-95 transition-all"
             >
               {submitLoading ? (
                 <><Loader2 size={13} className="animate-spin" /> Menyimpan...</>

@@ -82,7 +82,7 @@ function PillSelect({ value, onChange, options, className = '' }) {
         type="button"
         onClick={() => setIsOpen(v => !v)}
         className={`w-full flex items-center justify-between gap-2 px-3.5 sm:px-4 py-2 sm:py-2.5 bg-white border ${
-          isOpen ? 'border-[#168a53] ring-2 ring-[#168a53]/15' : 'border-slate-200/90 hover:border-slate-300'
+          isOpen ? 'border-[#14b8a6] ring-2 ring-[#14b8a6]/15' : 'border-slate-200/90 hover:border-slate-300'
         } rounded-full text-xs font-bold text-slate-700 transition-all cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.02)]`}
       >
         <span className="truncate">{displayLabel}</span>
@@ -101,7 +101,7 @@ function PillSelect({ value, onChange, options, className = '' }) {
               }}
               className={`w-full text-left px-4 py-2.5 text-xs font-semibold transition-colors ${
                 String(value) === String(opt.value)
-                  ? 'bg-emerald-50 text-[#168a53]'
+                  ? 'bg-teal-50 text-[#14b8a6]'
                   : 'text-slate-700 hover:bg-slate-50'
               }`}
             >
@@ -163,6 +163,7 @@ export default function ManageEvents() {
   const [confirm,       setConfirm]       = useState({ open: false, title: '', message: '', action: null });
   const [deleteInput,   setDeleteInput]   = useState('');
   const [isTypeOpen,    setIsTypeOpen]    = useState(false);
+  const [togglingId,    setTogglingId]    = useState(null);
   const typeDropRef = useRef(null);
 
   const fetchData = async () => {
@@ -288,12 +289,16 @@ export default function ManageEvents() {
   };
 
   const handleToggleStatus = async (event) => {
+    if (togglingId) return;
+    setTogglingId(event.id);
     try {
       await api.patch(`/admin/events/${event.id}/toggle-status`);
-      fetchData();
+      await fetchData();
     } catch (err) {
       console.error(err);
-      alert('Gagal mengubah status acara');
+      alert(err.response?.data?.message || 'Gagal mengubah status acara');
+    } finally {
+      setTogglingId(null);
     }
   };
 
@@ -414,14 +419,14 @@ export default function ManageEvents() {
   const mobileTopActions = headerSlot && ReactDOM.createPortal(
     <div className="flex lg:hidden items-center gap-1.5 sm:gap-2">
       <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-200/90 bg-white text-[11px] font-semibold text-slate-600 shadow-2xs">
-        <Calendar size={12} className="text-emerald-600" />
+        <Calendar size={12} className="text-teal-600" />
         <span>{new Date().toLocaleDateString('id-ID', { month: 'short', year: 'numeric' })}</span>
       </div>
       {['admin', 'absen_kelompok'].includes(role) && (
         <button
           type="button"
           onClick={() => openModal('add')}
-          className="flex items-center gap-1 px-3.5 py-1.5 bg-[#168a53] hover:bg-[#127344] text-white rounded-full text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95"
+          className="flex items-center gap-1 px-3.5 py-1.5 bg-[#14b8a6] hover:bg-[#0d9488] text-white rounded-full text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95"
         >
           <Plus size={14} strokeWidth={2.5} />
           <span>Jadwal</span>
@@ -450,7 +455,7 @@ export default function ManageEvents() {
           {['admin', 'absen_kelompok'].includes(role) && (
             <button
               onClick={() => openModal('add')}
-              className="flex items-center justify-center gap-1.5 px-4 py-2.5 bg-[#168a53] hover:bg-[#127344] active:scale-95 text-white rounded-full font-bold text-xs shadow-xs transition-all cursor-pointer whitespace-nowrap"
+              className="flex items-center justify-center gap-1.5 px-4 py-2.5 bg-[#14b8a6] hover:bg-[#0d9488] active:scale-95 text-white rounded-full font-bold text-xs shadow-xs transition-all cursor-pointer whitespace-nowrap"
             >
               <Plus size={14} strokeWidth={2.5} />
               <span>Buat Jadwal Baru</span>
@@ -516,7 +521,7 @@ export default function ManageEvents() {
             <div className="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
               <Clock size={14} strokeWidth={2} />
             </div>
-            <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-50 text-[#168a53] border border-emerald-200/60">
+            <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-teal-50 text-[#14b8a6] border border-teal-200/60">
               Aktif
             </span>
           </div>
@@ -552,22 +557,22 @@ export default function ManageEvents() {
         <div className="bg-white border border-slate-200/80 rounded-2xl p-3 sm:p-4 min-w-[125px] flex-1 shrink-0 flex flex-col justify-between sm:flex-row sm:items-center gap-2 sm:gap-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
           {/* Mobile Top Row: Icon on left, Badge on right */}
           <div className="flex items-center justify-between sm:hidden w-full">
-            <div className="w-7 h-7 rounded-lg bg-emerald-50 text-[#168a53] flex items-center justify-center">
+            <div className="w-7 h-7 rounded-lg bg-teal-50 text-[#14b8a6] flex items-center justify-center">
               <CheckCircle2 size={14} strokeWidth={2} />
             </div>
-            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-50 text-[#168a53] border border-emerald-200/60">
+            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-teal-50 text-[#14b8a6] border border-teal-200/60">
               {selesaiPct}%
             </span>
           </div>
 
           {/* Desktop Left: Icon + Label & Value */}
           <div className="hidden sm:flex items-center gap-3.5 min-w-0">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center shrink-0">
               <CheckCircle2 size={18} strokeWidth={2} />
             </div>
             <div className="min-w-0">
               <p className="text-xs font-medium text-slate-500 truncate">Selesai Diabsen</p>
-              <p className="text-lg sm:text-xl font-extrabold text-[#168a53] tracking-tight leading-snug">
+              <p className="text-lg sm:text-xl font-extrabold text-[#14b8a6] tracking-tight leading-snug">
                 {selesaiCount} Acara
               </p>
             </div>
@@ -582,7 +587,7 @@ export default function ManageEvents() {
           </div>
 
           {/* Desktop Right Badge */}
-          <span className="hidden sm:inline-block text-[11px] font-bold px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200/60 shrink-0">
+          <span className="hidden sm:inline-block text-[11px] font-bold px-2.5 py-1 rounded-lg bg-teal-50 text-teal-700 border border-teal-200/60 shrink-0">
             {selesaiPct}%
           </span>
         </div>
@@ -597,7 +602,7 @@ export default function ManageEvents() {
             placeholder="Cari nama acara, kelompok..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full pl-10 pr-9 py-2.5 text-xs bg-white rounded-full border border-slate-200/90 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#168a53]/15 focus:border-[#168a53] shadow-[0_1px_2px_rgba(0,0,0,0.02)] transition-all"
+            className="w-full pl-10 pr-9 py-2.5 text-xs bg-white rounded-full border border-slate-200/90 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#14b8a6]/15 focus:border-[#14b8a6] shadow-[0_1px_2px_rgba(0,0,0,0.02)] transition-all"
           />
           {search && (
             <button
@@ -644,7 +649,7 @@ export default function ManageEvents() {
             placeholder="Cari nama acara, kelompok..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full pl-10 pr-9 py-2.5 text-xs bg-white rounded-full border border-slate-200/90 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#168a53]/15 focus:border-[#168a53] shadow-[0_1px_2px_rgba(0,0,0,0.02)] transition-all"
+            className="w-full pl-10 pr-9 py-2.5 text-xs bg-white rounded-full border border-slate-200/90 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#14b8a6]/15 focus:border-[#14b8a6] shadow-[0_1px_2px_rgba(0,0,0,0.02)] transition-all"
           />
           {search && (
             <button
@@ -672,7 +677,7 @@ export default function ManageEvents() {
                 <span>Acara Umum</span>
                 <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold leading-none ${
                   activeTab === 'umum'
-                    ? 'bg-emerald-100 text-[#168a53]'
+                    ? 'bg-teal-100 text-[#14b8a6]'
                     : 'bg-slate-200/80 text-slate-500'
                 }`}>
                   {umumEvents.length}
@@ -690,7 +695,7 @@ export default function ManageEvents() {
                 {kelompokEvents.length > 0 && (
                   <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold leading-none ${
                     activeTab === 'kelompok'
-                      ? 'bg-emerald-100 text-[#168a53]'
+                      ? 'bg-teal-100 text-[#14b8a6]'
                       : 'bg-slate-200/80 text-slate-500'
                   }`}>
                     {kelompokEvents.length}
@@ -746,7 +751,7 @@ export default function ManageEvents() {
                   <span>Acara Umum</span>
                   <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold leading-none ${
                     activeTab === 'umum'
-                      ? 'bg-emerald-100 text-[#168a53]'
+                      ? 'bg-teal-100 text-[#14b8a6]'
                       : 'bg-slate-200/80 text-slate-500'
                   }`}>
                     {umumEvents.length}
@@ -764,7 +769,7 @@ export default function ManageEvents() {
                   {kelompokEvents.length > 0 && (
                     <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold leading-none ${
                       activeTab === 'kelompok'
-                        ? 'bg-emerald-100 text-[#168a53]'
+                        ? 'bg-teal-100 text-[#14b8a6]'
                         : 'bg-slate-200/80 text-slate-500'
                     }`}>
                       {kelompokEvents.length}
@@ -775,7 +780,7 @@ export default function ManageEvents() {
             ) : (
               <div className="inline-flex items-center gap-2">
                 <h3 className="font-bold text-slate-800 text-sm">Daftar Jadwal Kelompok</h3>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-[#168a53]">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-100 text-[#14b8a6]">
                   {filteredEvents.length}
                 </span>
               </div>
@@ -816,7 +821,7 @@ export default function ManageEvents() {
         {/* Body */}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 gap-3">
-            <Loader2 size={30} className="animate-spin text-[#168a53]" />
+            <Loader2 size={30} className="animate-spin text-[#14b8a6]" />
             <p className="text-slate-400 text-xs font-medium">Memuat jadwal acara...</p>
           </div>
         ) : filteredEvents.length === 0 ? (
@@ -828,7 +833,7 @@ export default function ManageEvents() {
             {!search && role !== 'operator_absensi' && (
               <button
                 onClick={() => openModal('add')}
-                className="mt-1 text-[#168a53] text-xs font-bold hover:underline cursor-pointer"
+                className="mt-1 text-[#14b8a6] text-xs font-bold hover:underline cursor-pointer"
               >
                 + Buat jadwal pertama
               </button>
@@ -842,7 +847,12 @@ export default function ManageEvents() {
                 : event.target_kategori ? JSON.parse(event.target_kategori) : [];
               const typeName  = getTypeName(event.event_type_id);
               const isAllCats = cats.length >= ageKategoriList.length && ageKategoriList.every(k => cats.includes(k));
-              const isActive  = !event.is_closed && !event.is_completed;
+              const isClosed  = Boolean(event.is_closed);
+              const isCompleted = Boolean(
+                event.is_completed ||
+                (!event.allow_other_participants && event.target_count > 0 && event.attendances_count >= event.target_count)
+              );
+              const isActive  = !isClosed;
               const { dayName, dayNum, monthShort, fullText } = formatCardDate(event.event_date);
               const displayTitle = event.name || typeName || 'ACARA DESA';
 
@@ -851,24 +861,24 @@ export default function ManageEvents() {
                   key={event.id}
                   className={`relative flex flex-col lg:flex-row lg:items-center justify-between gap-3 sm:gap-4 p-3.5 sm:p-4 pl-4 sm:pl-5 bg-white border rounded-2xl transition-all overflow-hidden ${
                     isActive
-                      ? 'border-slate-200/90 hover:border-emerald-300 shadow-[0_1px_3px_rgba(0,0,0,0.02)]'
+                      ? 'border-slate-200/90 hover:border-teal-300 shadow-[0_1px_3px_rgba(0,0,0,0.02)]'
                       : 'border-slate-200/80 hover:border-slate-300'
                   }`}
                 >
                   {/* Active green left bar */}
                   {isActive && (
-                    <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-[#168a53]" />
+                    <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-[#14b8a6]" />
                   )}
 
                   {/* Left: Calendar Date Box + Event Details */}
                   <div className="flex items-start sm:items-center gap-3 sm:gap-4 flex-1 min-w-0">
                     {/* Calendar Badge */}
                     <div className={`w-12 h-14 sm:w-13 sm:h-15 rounded-xl border bg-white flex flex-col items-center justify-between overflow-hidden shrink-0 shadow-2xs ${
-                      isActive ? 'border-emerald-200/80' : 'border-slate-200/80'
+                      isActive ? 'border-teal-200/80' : 'border-slate-200/80'
                     }`}>
                       <div className={`w-full py-0.5 text-center text-[9px] font-extrabold uppercase tracking-wider ${
                         isActive
-                          ? 'bg-emerald-50 text-[#168a53] border-b border-emerald-100/80 sm:bg-[#168a53] sm:text-white sm:border-0'
+                          ? 'bg-teal-50 text-[#14b8a6] border-b border-teal-100/80 sm:bg-[#14b8a6] sm:text-white sm:border-0'
                           : 'bg-slate-100 text-slate-600 sm:bg-slate-700 sm:text-white'
                       }`}>
                         {dayName}
@@ -877,7 +887,7 @@ export default function ManageEvents() {
                         {dayNum}
                       </span>
                       <span className={`text-[8px] sm:text-[9px] font-bold uppercase pb-1 ${
-                        isActive ? 'text-[#168a53] sm:text-slate-400' : 'text-slate-400'
+                        isActive ? 'text-[#14b8a6] sm:text-slate-400' : 'text-slate-400'
                       }`}>
                         {monthShort}
                       </span>
@@ -902,15 +912,20 @@ export default function ManageEvents() {
                           </span>
                         )}
 
-                        {isActive ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-emerald-50 text-[#168a53] border border-emerald-200/60">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#168a53]" />
-                            Sedang Aktif
+                        {isClosed ? (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-slate-100 text-slate-600 border border-slate-200">
+                            <Lock size={11} className="text-slate-500" />
+                            Ditutup
                           </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-emerald-50/70 text-[#168a53] border border-emerald-200/50">
+                        ) : isCompleted ? (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-teal-50/70 text-[#14b8a6] border border-teal-200/50">
                             <Check size={11} strokeWidth={2.5} />
                             Selesai Diabsen
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-teal-50 text-[#14b8a6] border border-teal-200/60">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#14b8a6]" />
+                            Sedang Aktif
                           </span>
                         )}
                       </div>
@@ -953,21 +968,26 @@ export default function ManageEvents() {
 
                   {/* ── MOBILE ACTIONS (lg:hidden) ── */}
                   <div className="flex lg:hidden items-center gap-2 pt-2.5 border-t border-slate-100">
-                    {isActive ? (
+                    {!isClosed ? (
                       <>
                         <button
                           onClick={() => navigate(`/admin/attendance/${event.id}`)}
-                          className="flex-1 py-2 px-3 bg-[#168a53] hover:bg-[#127344] text-white rounded-full font-bold text-xs flex items-center justify-center gap-1.5 shadow-xs cursor-pointer active:scale-95 transition-all"
+                          className="flex-1 py-2 px-3 bg-[#14b8a6] hover:bg-[#0d9488] text-white rounded-full font-bold text-xs flex items-center justify-center gap-1.5 shadow-xs cursor-pointer active:scale-95 transition-all"
                         >
                           <Users size={13} />
                           <span>Absen</span>
                         </button>
                         {['admin', 'absen_kelompok'].includes(role) && (
                           <button
+                            disabled={togglingId === event.id}
                             onClick={() => handleToggleStatus(event)}
-                            className="py-2 px-3.5 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-full font-bold text-xs flex items-center justify-center gap-1 shadow-2xs cursor-pointer transition-colors"
+                            className="py-2 px-3.5 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-full font-bold text-xs flex items-center justify-center gap-1 shadow-2xs cursor-pointer transition-colors disabled:opacity-50"
                           >
-                            <Lock size={13} className="text-slate-500" />
+                            {togglingId === event.id ? (
+                              <Loader2 size={13} className="animate-spin text-slate-500" />
+                            ) : (
+                              <Lock size={13} className="text-slate-500" />
+                            )}
                             <span>Tutup</span>
                           </button>
                         )}
@@ -983,10 +1003,15 @@ export default function ManageEvents() {
                       <>
                         {['admin', 'absen_kelompok'].includes(role) && (
                           <button
+                            disabled={togglingId === event.id}
                             onClick={() => handleToggleStatus(event)}
-                            className="py-2 px-4 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-full font-bold text-xs flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer transition-colors"
+                            className="flex-1 py-2 px-4 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-full font-bold text-xs flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer transition-colors disabled:opacity-50"
                           >
-                            <Unlock size={13} className="text-slate-500" />
+                            {togglingId === event.id ? (
+                              <Loader2 size={13} className="animate-spin text-slate-500" />
+                            ) : (
+                              <Unlock size={13} className="text-slate-500" />
+                            )}
                             <span>Buka Absen</span>
                           </button>
                         )}
@@ -1022,9 +1047,9 @@ export default function ManageEvents() {
                                     setMobileMenuId(null);
                                     navigate(`/admin/notulen?eventId=${event.id}`);
                                   }}
-                                  className="w-full text-left px-3.5 py-2 text-xs font-semibold text-emerald-700 hover:bg-emerald-50 flex items-center gap-2 cursor-pointer"
+                                  className="w-full text-left px-3.5 py-2 text-xs font-semibold text-teal-700 hover:bg-teal-50 flex items-center gap-2 cursor-pointer"
                                 >
-                                  <FileText size={13} className="text-[#168a53]" />
+                                  <FileText size={13} className="text-[#14b8a6]" />
                                   <span>Notulen</span>
                                 </button>
                               )}
@@ -1067,11 +1092,11 @@ export default function ManageEvents() {
                   <div className="hidden lg:flex flex-wrap items-center gap-2 shrink-0 justify-end">
                     <button
                       onClick={() => navigate(`/admin/attendance/${event.id}`)}
-                      disabled={event.is_closed}
+                      disabled={isClosed}
                       className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
-                        event.is_closed
+                        isClosed
                           ? 'bg-slate-50 text-slate-300 border border-slate-200/60 cursor-not-allowed'
-                          : 'bg-[#168a53] hover:bg-[#127344] text-white shadow-xs cursor-pointer'
+                          : 'bg-[#14b8a6] hover:bg-[#0d9488] text-white shadow-xs cursor-pointer'
                       }`}
                     >
                       <Users size={13} />
@@ -1081,12 +1106,19 @@ export default function ManageEvents() {
                     {['admin', 'absen_kelompok'].includes(role) && (
                       <>
                         <button
+                          disabled={togglingId === event.id}
                           onClick={() => handleToggleStatus(event)}
-                          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-bold transition-all cursor-pointer"
-                          title={event.is_closed ? 'Buka kembali absen acara ini' : 'Tutup absen acara ini'}
+                          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-bold transition-all cursor-pointer disabled:opacity-50"
+                          title={isClosed ? 'Buka kembali absen acara ini' : 'Tutup absen acara ini'}
                         >
-                          {event.is_closed ? <Unlock size={13} className="text-slate-500" /> : <Lock size={13} className="text-slate-500" />}
-                          <span>{event.is_closed ? 'Buka Absen' : 'Tutup'}</span>
+                          {togglingId === event.id ? (
+                            <Loader2 size={13} className="animate-spin text-slate-500" />
+                          ) : isClosed ? (
+                            <Unlock size={13} className="text-slate-500" />
+                          ) : (
+                            <Lock size={13} className="text-slate-500" />
+                          )}
+                          <span>{isClosed ? 'Buka Absen' : 'Tutup'}</span>
                         </button>
 
                         <button
@@ -1100,7 +1132,7 @@ export default function ManageEvents() {
                         {role === 'admin' && (
                           <button
                             onClick={() => navigate(`/admin/notulen?eventId=${event.id}`)}
-                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-50/80 hover:bg-emerald-100 text-[#168a53] border border-emerald-200/60 text-xs font-bold transition-all cursor-pointer"
+                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-teal-50/80 hover:bg-teal-100 text-[#14b8a6] border border-teal-200/60 text-xs font-bold transition-all cursor-pointer"
                             title="Notulen Musyawarah"
                           >
                             <FileText size={13} />
@@ -1150,7 +1182,7 @@ export default function ManageEvents() {
               <select
                 value={itemsPerPage}
                 onChange={e => setItemsPerPage(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-                className="bg-white border border-slate-200 rounded-lg px-2 py-1 text-xs font-bold text-slate-700 focus:outline-none focus:border-[#168a53] cursor-pointer"
+                className="bg-white border border-slate-200 rounded-lg px-2 py-1 text-xs font-bold text-slate-700 focus:outline-none focus:border-[#14b8a6] cursor-pointer"
               >
                 <option value={5}>5</option>
                 <option value={10}>10</option>
@@ -1179,7 +1211,7 @@ export default function ManageEvents() {
                     onClick={() => setCurrentPage(page)}
                     className={`w-7 h-7 rounded-full text-xs font-bold transition-all cursor-pointer ${
                       safePage === page
-                        ? 'bg-[#168a53] text-white shadow-2xs'
+                        ? 'bg-[#14b8a6] text-white shadow-2xs'
                         : 'text-slate-600 hover:bg-slate-100'
                     }`}
                   >
@@ -1270,8 +1302,8 @@ export default function ManageEvents() {
             <div
               key={i}
               className={`h-1.5 rounded-full flex-1 transition-all duration-300 ${
-                i < modalStep   ? 'bg-[#168a53]' :
-                i === modalStep ? 'bg-emerald-300' :
+                i < modalStep   ? 'bg-[#14b8a6]' :
+                i === modalStep ? 'bg-teal-300' :
                 'bg-slate-200'
               }`}
             />
@@ -1295,7 +1327,7 @@ export default function ManageEvents() {
                 <button
                   type="button"
                   onClick={() => setIsTypeOpen(v => !v)}
-                  className="w-full flex items-center justify-between px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 hover:border-[#168a53] focus:outline-none focus:ring-2 focus:ring-[#168a53]/20 transition-colors"
+                  className="w-full flex items-center justify-between px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 hover:border-[#14b8a6] focus:outline-none focus:ring-2 focus:ring-[#14b8a6]/20 transition-colors"
                 >
                   <span className="flex items-center gap-2 text-slate-600">
                     <Layers size={14} className="text-blue-400" />
@@ -1313,7 +1345,7 @@ export default function ManageEvents() {
                         onClick={() => handleSelectTemplate(type)}
                         className={`w-full text-left px-4 py-3 text-sm font-medium transition-colors flex items-center justify-between ${
                           formData.event_type_id === type.id
-                            ? 'bg-emerald-50 text-[#168a53]'
+                            ? 'bg-teal-50 text-[#14b8a6]'
                             : 'text-slate-700 hover:bg-slate-50'
                         }`}
                       >
@@ -1326,11 +1358,11 @@ export default function ManageEvents() {
               </div>
 
               {formData.event_type_id && (
-                <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-3.5 space-y-1">
-                  <p className="text-xs font-bold text-[#168a53] uppercase tracking-wider">Template terpilih - data terisi otomatis</p>
-                  <p className="text-sm text-[#168a53]">Nama: <span className="font-semibold">{formData.name}</span></p>
-                  <p className="text-sm text-[#168a53]">Batas: <span className="font-semibold">{formData.start_time} WIB</span></p>
-                  <p className="text-sm text-[#168a53]">Peserta: <span className="font-semibold">{formData.target_kategori.length} kategori</span></p>
+                <div className="bg-teal-50 border border-teal-100 rounded-xl p-3.5 space-y-1">
+                  <p className="text-xs font-bold text-[#14b8a6] uppercase tracking-wider">Template terpilih - data terisi otomatis</p>
+                  <p className="text-sm text-[#14b8a6]">Nama: <span className="font-semibold">{formData.name}</span></p>
+                  <p className="text-sm text-[#14b8a6]">Batas: <span className="font-semibold">{formData.start_time} WIB</span></p>
+                  <p className="text-sm text-[#14b8a6]">Peserta: <span className="font-semibold">{formData.target_kategori.length} kategori</span></p>
                 </div>
               )}
             </div>
@@ -1349,7 +1381,7 @@ export default function ManageEvents() {
                   value={formData.event_date}
                   onChange={handleInputChange}
                   onClick={(e) => e.target.showPicker?.()}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-[#168a53]/20 focus:border-[#168a53] transition-colors cursor-pointer [color-scheme:light]"
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-[#14b8a6]/20 focus:border-[#14b8a6] transition-colors cursor-pointer [color-scheme:light]"
                 />
               </div>
 
@@ -1363,7 +1395,7 @@ export default function ManageEvents() {
                   value={formData.name}
                   onChange={handleInputChange}
                   placeholder="Contoh: Pengajian Bulanan Maret"
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#168a53]/20 focus:border-[#168a53] transition-colors"
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#14b8a6]/20 focus:border-[#14b8a6] transition-colors"
                 />
               </div>
 
@@ -1390,7 +1422,7 @@ export default function ManageEvents() {
                 <p className="text-sm text-slate-500">
                   Pilih kategori / jenjang yang <span className="font-semibold text-slate-700">wajib hadir</span>.
                 </p>
-                <span className="text-sm font-bold text-[#168a53]">{formData.target_kategori.length} dipilih</span>
+                <span className="text-sm font-bold text-[#14b8a6]">{formData.target_kategori.length} dipilih</span>
               </div>
 
               {/* Quick-select */}
@@ -1398,7 +1430,7 @@ export default function ManageEvents() {
                 <button
                   type="button"
                   onClick={() => handleSelectAll(true)}
-                  className="flex-1 py-2 text-xs font-semibold text-[#168a53] bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl transition-colors"
+                  className="flex-1 py-2 text-xs font-semibold text-[#14b8a6] bg-teal-50 hover:bg-teal-100 border border-teal-200 rounded-xl transition-colors"
                 >
                   Pilih Semua
                 </button>
@@ -1422,7 +1454,7 @@ export default function ManageEvents() {
                         type="button"
                         onClick={() => handleGroupToggle(group.items)}
                         className={`w-full flex items-center justify-between px-4 py-2.5 text-sm font-semibold transition-colors ${
-                          allOn  ? 'bg-emerald-50 text-[#168a53]' :
+                          allOn  ? 'bg-teal-50 text-[#14b8a6]' :
                           someOn ? 'bg-blue-50 text-blue-700'     :
                                    'bg-slate-50 text-slate-600'
                         }`}
@@ -1441,8 +1473,8 @@ export default function ManageEvents() {
                               key={k}
                               className={`cursor-pointer flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold select-none transition-all ${
                                 on
-                                  ? 'bg-[#168a53] border-[#168a53] text-white'
-                                  : 'bg-white border-slate-200 text-slate-600 hover:border-emerald-300 hover:bg-emerald-50'
+                                  ? 'bg-[#14b8a6] border-[#14b8a6] text-white'
+                                  : 'bg-white border-slate-200 text-slate-600 hover:border-teal-300 hover:bg-teal-50'
                               }`}
                             >
                               <input type="checkbox" className="hidden" checked={on} onChange={() => handleCheckbox(k)} />
@@ -1471,7 +1503,7 @@ export default function ManageEvents() {
                       name="allow_other_participants"
                       checked={formData.allow_other_participants}
                       onChange={(e) => setFormData(prev => ({ ...prev, allow_other_participants: e.target.checked }))}
-                      className="w-4 h-4 text-[#168a53] rounded border-slate-300 focus:ring-[#168a53]"
+                      className="w-4 h-4 text-[#14b8a6] rounded border-slate-300 focus:ring-[#14b8a6]"
                     />
                   </div>
                   <div>
@@ -1511,7 +1543,7 @@ export default function ManageEvents() {
               type="button"
               disabled={(modalStep === 0 && !formData.event_type_id) || (modalStep === 1 && !step2Valid)}
               onClick={() => setModalStep(s => s + 1)}
-              className="flex-1 py-3 rounded-xl bg-[#168a53] hover:bg-[#127344] disabled:bg-slate-200 disabled:text-slate-400 text-white font-semibold text-sm transition-colors active:scale-95"
+              className="flex-1 py-3 rounded-xl bg-[#14b8a6] hover:bg-[#0d9488] disabled:bg-slate-200 disabled:text-slate-400 text-white font-semibold text-sm transition-colors active:scale-95"
             >
               Lanjut
             </button>
@@ -1520,7 +1552,7 @@ export default function ManageEvents() {
               type="button"
               disabled={!step3Valid || submitLoading}
               onClick={handleSubmit}
-              className="flex-1 py-3 rounded-xl bg-[#168a53] hover:bg-[#127344] disabled:bg-slate-200 disabled:text-slate-400 text-white font-bold text-sm transition-colors active:scale-95 flex items-center justify-center gap-2"
+              className="flex-1 py-3 rounded-xl bg-[#14b8a6] hover:bg-[#0d9488] disabled:bg-slate-200 disabled:text-slate-400 text-white font-bold text-sm transition-colors active:scale-95 flex items-center justify-center gap-2"
             >
               {submitLoading ? (
                 <><Loader2 size={15} className="animate-spin" /> Menyimpan...</>

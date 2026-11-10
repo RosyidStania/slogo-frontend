@@ -58,11 +58,11 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-800 font-sans flex flex-col justify-between selection:bg-[#168a53] selection:text-white relative overflow-hidden">
+    <div className="min-h-screen bg-[#f8fafc] text-slate-800 font-sans flex flex-col justify-between selection:bg-[#14b8a6] selection:text-white relative overflow-hidden">
       
       {/* iOS Soft Ambient Gradient Orbs */}
-      <div className="fixed top-[-100px] left-1/2 -translate-x-1/2 w-[650px] h-[350px] bg-gradient-to-b from-emerald-100/40 via-teal-50/20 to-transparent rounded-full blur-[100px] pointer-events-none -z-10" />
-      <div className="fixed bottom-[-100px] right-[-100px] w-[450px] h-[450px] bg-emerald-100/30 rounded-full blur-[120px] pointer-events-none -z-10" />
+      <div className="fixed top-[-100px] left-1/2 -translate-x-1/2 w-[650px] h-[350px] bg-gradient-to-b from-teal-100/40 via-teal-50/20 to-transparent rounded-full blur-[100px] pointer-events-none -z-10" />
+      <div className="fixed bottom-[-100px] right-[-100px] w-[450px] h-[450px] bg-teal-100/30 rounded-full blur-[120px] pointer-events-none -z-10" />
 
       {/* Top Bar Navigation */}
       <header className="w-full max-w-6xl mx-auto px-4 sm:px-6 pt-6 flex items-center justify-between z-10">
@@ -124,7 +124,7 @@ export default function Login() {
                     type="text"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-[#f8fafc] border border-slate-200/90 rounded-2xl text-slate-800 placeholder-slate-400 text-sm focus:outline-none focus:bg-white focus:border-[#168a53] focus:ring-4 focus:ring-emerald-500/15 transition-all shadow-2xs font-medium"
+                    className="w-full pl-10 pr-4 py-3 bg-[#f8fafc] border border-slate-200/90 rounded-2xl text-slate-800 placeholder-slate-400 text-sm focus:outline-none focus:bg-white focus:border-[#14b8a6] focus:ring-4 focus:ring-teal-500/15 transition-all shadow-2xs font-medium"
                     placeholder="Masukkan username Anda"
                     required
                     autoComplete="username"
@@ -145,7 +145,7 @@ export default function Login() {
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-10 pr-11 py-3 bg-[#f8fafc] border border-slate-200/90 rounded-2xl text-slate-800 placeholder-slate-400 text-sm focus:outline-none focus:bg-white focus:border-[#168a53] focus:ring-4 focus:ring-emerald-500/15 transition-all shadow-2xs font-medium"
+                    className="w-full pl-10 pr-11 py-3 bg-[#f8fafc] border border-slate-200/90 rounded-2xl text-slate-800 placeholder-slate-400 text-sm focus:outline-none focus:bg-white focus:border-[#14b8a6] focus:ring-4 focus:ring-teal-500/15 transition-all shadow-2xs font-medium"
                     placeholder="••••••••"
                     required
                     autoComplete="current-password"
@@ -166,7 +166,7 @@ export default function Login() {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-3.5 bg-[#168a53] hover:bg-[#137747] text-white font-bold text-sm sm:text-base rounded-2xl shadow-sm shadow-emerald-700/25 active:scale-[0.98] transition-all duration-150 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed"
+                  className="w-full py-3.5 bg-[#14b8a6] hover:bg-[#0d9488] text-white font-bold text-sm sm:text-base rounded-2xl shadow-sm shadow-teal-700/25 active:scale-[0.98] transition-all duration-150 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed"
                 >
                   {isLoading ? (
                     <>

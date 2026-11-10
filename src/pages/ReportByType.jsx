@@ -67,12 +67,12 @@ function CustomSelect({ options, value, onChange, placeholder, multiple = false 
                   }
                 }}
                 className={`px-3.5 py-2 text-xs font-semibold cursor-pointer transition-colors flex justify-between items-center gap-2 ${
-                  isSelected ? 'bg-emerald-50 text-[#168a53] font-bold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                  isSelected ? 'bg-teal-50 text-[#14b8a6] font-bold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                 }`}
               >
                 <span className="truncate">{opt.label}</span>
                 {multiple && isSelected && (
-                  <Check size={14} className="text-[#168a53] shrink-0" strokeWidth={2.5} />
+                  <Check size={14} className="text-[#14b8a6] shrink-0" strokeWidth={2.5} />
                 )}
               </div>
             );
@@ -116,7 +116,7 @@ export default function ReportByType() {
     const colors = [
       'bg-blue-50 text-blue-700 border-blue-200/60',
       'bg-orange-50 text-orange-700 border-orange-200/60',
-      'bg-emerald-50 text-emerald-700 border-emerald-200/60',
+      'bg-teal-50 text-teal-700 border-teal-200/60',
       'bg-purple-50 text-purple-700 border-purple-200/60',
       'bg-rose-50 text-rose-700 border-rose-200/60',
       'bg-cyan-50 text-cyan-700 border-cyan-200/60',
@@ -406,7 +406,7 @@ export default function ReportByType() {
   // Full solid colored square for Hadir (Green), Alpa (Red), Izin (Amber), Sakit (Blue)
   const getStatusCellClass = (status) => {
     switch(status) {
-      case 'H': return 'bg-emerald-500 text-white font-black';
+      case 'H': return 'bg-teal-500 text-white font-black';
       case 'A': return 'bg-red-500 text-white font-black';
       case 'I': return 'bg-amber-400 text-white font-black';
       case 'S': return 'bg-blue-500 text-white font-black';
@@ -421,7 +421,7 @@ export default function ReportByType() {
         type="button"
         onClick={exportToExcel}
         disabled={!filteredData.length}
-        className="flex items-center gap-1 px-3 py-1.5 bg-[#168a53] hover:bg-[#127344] disabled:opacity-50 text-white rounded-full text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95"
+        className="flex items-center gap-1 px-3 py-1.5 bg-[#14b8a6] hover:bg-[#0d9488] disabled:opacity-50 text-white rounded-full text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95"
       >
         <FileUp size={13} strokeWidth={2.5} />
         <span>Export</span>
@@ -449,7 +449,7 @@ export default function ReportByType() {
             type="button"
             onClick={exportToExcel}
             disabled={!filteredData.length}
-            className="flex items-center justify-center gap-1.5 px-4 py-2 bg-[#168a53] hover:bg-[#127344] active:scale-95 disabled:opacity-50 text-white rounded-full font-bold text-xs shadow-xs transition-all cursor-pointer whitespace-nowrap"
+            className="flex items-center justify-center gap-1.5 px-4 py-2 bg-[#14b8a6] hover:bg-[#0d9488] active:scale-95 disabled:opacity-50 text-white rounded-full font-bold text-xs shadow-xs transition-all cursor-pointer whitespace-nowrap"
           >
             <FileUp size={14} strokeWidth={2.5} />
             <span>Export Excel</span>
@@ -497,21 +497,21 @@ export default function ReportByType() {
         {/* Rata-rata Kehadiran */}
         <div className="bg-white border border-slate-200/80 rounded-2xl p-3.5 sm:p-4 min-w-[130px] flex-1 shrink-0 flex flex-col justify-between sm:flex-row sm:items-center gap-2 sm:gap-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
           <div className="flex items-center justify-between sm:hidden w-full">
-            <div className="w-7 h-7 rounded-lg bg-emerald-50 text-[#168a53] flex items-center justify-center">
+            <div className="w-7 h-7 rounded-lg bg-teal-50 text-[#14b8a6] flex items-center justify-center">
               <Activity size={14} strokeWidth={2} />
             </div>
-            <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-50 text-[#168a53] border border-emerald-200/60">
+            <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-teal-50 text-[#14b8a6] border border-teal-200/60">
               {totalRecordedCount > 0 ? `${avgAttendancePercent}%` : '0%'}
             </span>
           </div>
 
           <div className="hidden sm:flex items-center gap-3.5 min-w-0">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-[#168a53] flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-teal-50 text-[#14b8a6] flex items-center justify-center shrink-0">
               <Activity size={18} strokeWidth={2} />
             </div>
             <div className="min-w-0">
               <p className="text-xs font-medium text-slate-500 truncate">Rata-rata Hadir</p>
-              <p className="text-lg sm:text-xl font-extrabold text-[#168a53] tracking-tight leading-snug">
+              <p className="text-lg sm:text-xl font-extrabold text-[#14b8a6] tracking-tight leading-snug">
                 {totalRecordedCount > 0 ? `${avgAttendancePercent}%` : '-'}
               </p>
             </div>
@@ -524,7 +524,7 @@ export default function ReportByType() {
             </p>
           </div>
 
-          <span className="hidden sm:inline-block text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-emerald-50 text-[#168a53] border border-emerald-200/60 shrink-0">
+          <span className="hidden sm:inline-block text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-teal-50 text-[#14b8a6] border border-teal-200/60 shrink-0">
             Akumulasi
           </span>
         </div>
@@ -608,7 +608,7 @@ export default function ReportByType() {
               placeholder="Cari nama generus..."
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-8 py-2 text-xs bg-white rounded-full border border-slate-200/90 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#168a53]/15 focus:border-[#168a53] shadow-2xs transition-all"
+              className="w-full pl-9 pr-8 py-2 text-xs bg-white rounded-full border border-slate-200/90 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#14b8a6]/15 focus:border-[#14b8a6] shadow-2xs transition-all"
             />
             {searchTerm && (
               <button
@@ -624,14 +624,14 @@ export default function ReportByType() {
             onClick={() => setShowFilters(!showFilters)}
             className={`px-3.5 py-2 text-xs font-bold rounded-full border flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer whitespace-nowrap ${
               showFilters || filterKelompok.length > 0 || filterJenjang.length > 0
-                ? 'bg-emerald-50 border-emerald-200 text-[#168a53]'
+                ? 'bg-teal-50 border-teal-200 text-[#14b8a6]'
                 : 'bg-white border-slate-200/90 text-slate-600 hover:bg-slate-50'
             }`}
           >
             <Filter size={13} />
             <span>Filter</span>
             {(filterKelompok.length > 0 || filterJenjang.length > 0) && (
-              <span className="w-1.5 h-1.5 rounded-full bg-[#168a53]" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#14b8a6]" />
             )}
           </button>
         </div>
@@ -644,12 +644,12 @@ export default function ReportByType() {
           <div>
             <div className="flex items-center justify-between mb-2">
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                <MapPin size={11} className="text-emerald-600" /> Filter Kelompok
+                <MapPin size={11} className="text-teal-600" /> Filter Kelompok
               </p>
               {filterKelompok.length > 0 && (
                 <button
                   onClick={() => setFilterKelompok([])}
-                  className="text-[10px] font-bold text-[#168a53] hover:underline cursor-pointer"
+                  className="text-[10px] font-bold text-[#14b8a6] hover:underline cursor-pointer"
                 >
                   Reset
                 </button>
@@ -668,7 +668,7 @@ export default function ReportByType() {
                     onClick={() => toggleKelompok(k)}
                     className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
                       active
-                        ? 'bg-[#168a53] text-white shadow-2xs'
+                        ? 'bg-[#14b8a6] text-white shadow-2xs'
                         : 'bg-slate-100/90 text-slate-600 hover:bg-slate-200/80'
                     }`}
                   >
@@ -688,12 +688,12 @@ export default function ReportByType() {
           <div className="pt-2 border-t border-slate-100">
             <div className="flex items-center justify-between mb-2">
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                <Filter size={11} className="text-emerald-600" /> Filter Jenjang & Jabatan
+                <Filter size={11} className="text-teal-600" /> Filter Jenjang & Jabatan
               </p>
               {filterJenjang.length > 0 && (
                 <button
                   onClick={() => setFilterJenjang([])}
-                  className="text-[10px] font-bold text-[#168a53] hover:underline cursor-pointer"
+                  className="text-[10px] font-bold text-[#14b8a6] hover:underline cursor-pointer"
                 >
                   Reset
                 </button>
@@ -709,7 +709,7 @@ export default function ReportByType() {
                     onClick={() => toggleJenjang(j)}
                     className={`px-2.5 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
                       active
-                        ? 'bg-[#168a53] text-white shadow-2xs'
+                        ? 'bg-[#14b8a6] text-white shadow-2xs'
                         : 'bg-slate-100/90 text-slate-600 hover:bg-slate-200/80'
                     }`}
                   >
@@ -728,7 +728,7 @@ export default function ReportByType() {
         <div className="px-4 sm:px-6 py-3.5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/70">
           <div className="flex items-center gap-2.5">
             <h3 className="font-extrabold text-slate-800 text-sm sm:text-base tracking-tight">Matriks Kehadiran</h3>
-            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-[#168a53] border border-emerald-200/60">
+            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-teal-50 text-[#14b8a6] border border-teal-200/60">
               {filteredData.length} generus
             </span>
           </div>
@@ -753,7 +753,7 @@ export default function ReportByType() {
         {/* Content Body */}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-24 gap-3">
-            <Loader2 size={34} className="animate-spin text-[#168a53]" />
+            <Loader2 size={34} className="animate-spin text-[#14b8a6]" />
             <p className="text-slate-400 font-medium text-sm">Memuat rekapan absensi...</p>
           </div>
         ) : selectedType.length === 0 ? (
@@ -837,7 +837,7 @@ export default function ReportByType() {
                     <td className="px-3 py-2.5 text-center border-r border-slate-100">
                       <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full uppercase ${
                         g.status?.toLowerCase() === 'aktif'
-                          ? 'bg-emerald-50 text-[#168a53] border border-emerald-200/60'
+                          ? 'bg-teal-50 text-[#14b8a6] border border-teal-200/60'
                           : g.status?.toLowerCase() === 'pasif'
                             ? 'bg-amber-50 text-amber-700 border border-amber-200/60'
                             : 'bg-red-50 text-red-600 border border-red-200/60'

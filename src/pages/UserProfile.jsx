@@ -225,7 +225,7 @@ export default function UserProfile() {
         {/* SIDEBAR (Left Column) */}
         <div className="lg:col-span-4">
           <div className="bg-white rounded-3xl shadow-xl shadow-teal-500/5 border border-slate-100 overflow-hidden lg:sticky lg:top-8 relative group">
-            <div className="h-36 bg-gradient-to-br from-teal-400 via-teal-500 to-emerald-600 relative overflow-hidden">
+            <div className="h-36 bg-gradient-to-br from-teal-400 via-teal-500 to-teal-600 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-40 h-40 bg-white/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
               <button 
                 onClick={() => {
@@ -259,8 +259,8 @@ export default function UserProfile() {
                   <span className="text-sm font-semibold text-slate-700">{formData.no_hp || 'Belum ditambahkan'}</span>
                 </div>
                 <div className="flex items-center gap-4 text-slate-600 bg-white hover:bg-slate-50 p-4 rounded-2xl border border-slate-100 transition-colors shadow-sm">
-                  <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center shrink-0">
-                    <Activity size={18} className="text-emerald-500" />
+                  <div className="w-10 h-10 bg-teal-50 rounded-xl flex items-center justify-center shrink-0">
+                    <Activity size={18} className="text-teal-500" />
                   </div>
                   <span className="text-sm font-semibold text-slate-700">{formData.keterangan || 'Pelajar/Karyawan'}</span>
                 </div>

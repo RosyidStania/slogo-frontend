@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 
 const COLOR_OPTIONS = [
-  { key: 'emerald', label: 'Hijau',   badge: 'bg-emerald-50 text-emerald-700 border-emerald-200/80', dot: 'bg-emerald-500' },
+  { key: 'emerald', label: 'Hijau',   badge: 'bg-teal-50 text-teal-700 border-teal-200/80', dot: 'bg-teal-500' },
   { key: 'blue',    label: 'Biru',    badge: 'bg-blue-50 text-blue-700 border-blue-200/80',          dot: 'bg-blue-500' },
   { key: 'amber',   label: 'Amber',   badge: 'bg-amber-50 text-amber-700 border-amber-200/80',       dot: 'bg-amber-500' },
   { key: 'purple',  label: 'Ungu',    badge: 'bg-purple-50 text-purple-700 border-purple-200/80',    dot: 'bg-purple-500' },
@@ -19,12 +19,12 @@ const COLOR_OPTIONS = [
 
 function getColorClass(colorKey) {
   const found = COLOR_OPTIONS.find(c => c.key === colorKey);
-  return found ? found.badge : 'bg-emerald-50 text-emerald-700 border-emerald-200/80';
+  return found ? found.badge : 'bg-teal-50 text-teal-700 border-teal-200/80';
 }
 
 function getColorDot(colorKey) {
   const found = COLOR_OPTIONS.find(c => c.key === colorKey);
-  return found ? found.dot : 'bg-emerald-500';
+  return found ? found.dot : 'bg-teal-500';
 }
 
 // ─── User Avatar (iOS Pastel Theme) ──────────────────────────────────────────
@@ -32,7 +32,7 @@ const AVATAR_PALETTE_MALE = [
   'bg-blue-100 text-blue-700',
   'bg-sky-100 text-sky-700',
   'bg-teal-100 text-teal-700',
-  'bg-emerald-100 text-emerald-700',
+  'bg-teal-100 text-teal-700',
   'bg-indigo-100 text-indigo-700',
   'bg-cyan-100 text-cyan-700',
 ];
@@ -331,9 +331,9 @@ export default function ManagePengurus() {
           <div className={`pointer-events-auto flex items-center gap-2.5 px-4 py-2.5 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.08)] border text-xs sm:text-sm font-semibold backdrop-blur-md ${
             toast.type === 'error'
               ? 'bg-rose-50 text-rose-800 border-rose-200'
-              : 'bg-white text-emerald-800 border-emerald-200/80 shadow-md'
+              : 'bg-white text-teal-800 border-teal-200/80 shadow-md'
           }`}>
-            {toast.type === 'error' ? <AlertCircle size={16} /> : <Check size={16} className="text-[#168a53]" />}
+            {toast.type === 'error' ? <AlertCircle size={16} /> : <Check size={16} className="text-[#14b8a6]" />}
             <span>{toast.message}</span>
           </div>
         </div>
@@ -358,7 +358,7 @@ export default function ManagePengurus() {
           }}
           className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 sm:py-2 rounded-full bg-white hover:bg-slate-50 text-slate-700 border border-slate-200/90 hover:border-slate-300 text-xs sm:text-sm font-semibold shadow-2xs transition-all active:scale-95 shrink-0"
         >
-          <Plus size={15} strokeWidth={2.5} className="text-[#168a53]" />
+          <Plus size={15} strokeWidth={2.5} className="text-[#14b8a6]" />
           <span>Tambah Jenis Pengurus</span>
         </button>
       </div>
@@ -374,7 +374,7 @@ export default function ManagePengurus() {
                 onClick={() => setSelectedTypeId(t.id)}
                 className={`flex items-center gap-2 px-3.5 py-2 rounded-full text-xs font-bold shrink-0 transition-all active:scale-95 border min-h-[38px] ${
                   isSelected
-                    ? 'bg-[#168a53] text-white border-[#168a53] shadow-sm shadow-[#168a53]/25'
+                    ? 'bg-[#14b8a6] text-white border-[#14b8a6] shadow-sm shadow-[#14b8a6]/25'
                     : 'bg-white text-slate-700 border-slate-200/80 hover:bg-slate-50'
                 }`}
               >
@@ -407,7 +407,7 @@ export default function ManagePengurus() {
 
           {loading ? (
             <div className="py-12 text-center text-slate-400 text-xs sm:text-sm flex items-center justify-center gap-2">
-              <Loader2 size={16} className="animate-spin text-[#168a53]" />
+              <Loader2 size={16} className="animate-spin text-[#14b8a6]" />
               <span>Memuat data pengurus...</span>
             </div>
           ) : types.length === 0 ? (
@@ -424,7 +424,7 @@ export default function ManagePengurus() {
                     onClick={() => setSelectedTypeId(t.id)}
                     className={`group relative p-3 rounded-xl sm:rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
                       isSelected
-                        ? 'border-emerald-500/80 bg-emerald-50/50 shadow-xs ring-1 ring-emerald-500/20'
+                        ? 'border-teal-500/80 bg-teal-50/50 shadow-xs ring-1 ring-teal-500/20'
                         : 'border-slate-100 hover:border-slate-200 hover:bg-slate-50/70'
                     }`}
                   >
@@ -559,7 +559,7 @@ export default function ManagePengurus() {
                 {/* HERO QUICK ADD BUTTON (Full Width on Mobile) */}
                 <button
                   onClick={handleOpenQuickModal}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-[#168a53] hover:bg-[#127344] text-white text-xs sm:text-sm font-bold shadow-sm shadow-[#168a53]/25 transition-all active:scale-95 shrink-0"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-[#14b8a6] hover:bg-[#0d9488] text-white text-xs sm:text-sm font-bold shadow-sm shadow-[#14b8a6]/25 transition-all active:scale-95 shrink-0"
                 >
                   <UserPlus size={16} strokeWidth={2.3} />
                   <span>Tambah Anggota Pengurus</span>
@@ -574,7 +574,7 @@ export default function ManagePengurus() {
                   value={memberSearch}
                   onChange={e => setMemberSearch(e.target.value)}
                   placeholder={`Cari nama anggota di ${activeType.name}...`}
-                  className="w-full pl-9 pr-8 py-2.5 sm:py-2 rounded-xl bg-slate-100/70 border border-slate-200/60 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#168a53]/20 focus:border-[#168a53] transition-all"
+                  className="w-full pl-9 pr-8 py-2.5 sm:py-2 rounded-xl bg-slate-100/70 border border-slate-200/60 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#14b8a6]/20 focus:border-[#14b8a6] transition-all"
                 />
                 {memberSearch && (
                   <button
@@ -589,7 +589,7 @@ export default function ManagePengurus() {
               {/* Member List / Table Container */}
               {membersLoading ? (
                 <div className="py-16 text-center text-slate-400 text-xs sm:text-sm flex items-center justify-center gap-2">
-                  <Loader2 size={16} className="animate-spin text-[#168a53]" />
+                  <Loader2 size={16} className="animate-spin text-[#14b8a6]" />
                   <span>Memuat anggota {activeType.name}...</span>
                 </div>
               ) : filteredMembers.length === 0 ? (
@@ -603,7 +603,7 @@ export default function ManagePengurus() {
                   </p>
                   <button
                     onClick={handleOpenQuickModal}
-                    className="mt-4 inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-emerald-50 text-[#168a53] hover:bg-emerald-100 text-xs font-bold transition-all active:scale-95 border border-emerald-200/60"
+                    className="mt-4 inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-teal-50 text-[#14b8a6] hover:bg-teal-100 text-xs font-bold transition-all active:scale-95 border border-teal-200/60"
                   >
                     <UserPlus size={14} />
                     <span>Mulai Tambah Anggota</span>
@@ -765,7 +765,7 @@ export default function ManagePengurus() {
                 value={typeForm.name}
                 onChange={e => setTypeForm({ ...typeForm, name: e.target.value })}
                 placeholder="Contoh: Pengurus Usman, Pengurus Desa, dll."
-                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#168a53]/20 focus:border-[#168a53] font-semibold text-slate-900 transition-all"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#14b8a6]/20 focus:border-[#14b8a6] font-semibold text-slate-900 transition-all"
               />
             </div>
 
@@ -782,7 +782,7 @@ export default function ManagePengurus() {
                       type="button"
                       onClick={() => setTypeForm({ ...typeForm, badge_color: c.key })}
                       className={`text-xs font-bold px-3 py-1.5 rounded-full border transition-all active:scale-95 min-h-[36px] ${c.badge} ${
-                        isChecked ? 'ring-2 ring-[#168a53] shadow-xs scale-105' : 'opacity-70 hover:opacity-100'
+                        isChecked ? 'ring-2 ring-[#14b8a6] shadow-xs scale-105' : 'opacity-70 hover:opacity-100'
                       }`}
                     >
                       {isChecked && <Check size={12} className="inline mr-1 -mt-0.5" />}
@@ -802,7 +802,7 @@ export default function ManagePengurus() {
                 value={typeForm.description}
                 onChange={e => setTypeForm({ ...typeForm, description: e.target.value })}
                 placeholder="Opsional: penjelasan tentang tugas/cakupan pengurus ini..."
-                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#168a53]/20 focus:border-[#168a53] transition-all"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#14b8a6]/20 focus:border-[#14b8a6] transition-all"
               />
             </div>
           </div>
@@ -818,7 +818,7 @@ export default function ManagePengurus() {
             <button
               type="submit"
               disabled={typeSubmitting}
-              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-[#168a53] hover:bg-[#127344] text-white text-xs sm:text-sm font-bold shadow-xs disabled:opacity-50 active:scale-95"
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-[#14b8a6] hover:bg-[#0d9488] text-white text-xs sm:text-sm font-bold shadow-xs disabled:opacity-50 active:scale-95"
             >
               {typeSubmitting && <Loader2 size={14} className="animate-spin" />}
               <span>{typeModalMode === 'add' ? 'Simpan Pengurus' : 'Update Pengurus'}</span>
@@ -834,7 +834,7 @@ export default function ManagePengurus() {
           <div className="flex items-center justify-between pb-3 border-b border-slate-100 shrink-0">
             <div>
               <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight flex items-center gap-2">
-                <UserPlus size={19} className="text-[#168a53]" />
+                <UserPlus size={19} className="text-[#14b8a6]" />
                 <span>Tambah Anggota Pengurus</span>
               </h2>
               <p className="text-[11px] sm:text-xs font-medium text-slate-400 mt-0.5">
@@ -859,7 +859,7 @@ export default function ManagePengurus() {
                 value={candidateSearch}
                 onChange={e => setCandidateSearch(e.target.value)}
                 placeholder="Cari nama calon anggota..."
-                className="w-full pl-9 pr-3.5 py-2.5 sm:py-2 rounded-xl bg-slate-100/70 border border-slate-200/60 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#168a53]/20 focus:border-[#168a53] transition-all"
+                className="w-full pl-9 pr-3.5 py-2.5 sm:py-2 rounded-xl bg-slate-100/70 border border-slate-200/60 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#14b8a6]/20 focus:border-[#14b8a6] transition-all"
               />
             </div>
 
@@ -868,7 +868,7 @@ export default function ManagePengurus() {
               <select
                 value={candidateKelompok}
                 onChange={e => setCandidateKelompok(e.target.value)}
-                className="w-full py-2.5 sm:py-2 px-3 rounded-xl bg-slate-100/70 border border-slate-200/60 text-xs sm:text-sm font-semibold text-slate-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#168a53]/20 focus:border-[#168a53] transition-all"
+                className="w-full py-2.5 sm:py-2 px-3 rounded-xl bg-slate-100/70 border border-slate-200/60 text-xs sm:text-sm font-semibold text-slate-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#14b8a6]/20 focus:border-[#14b8a6] transition-all"
               >
                 {availableKelompokList.map(k => (
                   <option key={k} value={k}>
@@ -882,7 +882,7 @@ export default function ManagePengurus() {
           {/* Selection Bar & Quick Toggle */}
           <div className="flex items-center justify-between px-1 py-0.5 text-xs shrink-0">
             <div className="flex items-center gap-2">
-              <span className="text-[#168a53] bg-emerald-50 border border-emerald-200/70 px-2.5 py-0.5 rounded-full font-bold tabular-nums">
+              <span className="text-[#14b8a6] bg-teal-50 border border-teal-200/70 px-2.5 py-0.5 rounded-full font-bold tabular-nums">
                 {selectedCandidateIds.length} dipilih
               </span>
               <span className="text-slate-400 text-[11px] font-medium hidden xs:inline">
@@ -893,7 +893,7 @@ export default function ManagePengurus() {
             <button
               type="button"
               onClick={handleSelectAllVisible}
-              className="text-xs font-bold text-[#168a53] hover:text-[#127344] flex items-center gap-1.5 cursor-pointer select-none active:scale-95 transition-all p-1"
+              className="text-xs font-bold text-[#14b8a6] hover:text-[#0d9488] flex items-center gap-1.5 cursor-pointer select-none active:scale-95 transition-all p-1"
             >
               {filteredCandidates.length > 0 && filteredCandidates.every(c => selectedCandidateIds.includes(c.id)) ? (
                 <>
@@ -913,7 +913,7 @@ export default function ManagePengurus() {
           <div className="flex-1 overflow-y-auto min-h-[220px] max-h-[360px] divide-y divide-slate-100 border border-slate-200/80 rounded-2xl shadow-2xs">
             {candidatesLoading ? (
               <div className="py-16 text-center text-slate-400 text-xs sm:text-sm flex items-center justify-center gap-2">
-                <Loader2 size={18} className="animate-spin text-[#168a53]" />
+                <Loader2 size={18} className="animate-spin text-[#14b8a6]" />
                 <span>Memuat calon anggota...</span>
               </div>
             ) : filteredCandidates.length === 0 ? (
@@ -928,14 +928,14 @@ export default function ManagePengurus() {
                     key={c.id}
                     onClick={() => toggleCandidate(c.id)}
                     className={`p-3 sm:p-2.5 flex items-center justify-between gap-3 cursor-pointer select-none transition-colors active:bg-slate-100/80 min-h-[52px] ${
-                      isChecked ? 'bg-emerald-50/60' : 'hover:bg-slate-50/70'
+                      isChecked ? 'bg-teal-50/60' : 'hover:bg-slate-50/70'
                     }`}
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       {/* Apple-style circular checkbox */}
                       <div className={`w-5 h-5 rounded-full flex items-center justify-center border transition-all shrink-0 ${
                         isChecked
-                          ? 'bg-[#168a53] border-[#168a53] text-white shadow-2xs'
+                          ? 'bg-[#14b8a6] border-[#14b8a6] text-white shadow-2xs'
                           : 'border-slate-300 bg-white hover:border-slate-400'
                       }`}>
                         {isChecked && <Check size={12} strokeWidth={3} />}
@@ -959,7 +959,7 @@ export default function ManagePengurus() {
                     </div>
 
                     <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full shrink-0 transition-all ${
-                      isChecked ? 'bg-[#168a53] text-white shadow-2xs' : 'text-slate-400 bg-slate-100'
+                      isChecked ? 'bg-[#14b8a6] text-white shadow-2xs' : 'text-slate-400 bg-slate-100'
                     }`}>
                       {isChecked ? 'Terpilih' : '+ Pilih'}
                     </span>
@@ -986,7 +986,7 @@ export default function ManagePengurus() {
                 type="button"
                 disabled={selectedCandidateIds.length === 0 || quickAssigning}
                 onClick={handleSaveQuickAssign}
-                className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-full bg-[#168a53] hover:bg-[#127344] text-white text-xs sm:text-sm font-bold shadow-sm shadow-[#168a53]/25 disabled:opacity-50 transition-all active:scale-95 text-center"
+                className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-full bg-[#14b8a6] hover:bg-[#0d9488] text-white text-xs sm:text-sm font-bold shadow-sm shadow-[#14b8a6]/25 disabled:opacity-50 transition-all active:scale-95 text-center"
               >
                 {quickAssigning && <Loader2 size={14} className="animate-spin" />}
                 <span>Tambahkan {selectedCandidateIds.length} Anggota</span>

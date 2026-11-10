@@ -67,12 +67,12 @@ function CustomSelect({ options, value, onChange, placeholder, multiple = false 
                   }
                 }}
                 className={`px-3.5 py-2 text-xs font-semibold cursor-pointer transition-colors flex justify-between items-center gap-2 ${
-                  isSelected ? 'bg-emerald-50 text-[#168a53] font-bold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                  isSelected ? 'bg-teal-50 text-[#14b8a6] font-bold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                 }`}
               >
                 <span className="truncate">{opt.label}</span>
                 {multiple && isSelected && (
-                  <Check size={14} className="text-[#168a53] shrink-0" strokeWidth={2.5} />
+                  <Check size={14} className="text-[#14b8a6] shrink-0" strokeWidth={2.5} />
                 )}
               </div>
             );
@@ -112,7 +112,7 @@ export default function MtAttendance() {
     const colors = [
       'bg-blue-50 text-blue-700 border-blue-200/60',
       'bg-orange-50 text-orange-700 border-orange-200/60',
-      'bg-emerald-50 text-emerald-700 border-emerald-200/60',
+      'bg-teal-50 text-teal-700 border-teal-200/60',
       'bg-purple-50 text-purple-700 border-purple-200/60',
       'bg-rose-50 text-rose-700 border-rose-200/60',
       'bg-cyan-50 text-cyan-700 border-cyan-200/60',
@@ -387,7 +387,7 @@ export default function MtAttendance() {
 
   const getStatusCellClass = (status) => {
     switch(status) {
-      case 'H': return 'bg-emerald-500 text-white font-black';
+      case 'H': return 'bg-teal-500 text-white font-black';
       case 'A': return 'bg-red-500 text-white font-black';
       case 'I': return 'bg-amber-400 text-white font-black';
       case 'S': return 'bg-blue-500 text-white font-black';
@@ -402,7 +402,7 @@ export default function MtAttendance() {
         type="button"
         onClick={exportToExcel}
         disabled={!filteredData.length}
-        className="flex items-center justify-center gap-1.5 px-4 py-1.5 bg-[#168a53] hover:bg-[#127344] active:scale-95 disabled:opacity-50 text-white rounded-full font-bold text-xs shadow-xs transition-all cursor-pointer whitespace-nowrap"
+        className="flex items-center justify-center gap-1.5 px-4 py-1.5 bg-[#14b8a6] hover:bg-[#0d9488] active:scale-95 disabled:opacity-50 text-white rounded-full font-bold text-xs shadow-xs transition-all cursor-pointer whitespace-nowrap"
       >
         <FileUp size={13} strokeWidth={2.5} />
         <span>Export Excel</span>
@@ -420,7 +420,7 @@ export default function MtAttendance() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h1 className="text-[26px] sm:text-2xl font-extrabold text-slate-900 tracking-tight leading-tight">
-              Rekapan Absensi Kelompok {kelompok && <span className="text-[#168a53]">{kelompok}</span>}
+              Rekapan Absensi Kelompok {kelompok && <span className="text-[#14b8a6]">{kelompok}</span>}
             </h1>
             <p className="text-slate-500 text-xs sm:text-sm mt-1">
               Pantau matriks kehadiran generus kelompok Anda berdasarkan kategori kegiatan dan tahun.
@@ -472,21 +472,21 @@ export default function MtAttendance() {
           {/* Rata-rata Kehadiran */}
           <div className="bg-white border border-slate-200/80 rounded-2xl p-3.5 sm:p-4 min-w-[130px] flex-1 shrink-0 flex flex-col justify-between sm:flex-row sm:items-center gap-2 sm:gap-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
             <div className="flex items-center justify-between sm:hidden w-full">
-              <div className="w-7 h-7 rounded-lg bg-emerald-50 text-[#168a53] flex items-center justify-center">
+              <div className="w-7 h-7 rounded-lg bg-teal-50 text-[#14b8a6] flex items-center justify-center">
                 <Activity size={14} strokeWidth={2} />
               </div>
-              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-50 text-[#168a53] border border-emerald-200/60">
+              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-teal-50 text-[#14b8a6] border border-teal-200/60">
                 {totalRecordedCount > 0 ? `${avgAttendancePercent}%` : '0%'}
               </span>
             </div>
 
             <div className="hidden sm:flex items-center gap-3.5 min-w-0">
-              <div className="w-10 h-10 rounded-xl bg-emerald-50 text-[#168a53] flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-teal-50 text-[#14b8a6] flex items-center justify-center shrink-0">
                 <Activity size={18} strokeWidth={2} />
               </div>
               <div className="min-w-0">
                 <p className="text-xs font-medium text-slate-500 truncate">Rata-rata Hadir</p>
-                <p className="text-lg sm:text-xl font-extrabold text-[#168a53] tracking-tight leading-snug">
+                <p className="text-lg sm:text-xl font-extrabold text-[#14b8a6] tracking-tight leading-snug">
                   {totalRecordedCount > 0 ? `${avgAttendancePercent}%` : '-'}
                 </p>
               </div>
@@ -499,7 +499,7 @@ export default function MtAttendance() {
               </p>
             </div>
 
-            <span className="hidden sm:inline-block text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-emerald-50 text-[#168a53] border border-emerald-200/60 shrink-0">
+            <span className="hidden sm:inline-block text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-teal-50 text-[#14b8a6] border border-teal-200/60 shrink-0">
               Akumulasi
             </span>
           </div>
@@ -570,7 +570,7 @@ export default function MtAttendance() {
                 placeholder="Cari nama generus..."
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
-                className="w-full pl-9 pr-8 py-2 text-xs bg-white rounded-full border border-slate-200/90 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#168a53]/15 focus:border-[#168a53] shadow-2xs transition-all font-medium"
+                className="w-full pl-9 pr-8 py-2 text-xs bg-white rounded-full border border-slate-200/90 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#14b8a6]/15 focus:border-[#14b8a6] shadow-2xs transition-all font-medium"
               />
               {searchTerm && (
                 <button
@@ -586,14 +586,14 @@ export default function MtAttendance() {
               onClick={() => setShowFilters(!showFilters)}
               className={`px-3.5 py-2 text-xs font-bold rounded-full border flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer whitespace-nowrap ${
                 showFilters || filterJenjang.length > 0
-                  ? 'bg-emerald-50 border-emerald-200 text-[#168a53]'
+                  ? 'bg-teal-50 border-teal-200 text-[#14b8a6]'
                   : 'bg-white border-slate-200/90 text-slate-600 hover:bg-slate-50'
               }`}
             >
               <Filter size={13} />
               <span>Filter</span>
               {filterJenjang.length > 0 && (
-                <span className="w-1.5 h-1.5 rounded-full bg-[#168a53]" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#14b8a6]" />
               )}
             </button>
           </div>
@@ -605,12 +605,12 @@ export default function MtAttendance() {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <Filter size={11} className="text-emerald-600" /> Filter Jenjang & Jabatan
+                  <Filter size={11} className="text-teal-600" /> Filter Jenjang & Jabatan
                 </p>
                 {filterJenjang.length > 0 && (
                   <button
                     onClick={() => setFilterJenjang([])}
-                    className="text-[10px] font-bold text-[#168a53] hover:underline cursor-pointer"
+                    className="text-[10px] font-bold text-[#14b8a6] hover:underline cursor-pointer"
                   >
                     Reset
                   </button>
@@ -626,7 +626,7 @@ export default function MtAttendance() {
                       onClick={() => toggleJenjang(j)}
                       className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
                         active
-                          ? 'bg-[#168a53] text-white shadow-2xs'
+                          ? 'bg-[#14b8a6] text-white shadow-2xs'
                           : 'bg-slate-100/90 text-slate-600 hover:bg-slate-200/80'
                       }`}
                     >
@@ -662,12 +662,12 @@ export default function MtAttendance() {
           <div className="flex-1 overflow-auto thin-scrollbar">
             {loading ? (
               <div className="py-24 flex flex-col items-center justify-center space-y-3">
-                <Loader2 size={32} className="animate-spin text-[#168a53]" />
+                <Loader2 size={32} className="animate-spin text-[#14b8a6]" />
                 <p className="text-slate-400 font-medium text-xs">Memuat rekapan absensi kelompok...</p>
               </div>
             ) : selectedType.length === 0 ? (
               <div className="py-24 flex flex-col items-center justify-center text-center p-6 space-y-3">
-                <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-[#168a53] flex items-center justify-center">
+                <div className="w-14 h-14 rounded-2xl bg-teal-50 text-[#14b8a6] flex items-center justify-center">
                   <Layers size={24} />
                 </div>
                 <h3 className="text-base font-bold text-slate-800">Pilih Kategori Acara</h3>
@@ -763,7 +763,7 @@ export default function MtAttendance() {
                         <td className="py-3 px-3.5 text-center">
                           <div className="flex flex-col items-center gap-0.5">
                             {roleBadges.map(rb => (
-                              <span key={rb} className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.2 bg-emerald-50 text-emerald-700 border border-emerald-200/60 rounded">
+                              <span key={rb} className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.2 bg-teal-50 text-teal-700 border border-teal-200/60 rounded">
                                 {rb}
                               </span>
                             ))}
@@ -774,11 +774,11 @@ export default function MtAttendance() {
                         </td>
 
                         {/* Column 4: Recap */}
-                        <td className="py-3 px-3 text-center bg-slate-50/60 font-extrabold text-[#168a53] tabular-nums">
+                        <td className="py-3 px-3 text-center bg-slate-50/60 font-extrabold text-[#14b8a6] tabular-nums">
                           {totalAcara === 0 ? (
                             <span className="text-slate-300 font-normal">-</span>
                           ) : (
-                            <span className="px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200/60 text-xs">
+                            <span className="px-2 py-0.5 rounded-full bg-teal-50 border border-teal-200/60 text-xs">
                               {hadir}/{totalAcara}
                             </span>
                           )}
@@ -810,7 +810,7 @@ export default function MtAttendance() {
             </div>
             <div className="flex items-center gap-3 text-[11px] font-bold">
               <span className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded bg-emerald-500" /> Hadir (H)
+                <span className="w-2.5 h-2.5 rounded bg-teal-500" /> Hadir (H)
               </span>
               <span className="flex items-center gap-1.5">
                 <span className="w-2.5 h-2.5 rounded bg-amber-400" /> Izin (I)

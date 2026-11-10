@@ -173,7 +173,7 @@ export default function ManageNotulen() {
             setPickerEventId('');
             setShowEventPickerModal(true);
           }}
-          className="w-full sm:w-auto py-2.5 px-4 rounded-full bg-[#168a53] hover:bg-[#127344] text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-[0_2px_8px_rgba(22,138,83,0.25)] cursor-pointer active:scale-95 transition-all"
+          className="w-full sm:w-auto py-2.5 px-4 rounded-full bg-[#14b8a6] hover:bg-[#0d9488] text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-[0_2px_8px_rgba(20,184,166,0.25)] cursor-pointer active:scale-95 transition-all"
         >
           <Plus size={16} strokeWidth={2.5} />
           <span>Pilih Acara Musyawarah</span>
@@ -203,7 +203,7 @@ export default function ManageNotulen() {
       {/* ── iOS INSET GROUPED CARDS ── */}
       {loading ? (
         <div className="py-20 flex flex-col items-center justify-center gap-3">
-          <Loader2 size={32} className="text-[#168a53] animate-spin" />
+          <Loader2 size={32} className="text-[#14b8a6] animate-spin" />
           <p className="text-xs font-bold text-slate-500">Memuat notulen...</p>
         </div>
       ) : filteredNotes.length === 0 ? (
@@ -222,7 +222,7 @@ export default function ManageNotulen() {
               setPickerEventId('');
               setShowEventPickerModal(true);
             }}
-            className="mt-4 sm:mt-5 py-2.5 px-4 rounded-full bg-[#168a53] hover:bg-[#127344] text-white text-xs font-bold flex items-center gap-1.5 shadow-sm cursor-pointer active:scale-95 transition-all"
+            className="mt-4 sm:mt-5 py-2.5 px-4 rounded-full bg-[#14b8a6] hover:bg-[#0d9488] text-white text-xs font-bold flex items-center gap-1.5 shadow-sm cursor-pointer active:scale-95 transition-all"
           >
             <Plus size={15} strokeWidth={2.5} />
             <span>Pilih Acara Musyawarah</span>
@@ -237,12 +237,12 @@ export default function ManageNotulen() {
               <div
                 key={note.id}
                 onClick={() => navigate(`/admin/notulen/${note.id}`)}
-                className="bg-white rounded-[20px] sm:rounded-[24px] border border-slate-200/70 hover:border-emerald-300 shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_20px_rgba(0,0,0,0.06)] transition-all duration-200 p-4 sm:p-5 flex flex-col justify-between overflow-hidden group cursor-pointer active:scale-[0.99] space-y-2.5 sm:space-y-3"
+                className="bg-white rounded-[20px] sm:rounded-[24px] border border-slate-200/70 hover:border-teal-300 shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_20px_rgba(0,0,0,0.06)] transition-all duration-200 p-4 sm:p-5 flex flex-col justify-between overflow-hidden group cursor-pointer active:scale-[0.99] space-y-2.5 sm:space-y-3"
               >
                 {/* Metadata Header Badge */}
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100/80 tabular-nums">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-teal-50 text-teal-700 border border-teal-100/80 tabular-nums">
                       <Calendar size={11} strokeWidth={2} />
                       <span>{formatShortDate(note.tanggal)}</span>
                     </span>
@@ -268,7 +268,7 @@ export default function ManageNotulen() {
 
                 {/* Judul Acara */}
                 <div>
-                  <h2 className="text-sm sm:text-base font-extrabold text-slate-900 group-hover:text-[#168a53] transition-colors tracking-tight leading-snug">
+                  <h2 className="text-sm sm:text-base font-extrabold text-slate-900 group-hover:text-[#14b8a6] transition-colors tracking-tight leading-snug">
                     {note.judul}
                   </h2>
                   <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-slate-500 text-[11px] font-medium">
@@ -279,7 +279,7 @@ export default function ManageNotulen() {
                       </span>
                     )}
                     {note.peserta_hadir_count != null && note.peserta_hadir_count > 0 && (
-                      <span className="inline-flex items-center gap-1 text-emerald-700 font-bold tabular-nums">
+                      <span className="inline-flex items-center gap-1 text-teal-700 font-bold tabular-nums">
                         <Users size={11} />
                         <span>{note.peserta_hadir_count} Hadir</span>
                       </span>
@@ -305,7 +305,7 @@ export default function ManageNotulen() {
       <ModalPortal open={showEventPickerModal} onClose={() => setShowEventPickerModal(false)} maxWidth="max-w-md">
         <div className="px-5 sm:px-6 py-3.5 sm:py-4 border-b border-slate-100 flex items-center justify-between bg-white/80 shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full bg-emerald-50 text-[#168a53] flex items-center justify-center font-bold">
+            <div className="w-8 h-8 rounded-full bg-teal-50 text-[#14b8a6] flex items-center justify-center font-bold">
               <Calendar size={16} />
             </div>
             <div>
@@ -334,7 +334,7 @@ export default function ManageNotulen() {
               required
               value={pickerEventId}
               onChange={(e) => setPickerEventId(e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#168a53]/20 focus:border-[#168a53] cursor-pointer"
+              className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#14b8a6]/20 focus:border-[#14b8a6] cursor-pointer"
             >
               <option value="">-- Pilih salah satu acara umum --</option>
               {eventsList.map(ev => {
@@ -363,7 +363,7 @@ export default function ManageNotulen() {
             <button
               type="submit"
               disabled={pickerLoading || !pickerEventId}
-              className="w-full sm:w-auto py-2.5 px-5 rounded-full bg-[#168a53] hover:bg-[#127344] disabled:bg-slate-200 disabled:text-slate-400 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm cursor-pointer active:scale-95 transition-all text-center"
+              className="w-full sm:w-auto py-2.5 px-5 rounded-full bg-[#14b8a6] hover:bg-[#0d9488] disabled:bg-slate-200 disabled:text-slate-400 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm cursor-pointer active:scale-95 transition-all text-center"
             >
               {pickerLoading ? (
                 <><Loader2 size={13} className="animate-spin" /> Menyimpan...</>

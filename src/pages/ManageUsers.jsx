@@ -255,7 +255,7 @@ export default function ManageUsers() {
     switch (role) {
       case 'admin':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs sm:text-sm font-bold bg-emerald-50 text-[#168a53] border border-emerald-200/60 shadow-2xs">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs sm:text-sm font-bold bg-teal-50 text-[#14b8a6] border border-teal-200/60 shadow-2xs">
             <Shield size={13} strokeWidth={2.4} />
             Admin
           </span>
@@ -295,7 +295,7 @@ export default function ManageUsers() {
   const getRoleAvatarClass = (role) => {
     switch (role) {
       case 'admin':
-        return 'bg-emerald-50 text-[#168a53] border-emerald-200/60';
+        return 'bg-teal-50 text-[#14b8a6] border-teal-200/60';
       case 'operator_absensi':
         return 'bg-blue-50 text-blue-600 border-blue-200/60';
       case 'absen_kelompok':
@@ -313,7 +313,7 @@ export default function ManageUsers() {
       <button
         type="button"
         onClick={openAddModal}
-        className="flex items-center gap-1 px-3 py-1.5 bg-[#168a53] hover:bg-[#127344] text-white rounded-full text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95"
+        className="flex items-center gap-1 px-3 py-1.5 bg-[#14b8a6] hover:bg-[#0d9488] text-white rounded-full text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95"
       >
         <Plus size={14} strokeWidth={2.5} />
         <span>Tambah</span>
@@ -360,7 +360,7 @@ export default function ManageUsers() {
           <button
             type="button"
             onClick={openAddModal}
-            className="flex items-center gap-1.5 px-4 py-2 bg-[#168a53] hover:bg-[#127344] text-white rounded-full text-xs font-bold shadow-xs transition-all active:scale-95 cursor-pointer whitespace-nowrap"
+            className="flex items-center gap-1.5 px-4 py-2 bg-[#14b8a6] hover:bg-[#0d9488] text-white rounded-full text-xs font-bold shadow-xs transition-all active:scale-95 cursor-pointer whitespace-nowrap"
           >
             <Plus size={14} strokeWidth={2.5} />
             <span>Tambah User</span>
@@ -392,15 +392,15 @@ export default function ManageUsers() {
         <div className="bg-white border border-slate-200/80 rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
           <div className="flex items-center justify-between gap-1">
             <span className="text-xs sm:text-sm font-semibold text-slate-500 truncate">Admin Pusat</span>
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-emerald-50 text-[#168a53] flex items-center justify-center shrink-0">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-teal-50 text-[#14b8a6] flex items-center justify-center shrink-0">
               <Shield size={14} strokeWidth={2.2} />
             </div>
           </div>
           <div className="mt-2.5 sm:mt-3 flex items-baseline justify-between gap-1">
-            <span className="text-2xl sm:text-3xl font-extrabold text-[#168a53] tracking-tight tabular-nums">
+            <span className="text-2xl sm:text-3xl font-extrabold text-[#14b8a6] tracking-tight tabular-nums">
               {totalAdmin}
             </span>
-            <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-emerald-50 text-emerald-700 whitespace-nowrap">
+            <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-teal-50 text-teal-700 whitespace-nowrap">
               Full Akses
             </span>
           </div>
@@ -485,7 +485,7 @@ export default function ManageUsers() {
               }`}
             >
               <span>{tab.label}</span>
-              <span className={`ml-1 text-xs ${active ? 'text-[#168a53] font-bold' : 'text-slate-400'}`}>
+              <span className={`ml-1 text-xs ${active ? 'text-[#14b8a6] font-bold' : 'text-slate-400'}`}>
                 ({tab.count})
               </span>
             </button>
@@ -506,7 +506,7 @@ export default function ManageUsers() {
               placeholder="Cari nama, username, kelompok..."
               value={searchQuery}
               onChange={e => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-              className="w-full pl-10 pr-9 py-2.5 text-sm bg-slate-50/90 rounded-xl border border-slate-200/70 text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-[#168a53] transition-all"
+              className="w-full pl-10 pr-9 py-2.5 text-sm bg-slate-50/90 rounded-xl border border-slate-200/70 text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-[#14b8a6] transition-all"
             />
             {searchQuery && (
               <button
@@ -538,7 +538,7 @@ export default function ManageUsers() {
               title="Segarkan Data"
               className="w-10 h-10 rounded-xl border border-slate-200/80 flex items-center justify-center text-slate-500 hover:text-slate-700 hover:bg-slate-50 transition-colors shrink-0 shadow-2xs cursor-pointer active:scale-95"
             >
-              <RotateCw size={16} className={loading ? 'animate-spin text-[#168a53]' : ''} />
+              <RotateCw size={16} className={loading ? 'animate-spin text-[#14b8a6]' : ''} />
             </button>
           </div>
         </div>
@@ -549,8 +549,8 @@ export default function ManageUsers() {
             Menampilkan <span className="font-extrabold text-slate-900">{filteredUsers.length}</span> akun
             {searchQuery || selectedKelompok || roleTab !== 'semua' ? ' (terfilter)' : ''}
           </p>
-          <span className="text-[11px] sm:text-xs text-[#168a53] font-bold flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#168a53]" />
+          <span className="text-[11px] sm:text-xs text-[#14b8a6] font-bold flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#14b8a6]" />
             Realtime sync
           </span>
         </div>
@@ -559,7 +559,7 @@ export default function ManageUsers() {
         <div className="lg:hidden divide-y divide-slate-100">
           {loading ? (
             <div className="py-16 text-center">
-              <RotateCw size={26} className="animate-spin text-[#168a53] mx-auto mb-2" />
+              <RotateCw size={26} className="animate-spin text-[#14b8a6] mx-auto mb-2" />
               <p className="text-slate-400 text-sm">Memuat data akun...</p>
             </div>
           ) : filteredUsers.length === 0 ? (
@@ -604,8 +604,8 @@ export default function ManageUsers() {
                   <div className="flex items-center justify-between gap-2 pt-2 border-t border-slate-100/90">
                     <div className="flex flex-wrap items-center gap-1.5 min-w-0">
                       {kelompok && (
-                        <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200/70 px-2.5 py-0.5 rounded-lg">
-                          <MapPin size={10} className="text-[#168a53]" />
+                        <span className="inline-flex items-center gap-1 text-[11px] font-bold text-teal-800 bg-teal-50 border border-teal-200/70 px-2.5 py-0.5 rounded-lg">
+                          <MapPin size={10} className="text-[#14b8a6]" />
                           {kelompok}
                         </span>
                       )}
@@ -619,7 +619,7 @@ export default function ManageUsers() {
                         >
                           <KeyRound size={11} className="text-slate-400" />
                           <span>{user.plain_password}</span>
-                          {isCopied ? <Check size={11} className="text-emerald-600" /> : <Copy size={11} className="text-slate-400" />}
+                          {isCopied ? <Check size={11} className="text-teal-600" /> : <Copy size={11} className="text-slate-400" />}
                         </button>
                       )}
                     </div>
@@ -629,7 +629,7 @@ export default function ManageUsers() {
                       <button
                         type="button"
                         onClick={() => openEditModal(user)}
-                        className="w-8 h-8 rounded-xl bg-slate-50 hover:bg-emerald-50 text-slate-500 hover:text-[#168a53] border border-slate-200/80 flex items-center justify-center transition-colors shadow-2xs cursor-pointer active:scale-95"
+                        className="w-8 h-8 rounded-xl bg-slate-50 hover:bg-teal-50 text-slate-500 hover:text-[#14b8a6] border border-slate-200/80 flex items-center justify-center transition-colors shadow-2xs cursor-pointer active:scale-95"
                         title="Edit User"
                       >
                         <Pencil size={14} />
@@ -666,7 +666,7 @@ export default function ManageUsers() {
               {loading ? (
                 <tr>
                   <td colSpan="5" className="px-6 py-16 text-center text-slate-400">
-                    <RotateCw size={26} className="animate-spin text-[#168a53] mx-auto mb-2" />
+                    <RotateCw size={26} className="animate-spin text-[#14b8a6] mx-auto mb-2" />
                     <p className="text-sm font-medium">Memuat data akun...</p>
                   </td>
                 </tr>
@@ -692,7 +692,7 @@ export default function ManageUsers() {
                             {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
                           </div>
                           <div>
-                            <p className="font-extrabold text-slate-900 text-[15px] sm:text-base leading-snug group-hover:text-[#168a53] transition-colors">
+                            <p className="font-extrabold text-slate-900 text-[15px] sm:text-base leading-snug group-hover:text-[#14b8a6] transition-colors">
                               {user.name}
                             </p>
                             <p className="text-xs font-semibold text-slate-400 mt-0.5">
@@ -717,7 +717,7 @@ export default function ManageUsers() {
                             >
                               <KeyRound size={12} className="text-slate-400" />
                               <span>{user.plain_password}</span>
-                              {isCopied ? <Check size={12} className="text-emerald-600" /> : <Copy size={12} className="text-slate-400" />}
+                              {isCopied ? <Check size={12} className="text-teal-600" /> : <Copy size={12} className="text-slate-400" />}
                             </button>
                           )}
                         </div>
@@ -726,8 +726,8 @@ export default function ManageUsers() {
                       {/* Kelompok */}
                       <td className="px-6 py-4">
                         {kelompok ? (
-                          <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-emerald-800 bg-emerald-50/80 border border-emerald-200/70 px-3 py-1.5 rounded-xl shadow-2xs">
-                            <MapPin size={13} className="text-[#168a53]" />
+                          <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-teal-800 bg-teal-50/80 border border-teal-200/70 px-3 py-1.5 rounded-xl shadow-2xs">
+                            <MapPin size={13} className="text-[#14b8a6]" />
                             {kelompok}
                           </span>
                         ) : (
@@ -746,7 +746,7 @@ export default function ManageUsers() {
                           <button
                             type="button"
                             onClick={() => openEditModal(user)}
-                            className="p-2 rounded-xl text-slate-400 hover:text-[#168a53] hover:bg-emerald-50 border border-transparent hover:border-emerald-200/60 transition-colors cursor-pointer shadow-2xs"
+                            className="p-2 rounded-xl text-slate-400 hover:text-[#14b8a6] hover:bg-teal-50 border border-transparent hover:border-teal-200/60 transition-colors cursor-pointer shadow-2xs"
                             title="Edit User"
                           >
                             <Pencil size={16} />
@@ -853,7 +853,7 @@ export default function ManageUsers() {
                   onChange={handleInputChange}
                   required
                   placeholder="Contoh: Budi Santoso"
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200/80 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-[#168a53] text-slate-800 transition-all"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200/80 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-[#14b8a6] text-slate-800 transition-all"
                 />
               ) : (
                 <div>
@@ -917,7 +917,7 @@ export default function ManageUsers() {
                 onChange={handleInputChange}
                 required
                 placeholder="username_pengguna"
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200/80 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-[#168a53] text-slate-800 transition-all"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200/80 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-[#14b8a6] text-slate-800 transition-all"
               />
             </div>
 
@@ -940,7 +940,7 @@ export default function ManageUsers() {
                   required={modalMode === 'add'}
                   minLength="6"
                   placeholder={modalMode === 'add' ? 'Minimal 6 karakter' : 'Ketik password baru'}
-                  className="w-full pl-3.5 pr-10 py-2.5 bg-slate-50 border border-slate-200/80 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-[#168a53] text-slate-800 transition-all font-mono"
+                  className="w-full pl-3.5 pr-10 py-2.5 bg-slate-50 border border-slate-200/80 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-[#14b8a6] text-slate-800 transition-all font-mono"
                 />
                 <button
                   type="button"
@@ -964,7 +964,7 @@ export default function ManageUsers() {
               <button
                 type="submit"
                 disabled={submitLoading}
-                className="flex-1 py-2.5 rounded-full bg-[#168a53] hover:bg-[#127344] text-white font-bold text-xs transition-all shadow-xs active:scale-95 disabled:opacity-50"
+                className="flex-1 py-2.5 rounded-full bg-[#14b8a6] hover:bg-[#0d9488] text-white font-bold text-xs transition-all shadow-xs active:scale-95 disabled:opacity-50"
               >
                 {submitLoading ? 'Menyimpan...' : (modalMode === 'add' ? 'Simpan Akun' : 'Perbarui Akun')}
               </button>
