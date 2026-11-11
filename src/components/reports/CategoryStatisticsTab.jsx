@@ -169,12 +169,14 @@ export default function CategoryStatisticsTab({ headerSlot }) {
     data: null,
     error: null,
     loadedKey: null,
-    defaultEndMonth: '',
+    defaultEndMonths: {},
   });
 
   const enteredNativeFullscreenRef = useRef(false);
   const isPresentationOpenRef = useRef(false);
 
+  const filterKey = `${scope}::${selectedKelompok}`;
+  const isUnfilteredPeriod = !queryRange.startMonth && !queryRange.endMonth;
   const requestKey = `${queryRange.startMonth}|${queryRange.endMonth}|${scope}|${selectedKelompok}|${refreshTick}`;
   const isLoading = requestState.loadedKey !== requestKey;
   const data = requestState.data;
@@ -205,13 +207,15 @@ export default function CategoryStatisticsTab({ headerSlot }) {
           }));
           return;
         }
-        const isUnfilteredPeriod = !queryRange.startMonth && !queryRange.endMonth;
         const resolvedEndMonth = res.data?.period?.end_month || '';
         setRequestState((prev) => ({
           data: res.data,
           error: null,
           loadedKey: requestKey,
-          defaultEndMonth: isUnfilteredPeriod && resolvedEndMonth ? resolvedEndMonth : prev.defaultEndMonth,
+          defaultEndMonths:
+            isUnfilteredPeriod && resolvedEndMonth
+              ? { ...prev.defaultEndMonths, [filterKey]: resolvedEndMonth }
+              : prev.defaultEndMonths,
         }));
       })
       .catch((err) => {
@@ -232,7 +236,7 @@ export default function CategoryStatisticsTab({ headerSlot }) {
       cancelled = true;
       controller.abort();
     };
-  }, [queryRange.startMonth, queryRange.endMonth, scope, selectedKelompok, refreshTick, requestKey]);
+  }, [queryRange.startMonth, queryRange.endMonth, scope, selectedKelompok, refreshTick, requestKey, filterKey, isUnfilteredPeriod]);
 
   useEffect(() => {
     if (!isPresentationMode) return undefined;
@@ -370,27 +374,28 @@ export default function CategoryStatisticsTab({ headerSlot }) {
     });
   };
 
-  const defaultEndMonth = requestState.defaultEndMonth;
+  const currentDefaultEndMonth = requestState.defaultEndMonths[filterKey] || '';
 
   const handlePresetClick = (presetKey) => {
-    if (presetKey === '6m' && !defaultEndMonth) {
-      if (queryRange.startMonth || queryRange.endMonth) {
+    if (presetKey === '6m') {
+      if (!isUnfilteredPeriod) {
         setQueryRange({ startMonth: '', endMonth: '' });
-      } else {
+      } else if (error) {
         setRefreshTick((prev) => prev + 1);
       }
       return;
     }
-    const nextRange = getPresetMonthRange(presetKey, defaultEndMonth || undefined);
+    const nextRange = getPresetMonthRange(presetKey, currentDefaultEndMonth || undefined);
     setQueryRange(nextRange);
   };
 
   const isPresetActive = (presetKey) => {
     if (!displayStartMonth || !displayEndMonth) return false;
-    if ((presetKey === '3m' || presetKey === '6m') && !defaultEndMonth) {
-      return false;
+    if (presetKey === '6m') {
+      if (isUnfilteredPeriod) return true;
+      if (!currentDefaultEndMonth) return false;
     }
-    const expected = getPresetMonthRange(presetKey, defaultEndMonth || undefined);
+    const expected = getPresetMonthRange(presetKey, currentDefaultEndMonth || undefined);
     return displayStartMonth === expected.startMonth && displayEndMonth === expected.endMonth;
   };
 
