@@ -1,12 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
+import { useSearchParams } from 'react-router-dom';
 import api from '../api/axios';
 import {
   Layers, Loader2, Search, AlertCircle, MapPin, Filter,
-  ChevronDown, FileUp, X, Check, Users, Calendar, Activity
+  ChevronDown, FileUp, X, Check, Users, Calendar, Activity,
+  BarChart3, Table2
 } from 'lucide-react';
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
+import CategoryStatisticsTab from '../components/reports/CategoryStatisticsTab';
 
 function CustomSelect({ options, value, onChange, placeholder, multiple = false }) {
   const [open, setOpen] = useState(false);
@@ -84,6 +87,15 @@ function CustomSelect({ options, value, onChange, placeholder, multiple = false 
 }
 
 export default function ReportByType() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get('tab') === 'statistik' ? 'statistik' : 'matriks';
+
+  const handleTabChange = (nextTab) => {
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.set('tab', nextTab);
+    setSearchParams(nextParams, { replace: true });
+  };
+
   const [eventTypes, setEventTypes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [headerSlot, setHeaderSlot] = useState(() => document.getElementById('layout-header-actions'));
@@ -252,19 +264,28 @@ export default function ReportByType() {
     else setFilterJenjang(prev => prev.includes(j) ? prev.filter(x => x !== j) : [...prev, j]);
   };
 
+  const getGenerusAttendanceStats = (generus) => {
+    let present = 0;
+    let totalParticipant = 0;
+    filteredEventsList.forEach(e => {
+      const stat = generus.events_attendance?.[e.id];
+      if (stat && stat !== '-') {
+        totalParticipant++;
+        if (stat === 'H') present++;
+      }
+    });
+    return { present, totalParticipant };
+  };
+
   // Calculation of Summary Metrics
   const totalGenerus = filteredData.length;
   let totalHadirCount = 0;
   let totalRecordedCount = 0;
 
   filteredData.forEach(g => {
-    filteredEventsList.forEach(e => {
-      const stat = g.events_attendance[e.id];
-      if (stat && stat !== '-') {
-        totalRecordedCount++;
-        if (stat === 'H') totalHadirCount++;
-      }
-    });
+    const { present, totalParticipant } = getGenerusAttendanceStats(g);
+    totalHadirCount += present;
+    totalRecordedCount += totalParticipant;
   });
 
   const avgAttendancePercent = totalRecordedCount > 0
@@ -321,15 +342,7 @@ export default function ReportByType() {
     headerRow.height = 30;
 
     filteredData.forEach((g, index) => {
-      let present = 0;
-      let totalParticipant = 0;
-      filteredEventsList.forEach(e => {
-        const stat = g.events_attendance[e.id];
-        if (stat && stat !== '-') {
-          totalParticipant++;
-          if (stat === 'H') present++;
-        }
-      });
+      const { present, totalParticipant } = getGenerusAttendanceStats(g);
 
       const rowData = {
         id: g.id,
@@ -415,7 +428,7 @@ export default function ReportByType() {
   };
 
   // Mobile Top Action Portal
-  const mobileTopActions = headerSlot && ReactDOM.createPortal(
+  const mobileTopActions = activeTab === 'matriks' && headerSlot && ReactDOM.createPortal(
     <div className="flex lg:hidden items-center gap-1.5 sm:gap-2">
       <button
         type="button"
@@ -432,30 +445,77 @@ export default function ReportByType() {
 
   return (
     <div className="w-full py-4 sm:py-6 space-y-4 sm:space-y-5">
-      {mobileTopActions}
+      {activeTab === 'matriks' && mobileTopActions}
 
       {/* ── Page Header ─────────────────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Rekapan Absensi</h1>
           <p className="text-slate-500 text-xs sm:text-sm mt-1">
-            Pantau matriks kehadiran generus berdasarkan kategori kegiatan dan tahun.
+            {activeTab === 'statistik'
+              ? 'Pantau perkembangan tren kehadiran dan capaian tiap kategori kegiatan.'
+              : 'Pantau matriks kehadiran generus berdasarkan kategori kegiatan dan tahun.'}
           </p>
         </div>
 
-        {/* Desktop Export Button */}
-        <div className="hidden lg:flex items-center gap-2 shrink-0">
-          <button
-            type="button"
-            onClick={exportToExcel}
-            disabled={!filteredData.length}
-            className="flex items-center justify-center gap-1.5 px-4 py-2 bg-[#14b8a6] hover:bg-[#0d9488] active:scale-95 disabled:opacity-50 text-white rounded-full font-bold text-xs shadow-xs transition-all cursor-pointer whitespace-nowrap"
+        <div className="flex flex-wrap items-center justify-between lg:justify-end gap-2.5 shrink-0">
+          {/* Segmented Tab Switcher */}
+          <div
+            role="tablist"
+            aria-label="Tampilan Rekapan Absensi"
+            className="inline-flex items-center bg-slate-100/90 p-1 rounded-full border border-slate-200/80 shadow-2xs"
           >
-            <FileUp size={14} strokeWidth={2.5} />
-            <span>Export Excel</span>
-          </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === 'statistik'}
+              onClick={() => handleTabChange('statistik')}
+              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                activeTab === 'statistik'
+                  ? 'bg-white text-[#0d9488] shadow-xs'
+                  : 'text-slate-500 hover:text-slate-800'
+              }`}
+            >
+              <BarChart3 size={14} strokeWidth={2.2} />
+              <span>Statistik &amp; Tren</span>
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === 'matriks'}
+              onClick={() => handleTabChange('matriks')}
+              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                activeTab === 'matriks'
+                  ? 'bg-white text-[#0d9488] shadow-xs'
+                  : 'text-slate-500 hover:text-slate-800'
+              }`}
+            >
+              <Table2 size={14} strokeWidth={2.2} />
+              <span>Matriks Individu</span>
+            </button>
+          </div>
+
+          {/* Desktop Export Button */}
+          {activeTab === 'matriks' && (
+            <div className="hidden lg:flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={exportToExcel}
+                disabled={!filteredData.length}
+                className="flex items-center justify-center gap-1.5 px-4 py-2 bg-[#14b8a6] hover:bg-[#0d9488] active:scale-95 disabled:opacity-50 text-white rounded-full font-bold text-xs shadow-xs transition-all cursor-pointer whitespace-nowrap"
+              >
+                <FileUp size={14} strokeWidth={2.5} />
+                <span>Export Excel</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
+
+      {activeTab === 'statistik' && <CategoryStatisticsTab headerSlot={headerSlot} />}
+
+      {activeTab === 'matriks' && (
+        <>
 
       {/* ── 3 Summary Stat Cards (iOS Inset Style) ───────────────────────── */}
       <div className="flex overflow-x-auto hide-scrollbar gap-2.5 sm:grid sm:grid-cols-3 sm:gap-4 pb-1 sm:pb-0">
@@ -786,8 +846,8 @@ export default function ReportByType() {
                   <th className="px-3 py-3.5 text-xs font-extrabold text-slate-500 uppercase tracking-wider text-center w-28 min-w-28 border-r border-slate-100">
                     Status
                   </th>
-                  <th className="px-3 py-3.5 text-xs font-extrabold text-slate-500 uppercase tracking-wider text-center w-24 min-w-24 border-r border-slate-200/60">
-                    Rasio
+                  <th className="px-3 py-3.5 text-xs font-extrabold text-slate-500 uppercase tracking-wider text-center w-28 min-w-28 border-r border-slate-200/60">
+                    Persentase
                   </th>
 
                   {/* Dynamic Event Columns */}
@@ -804,7 +864,13 @@ export default function ReportByType() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {filteredData.map((g, idx) => (
+                {filteredData.map((g, idx) => {
+                  const { present, totalParticipant } = getGenerusAttendanceStats(g);
+                  const attendancePercent = totalParticipant === 0
+                    ? '-'
+                    : `${Math.round((present / totalParticipant) * 100)}%`;
+
+                  return (
                   <tr key={g.id} className="hover:bg-slate-50/70 transition-colors group">
                     <td className="px-3 py-2.5 text-center font-bold text-slate-500 text-sm lg:sticky lg:left-0 z-20 bg-white group-hover:bg-slate-50/70 border-r border-slate-100">
                       {idx + 1}
@@ -847,18 +913,7 @@ export default function ReportByType() {
                     </td>
 
                     <td className="px-3 py-2.5 text-center text-sm font-mono font-black text-slate-800 border-r border-slate-100">
-                      {(() => {
-                        let present = 0;
-                        let totalParticipant = 0;
-                        filteredEventsList.forEach(e => {
-                          const stat = g.events_attendance[e.id];
-                          if (stat && stat !== '-') {
-                            totalParticipant++;
-                            if (stat === 'H') present++;
-                          }
-                        });
-                        return totalParticipant === 0 ? '-' : `${present}/${totalParticipant}`;
-                      })()}
+                      {attendancePercent}
                     </td>
 
                     {/* Dynamic Event Status Cells: 1 Kotak Penuh Solid dengan Huruf Jauh Lebih Besar */}
@@ -875,12 +930,15 @@ export default function ReportByType() {
                       );
                     })}
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>
         )}
       </div>
+        </>
+      )}
     </div>
   );
 }
