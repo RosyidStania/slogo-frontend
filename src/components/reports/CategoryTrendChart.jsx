@@ -305,6 +305,7 @@ export default function CategoryTrendChart({
                       dx={-4}
                     />
                     <Tooltip
+                      filterNull={false}
                       cursor={{ stroke: '#cbd5e1', strokeWidth: 1, strokeDasharray: '4 4' }}
                       content={<TrendChartTooltip presentationMode={presentationMode} />}
                     />
@@ -372,6 +373,7 @@ export default function CategoryTrendChart({
                       dx={-4}
                     />
                     <Tooltip
+                      filterNull={false}
                       cursor={{ fill: 'rgba(20, 184, 166, 0.06)', radius: 6 }}
                       content={<TrendChartTooltip presentationMode={presentationMode} />}
                     />
