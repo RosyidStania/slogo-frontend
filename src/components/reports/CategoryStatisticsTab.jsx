@@ -169,6 +169,7 @@ export default function CategoryStatisticsTab({ headerSlot }) {
     data: null,
     error: null,
     loadedKey: null,
+    defaultEndMonth: '',
   });
 
   const enteredNativeFullscreenRef = useRef(false);
@@ -198,17 +199,20 @@ export default function CategoryStatisticsTab({ headerSlot }) {
         if (cancelled) return;
         if (res.data?.success === false) {
           setRequestState((prev) => ({
-            data: prev.data,
+            ...prev,
             error: res.data?.message || 'Gagal memuat statistik kategori.',
             loadedKey: requestKey,
           }));
           return;
         }
-        setRequestState({
+        const isUnfilteredPeriod = !queryRange.startMonth && !queryRange.endMonth;
+        const resolvedEndMonth = res.data?.period?.end_month || '';
+        setRequestState((prev) => ({
           data: res.data,
           error: null,
           loadedKey: requestKey,
-        });
+          defaultEndMonth: isUnfilteredPeriod && resolvedEndMonth ? resolvedEndMonth : prev.defaultEndMonth,
+        }));
       })
       .catch((err) => {
         if (cancelled || err?.code === 'ERR_CANCELED' || err?.name === 'CanceledError') {
@@ -218,7 +222,7 @@ export default function CategoryStatisticsTab({ headerSlot }) {
           err?.response?.data?.message ||
           'Gagal memuat data statistik kategori. Silakan coba lagi.';
         setRequestState((prev) => ({
-          data: prev.data,
+          ...prev,
           error: message,
           loadedKey: requestKey,
         }));
@@ -366,16 +370,27 @@ export default function CategoryStatisticsTab({ headerSlot }) {
     });
   };
 
-  const anchorMonth = data?.period?.end_month || displayEndMonth;
+  const defaultEndMonth = requestState.defaultEndMonth;
 
   const handlePresetClick = (presetKey) => {
-    const nextRange = getPresetMonthRange(presetKey, anchorMonth);
+    if (presetKey === '6m' && !defaultEndMonth) {
+      if (queryRange.startMonth || queryRange.endMonth) {
+        setQueryRange({ startMonth: '', endMonth: '' });
+      } else {
+        setRefreshTick((prev) => prev + 1);
+      }
+      return;
+    }
+    const nextRange = getPresetMonthRange(presetKey, defaultEndMonth || undefined);
     setQueryRange(nextRange);
   };
 
   const isPresetActive = (presetKey) => {
     if (!displayStartMonth || !displayEndMonth) return false;
-    const expected = getPresetMonthRange(presetKey, anchorMonth);
+    if ((presetKey === '3m' || presetKey === '6m') && !defaultEndMonth) {
+      return false;
+    }
+    const expected = getPresetMonthRange(presetKey, defaultEndMonth || undefined);
     return displayStartMonth === expected.startMonth && displayEndMonth === expected.endMonth;
   };
 
