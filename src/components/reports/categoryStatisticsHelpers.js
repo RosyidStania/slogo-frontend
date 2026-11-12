@@ -259,3 +259,61 @@ export function formatRupiah(value) {
   const formatted = Math.abs(rounded).toLocaleString('id-ID');
   return rounded < 0 ? `-Rp ${formatted}` : `Rp ${formatted}`;
 }
+
+const MOBILE_SCOPE_LABELS = {
+  all: 'Semua',
+  desa: 'Desa',
+  kelompok: 'Kelompok',
+};
+
+/**
+ * Format a `YYYY-MM` key into short Indonesian month + 2-digit year (`Nov 26`).
+ */
+export function formatCompactMonthLabel(monthKey) {
+  const parsed = parseMonthKey(monthKey);
+  if (!parsed) return '';
+  const monthOption = MONTH_OPTIONS[parsed.month - 1];
+  if (!monthOption) return '';
+  const shortYear = String(parsed.year).padStart(4, '0').slice(-2);
+  return `${monthOption.shortLabel} ${shortYear}`;
+}
+
+/**
+ * Summarize active mobile filters (`Jun-Nov 2026 · Semua` or `Nov 25-Feb 26 · Desa · Slogo`).
+ */
+export function formatMobileFilterSummary(filters = {}) {
+  const {
+    startMonth = '',
+    endMonth = '',
+    scope = 'all',
+    selectedKelompok = '',
+  } = filters || {};
+
+  const parsedStart = parseMonthKey(startMonth);
+  const parsedEnd = parseMonthKey(endMonth);
+
+  let periodLabel = 'Periode Aktif';
+  if (parsedStart && parsedEnd) {
+    const startOption = MONTH_OPTIONS[parsedStart.month - 1];
+    const endOption = MONTH_OPTIONS[parsedEnd.month - 1];
+    if (startOption && endOption) {
+      if (parsedStart.year === parsedEnd.year) {
+        periodLabel = parsedStart.month === parsedEnd.month
+          ? `${endOption.shortLabel} ${parsedEnd.year}`
+          : `${startOption.shortLabel}-${endOption.shortLabel} ${parsedEnd.year}`;
+      } else {
+        periodLabel = `${formatCompactMonthLabel(startMonth)}-${formatCompactMonthLabel(endMonth)}`;
+      }
+    }
+  }
+
+  const scopeLabel = MOBILE_SCOPE_LABELS[scope] || MOBILE_SCOPE_LABELS.all;
+  const parts = [periodLabel, scopeLabel];
+
+  const trimmedKelompok = typeof selectedKelompok === 'string' ? selectedKelompok.trim() : '';
+  if (trimmedKelompok) {
+    parts.push(trimmedKelompok);
+  }
+
+  return parts.join(' · ');
+}

@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import {
   AlertCircle,
   Calendar,
   CalendarX2,
+  ChevronDown,
   Clock,
   Coins,
   Filter,
@@ -25,6 +26,7 @@ import CategoryTrendChart from './CategoryTrendChart';
 import {
   MONTH_OPTIONS,
   buildYearOptions,
+  formatMobileFilterSummary,
   formatRupiah,
   getPresetMonthRange,
   normalizeMonthRange,
@@ -146,6 +148,7 @@ export default function CategoryStatisticsTab({ headerSlot }) {
   const [selectedKelompok, setSelectedKelompok] = useState('');
   const [selectedTypeId, setSelectedTypeId] = useState(null);
   const [isPresentationMode, setIsPresentationMode] = useState(false);
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [refreshTick, setRefreshTick] = useState(0);
 
   const [requestState, setRequestState] = useState({
@@ -413,10 +416,10 @@ export default function CategoryStatisticsTab({ headerSlot }) {
     label: cat.name,
   }));
 
-  const renderCategorySelect = (name) => {
+  const renderCategorySelect = (name, wrapperClass = 'w-full md:w-56') => {
     if (categorySwitcherOptions.length === 0) return null;
     return (
-      <div className="w-full sm:w-56">
+      <div className={wrapperClass}>
         <CustomSelect
           name={name}
           value={effectiveSelectedId !== null ? String(effectiveSelectedId) : ''}
@@ -433,6 +436,40 @@ export default function CategoryStatisticsTab({ headerSlot }) {
     label: option.label,
   }));
 
+  const mobileFilterSummary = formatMobileFilterSummary({
+    startMonth: displayStartMonth,
+    endMonth: displayEndMonth,
+    scope,
+    selectedKelompok,
+  });
+
+  const loadingBadge = isLoading && data ? (
+    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-teal-50 text-[#0d9488] border border-teal-200/70 text-[11px] font-bold">
+      <Loader2 size={12} className="animate-spin" />
+      <span>Memperbarui...</span>
+    </span>
+  ) : null;
+
+  const presentationScopeBadges = (
+    <>
+      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200/80 text-xs font-bold">
+        <Layers size={12} className="text-slate-500" />
+        <span>{getScopeLabel(scope)}</span>
+      </span>
+      {selectedKelompok && (
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-sky-50 text-sky-700 border border-sky-200/80 text-xs font-bold">
+          <Filter size={12} />
+          <span>Kelompok: {selectedKelompok}</span>
+        </span>
+      )}
+    </>
+  );
+
+  const periodBoundaries = [
+    { key: 'start', label: 'Mulai', parts: startParts, disabled: !displayStartMonth },
+    { key: 'end', label: 'Akhir', parts: endParts, disabled: !displayEndMonth },
+  ];
+
   const mobileTopActions =
     headerSlot &&
     !isPresentationMode &&
@@ -442,7 +479,7 @@ export default function CategoryStatisticsTab({ headerSlot }) {
           type="button"
           onClick={enterPresentationMode}
           disabled={isLoading && !data}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#14b8a6] hover:bg-[#0d9488] disabled:opacity-50 text-white rounded-full text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95"
+          className="flex items-center gap-1.5 min-h-[40px] px-3.5 py-2 bg-[#14b8a6] hover:bg-[#0d9488] disabled:opacity-50 text-white rounded-full text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95"
         >
           <Maximize2 size={13} strokeWidth={2.5} />
           <span>Presentasi</span>
@@ -471,8 +508,16 @@ export default function CategoryStatisticsTab({ headerSlot }) {
     <div
       className={
         isPresentationMode
-          ? 'fixed inset-0 z-[120] bg-[#f8f9fa] overflow-y-auto p-4 sm:p-6 lg:p-10'
+          ? 'fixed inset-0 z-[120] bg-[#f8f9fa] overflow-y-auto px-3.5 sm:px-6 lg:px-10'
           : 'space-y-4 sm:space-y-5'
+      }
+      style={
+        isPresentationMode
+          ? {
+              paddingTop: 'max(1rem, env(safe-area-inset-top, 0px))',
+              paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom, 0px))',
+            }
+          : undefined
       }
     >
       {mobileTopActions}
@@ -480,124 +525,170 @@ export default function CategoryStatisticsTab({ headerSlot }) {
       <div className={isPresentationMode ? 'max-w-[1440px] mx-auto space-y-5 sm:space-y-6' : 'space-y-4 sm:space-y-5'}>
         {isPresentationMode ? (
           /* ── Minimalist Presentation Mode Header ─────────────────────────── */
-          <div className="bg-white border border-slate-200/80 rounded-2xl p-4 sm:px-6 sm:py-4 shadow-[0_2px_8px_rgba(0,0,0,0.03)] flex flex-col lg:flex-row lg:items-center justify-between gap-3.5">
-            <div className="min-w-0">
-              <div className="flex items-center gap-2.5 flex-wrap">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-teal-50 text-[#0d9488] border border-teal-200/80 text-xs font-extrabold">
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-4 sm:px-6 sm:py-4 shadow-[0_2px_8px_rgba(0,0,0,0.03)] space-y-3">
+            <div className="flex items-center justify-between gap-2.5">
+              <div className="flex items-center gap-2 flex-wrap min-w-0">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-teal-50 text-[#0d9488] border border-teal-200/80 text-xs font-extrabold whitespace-nowrap">
                   <span className="w-2 h-2 rounded-full bg-[#14b8a6]" />
                   Mode Presentasi
                 </span>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200/80 text-xs font-bold">
-                  <Layers size={12} className="text-slate-500" />
-                  <span>{getScopeLabel(scope)}</span>
-                </span>
-                {selectedKelompok && (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-sky-50 text-sky-700 border border-sky-200/80 text-xs font-bold">
-                    <Filter size={12} />
-                    <span>Kelompok: {selectedKelompok}</span>
-                  </span>
-                )}
-              </div>
-
-              <div className="flex items-center gap-2 mt-2">
-                <Calendar size={18} className="text-[#14b8a6] shrink-0" />
-                <h2 className="text-lg sm:text-2xl font-extrabold text-slate-900 tracking-tight truncate">
-                  {data?.period?.label || 'Statistik & Tren Kehadiran'}
-                </h2>
-                {isLoading && (
-                  <Loader2 size={16} className="animate-spin text-[#14b8a6] shrink-0" />
-                )}
-              </div>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2.5 shrink-0">
-              {renderCategorySelect('presentation_category')}
-
-              <div className="w-full sm:w-44">
-                <CustomSelect
-                  name="presentation_kelompok"
-                  value={selectedKelompok}
-                  onChange={(e) => setSelectedKelompok(e.target.value)}
-                  options={kelompokOptions}
-                  placeholder="Semua Kelompok"
-                />
+                <div className="hidden sm:flex items-center gap-2 flex-wrap">
+                  {presentationScopeBadges}
+                </div>
               </div>
 
               <button
                 type="button"
                 onClick={exitPresentationMode}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 active:scale-95 text-white rounded-xl font-bold text-xs sm:text-sm shadow-xs transition-all cursor-pointer whitespace-nowrap"
+                aria-label="Keluar Mode Presentasi"
+                className="inline-flex items-center justify-center gap-1.5 sm:gap-2 min-h-[42px] px-3.5 sm:px-4 py-2 bg-slate-900 hover:bg-slate-800 active:scale-95 text-white rounded-xl font-bold text-xs sm:text-sm shadow-xs transition-all cursor-pointer whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500"
               >
                 <Minimize2 size={15} strokeWidth={2.2} />
-                <span>Keluar Presentasi</span>
-                <span className="hidden sm:inline text-slate-400 font-semibold text-[11px]">(Esc)</span>
+                <span className="sm:hidden">Keluar</span>
+                <span className="hidden sm:inline">Keluar Presentasi (Esc)</span>
               </button>
+            </div>
+
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+              <div className="min-w-0 space-y-2">
+                <div className="flex sm:hidden items-center gap-1.5 flex-wrap">
+                  {presentationScopeBadges}
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Calendar size={18} className="text-[#14b8a6] shrink-0" />
+                  <h2 className="text-lg sm:text-2xl font-extrabold text-slate-900 tracking-tight truncate">
+                    {data?.period?.label || 'Statistik & Tren Kehadiran'}
+                  </h2>
+                  {isLoading && (
+                    <Loader2 size={16} className="animate-spin text-[#14b8a6] shrink-0" />
+                  )}
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 shrink-0">
+                {renderCategorySelect('presentation_category', 'w-full sm:w-56')}
+
+                <div className="w-full sm:w-44">
+                  <CustomSelect
+                    name="presentation_kelompok"
+                    value={selectedKelompok}
+                    onChange={(e) => setSelectedKelompok(e.target.value)}
+                    options={kelompokOptions}
+                    placeholder="Semua Kelompok"
+                  />
+                </div>
+              </div>
             </div>
           </div>
         ) : (
           /* ── Standard Period, Scope & Presentation Control Bar ──────────── */
-          <div className="bg-white border border-slate-200/80 rounded-2xl p-3.5 sm:p-4 shadow-[0_1px_3px_rgba(0,0,0,0.02)] space-y-3.5">
-            {/* Row 1: Bulan+Tahun Mulai/Akhir + Presets + Desktop Mode Presentasi */}
-            <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-3">
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-3.5 sm:p-4 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
+            {/* Always-Visible Focus Row */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-2.5">
+              <div className="flex flex-col md:flex-row md:items-center gap-2.5 min-w-0">
+                {renderCategorySelect('filter_category')}
+
+                <button
+                  type="button"
+                  aria-expanded={isMobileFilterOpen}
+                  aria-controls="category-statistics-filter-panel"
+                  onClick={() => setIsMobileFilterOpen((prev) => !prev)}
+                  className="md:hidden min-h-[44px] w-full flex items-center justify-between gap-2 px-3.5 py-2.5 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 text-left transition-colors cursor-pointer active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500"
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <Filter size={15} className="text-[#0d9488] shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 leading-tight">
+                        Filter Periode &amp; Cakupan
+                      </p>
+                      <p className="text-xs font-bold text-slate-700 truncate leading-snug mt-0.5">
+                        {mobileFilterSummary}
+                      </p>
+                    </div>
+                  </div>
+                  <ChevronDown
+                    size={16}
+                    className={`text-slate-400 shrink-0 transition-transform duration-200 ${
+                      isMobileFilterOpen ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+              </div>
+
+              {/* Active Period Pill, Loading Feedback & Desktop Mode Presentasi */}
+              <div className="hidden md:flex items-center gap-2 flex-wrap justify-end">
+                {loadingBadge}
+                {data?.period?.label && (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-50 text-slate-600 border border-slate-200/80 text-xs font-bold">
+                    <Calendar size={12} className="text-[#14b8a6]" />
+                    <span>Periode: {data.period.label}</span>
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={enterPresentationMode}
+                  disabled={isLoading && !data}
+                  className="hidden lg:inline-flex items-center justify-center gap-1.5 min-h-[40px] px-4 py-2 bg-[#14b8a6] hover:bg-[#0d9488] active:scale-95 disabled:opacity-50 text-white rounded-full font-bold text-xs shadow-xs transition-all cursor-pointer whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500"
+                >
+                  <Maximize2 size={14} strokeWidth={2.4} />
+                  <span>Mode Presentasi</span>
+                </button>
+              </div>
+            </div>
+
+            {loadingBadge && (
+              <div className="md:hidden mt-2 flex items-center">
+                {loadingBadge}
+              </div>
+            )}
+
+            {/* Collapsible Filter Detail Panel (< md) / Always-Open Panel (md+) */}
+            <div
+              id="category-statistics-filter-panel"
+              className={`${
+                isMobileFilterOpen ? 'block' : 'hidden md:block'
+              } mt-3.5 pt-3.5 border-t border-slate-100 space-y-3.5`}
+            >
+              {/* Row 1: Bulan+Tahun Mulai/Akhir + Presets */}
               <div className="flex flex-col lg:flex-row lg:items-center gap-2.5 flex-wrap">
-                {/* Bulan + Tahun Mulai */}
-                <div className="flex items-center gap-1.5">
-                  <span className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider w-10 sm:w-auto shrink-0">
-                    Mulai
-                  </span>
-                  <div className="flex-1 sm:flex-none sm:w-[132px]">
-                    <CustomSelect
-                      name="start_month"
-                      value={startParts.month}
-                      onChange={(e) => handleRangeChange('start', 'month', e.target.value)}
-                      options={monthSelectOptions}
-                      placeholder="Bulan"
-                      disabled={!displayStartMonth}
-                    />
-                  </div>
-                  <div className="w-[92px] sm:w-[96px] shrink-0">
-                    <CustomSelect
-                      name="start_year"
-                      value={startParts.year}
-                      onChange={(e) => handleRangeChange('start', 'year', e.target.value)}
-                      options={yearOptions}
-                      placeholder="Tahun"
-                      disabled={!displayStartMonth}
-                    />
-                  </div>
-                </div>
-
-                <span className="hidden lg:inline text-xs font-bold text-slate-300 select-none">–</span>
-
-                {/* Bulan + Tahun Akhir */}
-                <div className="flex items-center gap-1.5">
-                  <span className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider w-10 sm:w-auto shrink-0">
-                    Akhir
-                  </span>
-                  <div className="flex-1 sm:flex-none sm:w-[132px]">
-                    <CustomSelect
-                      name="end_month"
-                      value={endParts.month}
-                      onChange={(e) => handleRangeChange('end', 'month', e.target.value)}
-                      options={monthSelectOptions}
-                      placeholder="Bulan"
-                      disabled={!displayEndMonth}
-                    />
-                  </div>
-                  <div className="w-[92px] sm:w-[96px] shrink-0">
-                    <CustomSelect
-                      name="end_year"
-                      value={endParts.year}
-                      onChange={(e) => handleRangeChange('end', 'year', e.target.value)}
-                      options={yearOptions}
-                      placeholder="Tahun"
-                      disabled={!displayEndMonth}
-                    />
-                  </div>
-                </div>
+                {periodBoundaries.map((boundary, idx) => (
+                  <Fragment key={boundary.key}>
+                    {idx > 0 && (
+                      <span className="hidden lg:inline text-xs font-bold text-slate-300 select-none">–</span>
+                    )}
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-1.5">
+                      <span className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider shrink-0">
+                        {boundary.label}
+                      </span>
+                      <div className="grid grid-cols-[1fr_84px] sm:flex sm:items-center gap-1.5">
+                        <div className="min-w-0 sm:w-[132px]">
+                          <CustomSelect
+                            name={`${boundary.key}_month`}
+                            value={boundary.parts.month}
+                            onChange={(e) => handleRangeChange(boundary.key, 'month', e.target.value)}
+                            options={monthSelectOptions}
+                            placeholder="Bulan"
+                            disabled={boundary.disabled}
+                          />
+                        </div>
+                        <div className="w-[84px] sm:w-[96px] shrink-0">
+                          <CustomSelect
+                            name={`${boundary.key}_year`}
+                            value={boundary.parts.year}
+                            onChange={(e) => handleRangeChange(boundary.key, 'year', e.target.value)}
+                            options={yearOptions}
+                            placeholder="Tahun"
+                            disabled={boundary.disabled}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </Fragment>
+                ))}
 
                 {/* Quick Presets */}
-                <div className="flex items-center gap-1.5 flex-wrap pt-0.5 lg:pt-0">
+                <div className="flex items-center gap-2 flex-wrap pt-0.5 lg:pt-0">
                   {PRESET_OPTIONS.map((preset) => {
                     const active = isPresetActive(preset.key);
                     return (
@@ -606,7 +697,7 @@ export default function CategoryStatisticsTab({ headerSlot }) {
                         type="button"
                         aria-pressed={active}
                         onClick={() => handlePresetClick(preset.key)}
-                        className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-all cursor-pointer whitespace-nowrap ${
+                        className={`min-h-[40px] px-3.5 py-2 rounded-full text-xs font-bold border transition-all cursor-pointer whitespace-nowrap active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${
                           active
                             ? 'bg-teal-50 text-[#0d9488] border-[#14b8a6]/60 shadow-2xs'
                             : 'bg-slate-50 text-slate-600 border-slate-200/80 hover:bg-slate-100 hover:text-slate-900'
@@ -619,25 +710,10 @@ export default function CategoryStatisticsTab({ headerSlot }) {
                 </div>
               </div>
 
-              {/* Desktop Mode Presentasi Button */}
-              <div className="hidden lg:flex items-center gap-2 shrink-0">
-                <button
-                  type="button"
-                  onClick={enterPresentationMode}
-                  disabled={isLoading && !data}
-                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-[#14b8a6] hover:bg-[#0d9488] active:scale-95 disabled:opacity-50 text-white rounded-full font-bold text-xs shadow-xs transition-all cursor-pointer whitespace-nowrap"
-                >
-                  <Maximize2 size={14} strokeWidth={2.4} />
-                  <span>Mode Presentasi</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Row 2: Scope Pills + Kelompok Filter + Category Switcher + Period Indicator */}
-            <div className="pt-3 border-t border-slate-100 flex flex-col lg:flex-row lg:items-center justify-between gap-2.5">
-              <div className="flex flex-col sm:flex-row sm:items-center flex-wrap gap-2.5">
+              {/* Row 2: Scope Pills + Kelompok Filter */}
+              <div className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center flex-wrap gap-2.5">
                 {/* Scope Switcher */}
-                <div className="inline-flex items-center bg-slate-100/90 p-1 rounded-full border border-slate-200/70 self-start overflow-x-auto max-w-full">
+                <div className="inline-flex items-center gap-2 bg-slate-100/90 p-1 rounded-full border border-slate-200/70 self-start overflow-x-auto hide-scrollbar max-w-full">
                   {SCOPE_OPTIONS.map((opt) => {
                     const active = scope === opt.value;
                     return (
@@ -646,7 +722,7 @@ export default function CategoryStatisticsTab({ headerSlot }) {
                         type="button"
                         aria-pressed={active}
                         onClick={() => setScope(opt.value)}
-                        className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                        className={`min-h-[40px] px-3 py-2 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${
                           active
                             ? 'bg-white text-[#0d9488] shadow-2xs'
                             : 'text-slate-500 hover:text-slate-800'
@@ -668,25 +744,6 @@ export default function CategoryStatisticsTab({ headerSlot }) {
                     placeholder="Semua Kelompok"
                   />
                 </div>
-
-                {/* Pilih Kategori Acara */}
-                {renderCategorySelect('filter_category')}
-              </div>
-
-              {/* Active Period Pill & Loading Feedback */}
-              <div className="flex items-center gap-2 flex-wrap">
-                {isLoading && data && (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-teal-50 text-[#0d9488] border border-teal-200/70 text-[11px] font-bold">
-                    <Loader2 size={12} className="animate-spin" />
-                    <span>Memperbarui...</span>
-                  </span>
-                )}
-                {data?.period?.label && (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-50 text-slate-600 border border-slate-200/80 text-xs font-bold">
-                    <Calendar size={12} className="text-[#14b8a6]" />
-                    <span>Periode: {data.period.label}</span>
-                  </span>
-                )}
               </div>
             </div>
           </div>

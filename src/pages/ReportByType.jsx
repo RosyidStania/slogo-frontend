@@ -434,7 +434,7 @@ export default function ReportByType() {
         type="button"
         onClick={exportToExcel}
         disabled={!filteredData.length}
-        className="flex items-center gap-1 px-3 py-1.5 bg-[#14b8a6] hover:bg-[#0d9488] disabled:opacity-50 text-white rounded-full text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95"
+        className="flex items-center gap-1 min-h-[40px] px-3.5 py-2 bg-[#14b8a6] hover:bg-[#0d9488] disabled:opacity-50 text-white rounded-full text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95"
       >
         <FileUp size={13} strokeWidth={2.5} />
         <span>Export</span>
@@ -451,7 +451,7 @@ export default function ReportByType() {
       <div className="space-y-3">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Rekapan Absensi</h1>
+            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">Rekapan Absensi</h1>
             <p className="text-slate-500 text-xs sm:text-sm mt-1">
               {activeTab === 'statistik'
                 ? 'Pantau perkembangan tren kehadiran dan capaian tiap kategori kegiatan.'
@@ -480,14 +480,14 @@ export default function ReportByType() {
           <div
             role="tablist"
             aria-label="Tampilan Rekapan Absensi"
-            className="inline-flex items-center bg-slate-100/90 p-1 rounded-full border border-slate-200/80 shadow-2xs"
+            className="w-full sm:w-auto grid grid-cols-2 sm:inline-flex items-center bg-slate-100/90 p-1 rounded-full border border-slate-200/80 shadow-2xs"
           >
             <button
               type="button"
               role="tab"
               aria-selected={activeTab === 'statistik'}
               onClick={() => handleTabChange('statistik')}
-              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+              className={`inline-flex items-center justify-center gap-1.5 min-h-[40px] px-3 py-2 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap active:scale-[0.98] ${
                 activeTab === 'statistik'
                   ? 'bg-white text-[#0d9488] shadow-xs'
                   : 'text-slate-500 hover:text-slate-800'
@@ -501,7 +501,7 @@ export default function ReportByType() {
               role="tab"
               aria-selected={activeTab === 'matriks'}
               onClick={() => handleTabChange('matriks')}
-              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+              className={`inline-flex items-center justify-center gap-1.5 min-h-[40px] px-3 py-2 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap active:scale-[0.98] ${
                 activeTab === 'matriks'
                   ? 'bg-white text-[#0d9488] shadow-xs'
                   : 'text-slate-500 hover:text-slate-800'

@@ -8,6 +8,8 @@ import {
   sortCategoriesForDisplay,
   resolveSelectedCategoryId,
   formatRupiah,
+  formatCompactMonthLabel,
+  formatMobileFilterSummary,
 } from '../categoryStatisticsHelpers.js';
 
 test('MONTH_OPTIONS defines 12 Indonesian months from 01 to 12', () => {
@@ -105,4 +107,35 @@ test('formatRupiah formats numeric values cleanly', () => {
   assert.equal(formatRupiah(undefined), 'Rp 0');
   assert.equal(formatRupiah(Number.NaN), 'Rp 0');
   assert.equal(formatRupiah(''), 'Rp 0');
+});
+
+test('formatCompactMonthLabel formats YYYY-MM into short Indonesian month + 2-digit year', () => {
+  assert.equal(formatCompactMonthLabel('2026-11'), 'Nov 26');
+  assert.equal(formatCompactMonthLabel('2025-01'), 'Jan 25');
+  assert.equal(formatCompactMonthLabel('invalid'), '');
+  assert.equal(formatCompactMonthLabel(''), '');
+  assert.equal(formatCompactMonthLabel(null), '');
+});
+
+test('formatMobileFilterSummary formats same-year, cross-year, and scoped labels concisely', () => {
+  assert.equal(
+    formatMobileFilterSummary({ startMonth: '2026-06', endMonth: '2026-11', scope: 'all', selectedKelompok: '' }),
+    'Jun-Nov 2026 · Semua'
+  );
+  assert.equal(
+    formatMobileFilterSummary({ startMonth: '2026-11', endMonth: '2026-11', scope: 'all', selectedKelompok: '' }),
+    'Nov 2026 · Semua'
+  );
+  assert.equal(
+    formatMobileFilterSummary({ startMonth: '2025-11', endMonth: '2026-02', scope: 'desa', selectedKelompok: 'Slogo' }),
+    'Nov 25-Feb 26 · Desa · Slogo'
+  );
+  assert.equal(
+    formatMobileFilterSummary({ startMonth: '', endMonth: '', scope: 'kelompok', selectedKelompok: '' }),
+    'Periode Aktif · Kelompok'
+  );
+  assert.equal(
+    formatMobileFilterSummary({}),
+    'Periode Aktif · Semua'
+  );
 });
