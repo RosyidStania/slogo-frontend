@@ -156,9 +156,9 @@ function TrendChartTooltip({ active, payload, presentationMode = false }) {
       </div>
 
       {showInfaq && (
-        <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between gap-2 font-bold">
-          <span className="text-slate-500">Infaq</span>
-          <span className="text-amber-700 font-black tabular-nums">
+        <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between gap-2 font-bold min-w-0">
+          <span className="text-slate-500 truncate">Infaq</span>
+          <span className="text-amber-700 font-black tabular-nums shrink-0">
             {formatRupiah(point.infaq)}
           </span>
         </div>
@@ -524,7 +524,7 @@ export default function CategoryTrendChart({
                   </span>
                 </div>
 
-                <div className="flex flex-wrap gap-2">
+                <div className="overflow-x-auto flex gap-1.5 pb-1">
                   {seriesData.map((point, idx) => {
                     const isSelected = point.month === inspectedPoint.month;
                     const chipLabel =
@@ -538,7 +538,7 @@ export default function CategoryTrendChart({
                         type="button"
                         aria-pressed={isSelected}
                         onClick={() => point.month && setInspectedMonth(point.month)}
-                        className={`min-h-[38px] px-3 py-1.5 rounded-full border text-xs font-bold tabular-nums inline-flex items-center gap-1.5 transition-all cursor-pointer active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${
+                        className={`shrink-0 whitespace-nowrap min-h-[38px] px-3 py-1.5 rounded-full border text-xs font-bold tabular-nums inline-flex items-center gap-1.5 transition-all cursor-pointer active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${
                           isSelected
                             ? 'bg-teal-50 text-[#0f766e] border-[#14b8a6] shadow-2xs'
                             : point.has_event

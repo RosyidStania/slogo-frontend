@@ -117,8 +117,8 @@ function StatisticsSkeleton({ presentationMode = false }) {
         {[0, 1, 2, 3].map((idx) => (
           <div
             key={idx}
-            className={`h-24 rounded-2xl bg-white border border-slate-200/80 p-4 animate-pulse flex flex-col justify-between ${
-              idx === 0 ? 'col-span-2 sm:col-span-1' : 'col-span-1'
+            className={`min-w-0 h-24 rounded-2xl bg-white border border-slate-200/80 p-4 animate-pulse flex flex-col justify-between ${
+              idx === 0 || idx === 3 ? 'col-span-2 sm:col-span-1' : 'col-span-1'
             }`}
           >
             <div className="h-3.5 w-24 rounded bg-slate-100" />
@@ -790,7 +790,7 @@ export default function CategoryStatisticsTab({ headerSlot }) {
             <div className={kpiGridClass}>
               {/* KPI 1: Rata-rata Kehadiran */}
               <div
-                className={`col-span-2 sm:col-span-1 bg-white border border-slate-200/80 rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between ${kpiPaddingClass}`}
+                className={`col-span-2 sm:col-span-1 min-w-0 bg-white border border-slate-200/80 rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between ${kpiPaddingClass}`}
               >
                 <div className="flex items-center justify-between gap-2">
                   <p className={kpiLabelClass}>Rata-rata Kehadiran</p>
@@ -822,7 +822,7 @@ export default function CategoryStatisticsTab({ headerSlot }) {
 
               {/* KPI 2: Total Hadir / Target */}
               <div
-                className={`col-span-1 bg-white border border-slate-200/80 rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between ${kpiPaddingClass}`}
+                className={`col-span-1 min-w-0 bg-white border border-slate-200/80 rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between ${kpiPaddingClass}`}
               >
                 <div className="flex items-center justify-between gap-2">
                   <p className={kpiLabelClass}>Total Hadir / Target</p>
@@ -843,7 +843,7 @@ export default function CategoryStatisticsTab({ headerSlot }) {
 
               {/* KPI 3: Terlambat & Izin/Sakit */}
               <div
-                className={`col-span-1 bg-white border border-slate-200/80 rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between ${kpiPaddingClass}`}
+                className={`col-span-1 min-w-0 bg-white border border-slate-200/80 rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between ${kpiPaddingClass}`}
               >
                 <div className="flex items-center justify-between gap-2">
                   <p className={kpiLabelClass}>Terlambat &amp; Izin/Sakit</p>
@@ -864,7 +864,7 @@ export default function CategoryStatisticsTab({ headerSlot }) {
 
               {/* KPI 4: Alpa & Pertemuan */}
               <div
-                className={`col-span-2 sm:col-span-1 bg-white border border-slate-200/80 rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between ${kpiPaddingClass}`}
+                className={`col-span-2 sm:col-span-1 min-w-0 bg-white border border-slate-200/80 rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between ${kpiPaddingClass}`}
               >
                 <div className="flex items-center justify-between gap-2">
                   <p className={kpiLabelClass}>Alpa &amp; Pertemuan</p>
@@ -887,7 +887,7 @@ export default function CategoryStatisticsTab({ headerSlot }) {
               {/* KPI 5 (Conditional): Total Infaq */}
               {showInfaqCard && (
                 <div
-                  className={`col-span-2 lg:col-span-1 bg-white border border-amber-200/80 rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between ${kpiPaddingClass}`}
+                  className={`col-span-2 lg:col-span-1 min-w-0 bg-white border border-amber-200/80 rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between ${kpiPaddingClass}`}
                 >
                   <div className="flex items-center justify-between gap-2">
                     <p className={kpiLabelClass}>Total Infaq</p>

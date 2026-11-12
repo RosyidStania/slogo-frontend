@@ -284,7 +284,7 @@ export default function ReportByType() {
   const filteredData = useMemo(() => {
     const q = searchTerm.toLowerCase();
     return reportData.filter(g => {
-      const matchName = g.nama_lengkap.toLowerCase().includes(q);
+      const matchName = (g.nama_lengkap || '').toLowerCase().includes(q);
       const matchKelompok = filterKelompok.length === 0 ? true : filterKelompok.includes(g.kelompok);
       const matchMainKelompok = mainKelompok ? g.kelompok === mainKelompok : true;
       const matchJenjang = filterJenjang.length === 0 ? true : filterJenjang.some(f => {
@@ -388,7 +388,7 @@ export default function ReportByType() {
       };
 
       filteredEventsList.forEach(e => {
-        rowData[`event_${e.id}`] = g.events_attendance[e.id] === '-' ? '' : (g.events_attendance[e.id] || '');
+        rowData[`event_${e.id}`] = g.events_attendance?.[e.id] === '-' ? '' : (g.events_attendance?.[e.id] || '');
       });
 
       const row = worksheet.addRow(rowData);
@@ -936,7 +936,7 @@ export default function ReportByType() {
                           <div className={`shrink-0 w-9 h-9 rounded-xl font-extrabold text-sm flex items-center justify-center ${
                             g.jenis_kelamin === 'L' ? 'bg-blue-50 text-blue-600' : 'bg-pink-50 text-pink-600'
                           }`}>
-                            {g.nama_lengkap.charAt(0).toUpperCase()}
+                            {(g.nama_lengkap || '?').charAt(0).toUpperCase()}
                           </div>
                           <div className="min-w-0">
                             <p className="text-sm font-extrabold text-slate-900 truncate leading-snug">
@@ -1049,7 +1049,7 @@ export default function ReportByType() {
                           <div className={`w-8 h-8 rounded-lg font-extrabold text-sm flex items-center justify-center shrink-0 ${
                             g.jenis_kelamin === 'L' ? 'bg-blue-50 text-blue-600' : 'bg-pink-50 text-pink-600'
                           }`}>
-                            {g.nama_lengkap.charAt(0).toUpperCase()}
+                            {(g.nama_lengkap || '?').charAt(0).toUpperCase()}
                           </div>
                           <div className="min-w-0 pr-1">
                             <p className="text-sm font-extrabold text-slate-900 truncate leading-snug">{g.nama_lengkap}</p>
@@ -1080,7 +1080,7 @@ export default function ReportByType() {
 
                       {/* Dynamic Event Status Cells: 1 Kotak Penuh Solid dengan Huruf Jauh Lebih Besar */}
                       {filteredEventsList.map(e => {
-                        const mStatus = g.events_attendance[e.id];
+                        const mStatus = g.events_attendance?.[e.id];
                         const cellClass = mStatus && mStatus !== '-' ? getStatusCellClass(mStatus) : 'bg-white text-slate-300';
                         return (
                           <td

@@ -210,6 +210,35 @@ test('mobile viewport store helpers return safe defaults outside browser environ
   unsubscribeTouch();
 });
 
+test('subscribeMediaQuery helpers do not throw when matchMedia lacks addEventListener and addListener', () => {
+  const originalWindow = globalThis.window;
+  globalThis.window = {
+    matchMedia: () => ({ matches: false }),
+  };
+
+  try {
+    let mobileCleanup;
+    assert.doesNotThrow(() => {
+      mobileCleanup = subscribeMobileViewport(() => {});
+    });
+    assert.equal(typeof mobileCleanup, 'function');
+    assert.doesNotThrow(() => mobileCleanup());
+
+    let touchCleanup;
+    assert.doesNotThrow(() => {
+      touchCleanup = subscribeCompactTouchViewport(() => {});
+    });
+    assert.equal(typeof touchCleanup, 'function');
+    assert.doesNotThrow(() => touchCleanup());
+  } finally {
+    if (originalWindow === undefined) {
+      delete globalThis.window;
+    } else {
+      globalThis.window = originalWindow;
+    }
+  }
+});
+
 test('toFiniteNumber normalizes numeric values and rejects invalid inputs', () => {
   assert.equal(toFiniteNumber(42), 42);
   assert.equal(toFiniteNumber('18'), 18);

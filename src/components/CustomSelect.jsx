@@ -11,11 +11,18 @@ export default function CustomSelect({ name, value, onChange, options, required,
         setIsOpen(false);
       }
     }
+    function handleKeyDown(event) {
+      if (event.key === 'Escape') {
+        setIsOpen(false);
+      }
+    }
     document.addEventListener("mousedown", handleClickOutside);
     document.addEventListener("touchstart", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("touchstart", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, [wrapperRef]);
 
@@ -38,6 +45,8 @@ export default function CustomSelect({ name, value, onChange, options, required,
       <button
         type="button"
         disabled={disabled}
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
         onClick={() => !disabled && setIsOpen(!isOpen)}
         className={`w-full min-h-[44px] flex items-center justify-between text-left pl-3 pr-2.5 py-2.5 bg-white border ${isOpen ? 'border-teal-400 ring-2 ring-teal-400' : 'border-slate-200'} rounded-xl text-sm text-slate-800 transition-all cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:border-teal-400'}`}
       >
@@ -46,7 +55,10 @@ export default function CustomSelect({ name, value, onChange, options, required,
       </button>
 
       {isOpen && (
-        <div className="absolute z-50 w-full mt-1.5 bg-white border border-slate-100 rounded-xl shadow-xl max-h-[min(15rem,50dvh)] overflow-y-auto animate-in fade-in zoom-in-95 duration-100 focus:outline-none py-1.5">
+        <div
+          role="listbox"
+          className="absolute z-50 w-full mt-1.5 bg-white border border-slate-100 rounded-xl shadow-xl max-h-[min(15rem,50dvh)] overflow-y-auto animate-in fade-in zoom-in-95 duration-100 focus:outline-none py-1.5"
+        >
           {options.length === 0 ? (
             <div className="px-4 py-2 text-sm text-slate-400">Tidak ada opsi</div>
           ) : (
@@ -54,6 +66,8 @@ export default function CustomSelect({ name, value, onChange, options, required,
               <button
                 key={opt.value}
                 type="button"
+                role="option"
+                aria-selected={String(value) === String(opt.value)}
                 disabled={opt.disabled}
                 onClick={(e) => {
                   e.preventDefault();

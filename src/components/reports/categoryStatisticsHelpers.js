@@ -437,12 +437,14 @@ function subscribeMediaQuery(query, callback) {
     return () => {};
   }
   const mediaQuery = window.matchMedia(query);
-  if (typeof mediaQuery.addEventListener === 'function') {
+  if (typeof mediaQuery?.addEventListener === 'function') {
     mediaQuery.addEventListener('change', callback);
     return () => mediaQuery.removeEventListener('change', callback);
+  } else if (typeof mediaQuery?.addListener === 'function') {
+    mediaQuery.addListener(callback);
+    return () => mediaQuery.removeListener(callback);
   }
-  mediaQuery.addListener(callback);
-  return () => mediaQuery.removeListener(callback);
+  return () => {};
 }
 
 function getMediaQuerySnapshot(query) {
