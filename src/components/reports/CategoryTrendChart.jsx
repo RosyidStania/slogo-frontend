@@ -17,12 +17,18 @@ import {
   MONTH_OPTIONS,
   formatCompactMonthLabel,
   formatCompactTickLabel,
+  formatPercentLabel,
   formatRupiah,
+  getCompactTouchViewportSnapshot,
   getMobileViewportSnapshot,
+  resolveClickedBarItem,
   resolveClickedSeriesItem,
   resolveDefaultInspectedMonth,
+  subscribeCompactTouchViewport,
   subscribeMobileViewport,
+  toFiniteNumber,
 } from './categoryStatisticsHelpers';
+import AttendanceStatMiniGrid from './AttendanceStatMiniGrid';
 
 const MONTH_SHORT_MAP = Object.fromEntries(
   MONTH_OPTIONS.map((option) => [option.value, option.shortLabel])
@@ -36,13 +42,6 @@ function formatEventDate(dateStr) {
   const [, year, month, day] = match;
   const monthLabel = MONTH_SHORT_MAP[month] || month;
   return `${Number(day)} ${monthLabel} ${year}`;
-}
-
-function formatPercentLabel(value) {
-  if (value === null || value === undefined || value === '' || !Number.isFinite(Number(value))) {
-    return '';
-  }
-  return `${value}%`;
 }
 
 function computeYAxisMax(seriesData) {
@@ -180,6 +179,11 @@ export default function CategoryTrendChart({
     getMobileViewportSnapshot,
     () => false
   );
+  const isCompactMobile = useSyncExternalStore(
+    subscribeCompactTouchViewport,
+    getCompactTouchViewportSnapshot,
+    () => false
+  );
   const rawId = useId();
   const gradientId = `trend-area-fill-${rawId.replace(/:/g, '')}`;
 
@@ -218,11 +222,36 @@ export default function CategoryTrendChart({
     }
   };
 
-  const handleBarClick = (barData, index) => {
-    const clickedMonth = barData?.payload?.month ?? seriesData[index]?.month;
-    if (clickedMonth) {
-      setInspectedMonth(clickedMonth);
+  const handleBarClick = (barData, index, event) => {
+    event?.stopPropagation?.();
+    const clickedPoint = resolveClickedBarItem(barData, index, seriesData);
+    if (clickedPoint?.month) {
+      setInspectedMonth(clickedPoint.month);
     }
+  };
+
+  const renderInteractiveDot = ({ isActive = false } = {}) => (dotProps) => {
+    const { cx, cy, payload, index } = dotProps || {};
+    if (!Number.isFinite(cx) || !Number.isFinite(cy)) return null;
+    const radius = isActive ? (presentationMode ? 8 : 7) : (presentationMode ? 6 : 5);
+    return (
+      <circle
+        key={`area-${isActive ? 'active-' : ''}dot-${payload?.month ?? index}`}
+        cx={cx}
+        cy={cy}
+        r={radius}
+        fill={isActive ? '#0d9488' : '#14b8a6'}
+        stroke="#ffffff"
+        strokeWidth={2.5}
+        className="cursor-pointer"
+        onClick={(event) => {
+          event?.stopPropagation?.();
+          if (payload?.month) {
+            setInspectedMonth(payload.month);
+          }
+        }}
+      />
+    );
   };
 
   const inspectedEvents = Array.isArray(inspectedPoint?.events) ? inspectedPoint.events : [];
@@ -235,9 +264,7 @@ export default function CategoryTrendChart({
     inspectedPoint?.infaq !== null
     && inspectedPoint?.infaq !== undefined
     && Number(inspectedPoint.infaq) > 0;
-  const inspectedPct = Number.isFinite(Number(inspectedPoint?.percentage))
-    ? Number(inspectedPoint.percentage)
-    : 0;
+  const inspectedPct = toFiniteNumber(inspectedPoint?.percentage, 0);
   const inspectedPointLabel =
     inspectedPoint?.label || formatCompactMonthLabel(inspectedPoint?.month) || inspectedPoint?.month || '-';
 
@@ -375,6 +402,7 @@ export default function CategoryTrendChart({
                         dx={-4}
                       />
                       <Tooltip
+                        trigger={isCompactMobile ? 'click' : 'hover'}
                         filterNull={false}
                         cursor={{ stroke: '#cbd5e1', strokeWidth: 1, strokeDasharray: '4 4' }}
                         content={<TrendChartTooltip presentationMode={presentationMode} />}
@@ -388,18 +416,8 @@ export default function CategoryTrendChart({
                         fill={`url(#${gradientId})`}
                         connectNulls={false}
                         animationDuration={450}
-                        dot={{
-                          r: presentationMode ? 6 : 5,
-                          fill: '#14b8a6',
-                          stroke: '#ffffff',
-                          strokeWidth: 2.5,
-                        }}
-                        activeDot={{
-                          r: presentationMode ? 8 : 7,
-                          fill: '#0d9488',
-                          stroke: '#ffffff',
-                          strokeWidth: 2.5,
-                        }}
+                        dot={renderInteractiveDot({ isActive: false })}
+                        activeDot={renderInteractiveDot({ isActive: true })}
                       >
                         <LabelList
                           dataKey="percentage"
@@ -445,6 +463,7 @@ export default function CategoryTrendChart({
                         dx={-4}
                       />
                       <Tooltip
+                        trigger={isCompactMobile ? 'click' : 'hover'}
                         filterNull={false}
                         cursor={{ fill: 'rgba(20, 184, 166, 0.06)', radius: 6 }}
                         content={<TrendChartTooltip presentationMode={presentationMode} />}
@@ -568,46 +587,13 @@ export default function CategoryTrendChart({
                     </p>
                   ) : (
                     <>
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                        {[
-                          {
-                            key: 'hadir_target',
-                            label: 'Hadir / Target',
-                            value: `${inspectedPoint.hadir ?? 0}/${inspectedPoint.target_total ?? 0}`,
-                            valueClass: 'text-[#0d9488]',
-                          },
-                          {
-                            key: 'terlambat',
-                            label: 'Terlambat',
-                            value: inspectedPoint.terlambat ?? 0,
-                            valueClass: 'text-amber-600',
-                          },
-                          {
-                            key: 'izin_sakit',
-                            label: 'Izin/Sakit',
-                            value: inspectedPoint.izin_sakit ?? 0,
-                            valueClass: 'text-amber-500',
-                          },
-                          {
-                            key: 'alpa',
-                            label: 'Alpa',
-                            value: inspectedPoint.alpa ?? 0,
-                            valueClass: 'text-rose-500',
-                          },
-                        ].map((metric) => (
-                          <div
-                            key={metric.key}
-                            className="bg-white border border-slate-200/70 rounded-lg px-2.5 py-2 min-w-0"
-                          >
-                            <p className="text-[11px] font-semibold text-slate-500 truncate">
-                              {metric.label}
-                            </p>
-                            <p className={`text-xs sm:text-sm font-extrabold tabular-nums mt-0.5 ${metric.valueClass}`}>
-                              {metric.value}
-                            </p>
-                          </div>
-                        ))}
-                      </div>
+                      <AttendanceStatMiniGrid
+                        hadir={inspectedPoint.hadir}
+                        targetTotal={inspectedPoint.target_total}
+                        terlambat={inspectedPoint.terlambat}
+                        izinSakit={inspectedPoint.izin_sakit}
+                        alpa={inspectedPoint.alpa}
+                      />
 
                       {showInspectedInfaq && (
                         <div className="pt-2 border-t border-slate-200/70 flex items-center justify-between gap-2 text-xs font-bold">

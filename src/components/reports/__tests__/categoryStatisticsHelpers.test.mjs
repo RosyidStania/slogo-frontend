@@ -13,8 +13,13 @@ import {
   resolveDefaultInspectedMonth,
   formatCompactTickLabel,
   resolveClickedSeriesItem,
+  resolveClickedBarItem,
+  toFiniteNumber,
+  formatPercentLabel,
   subscribeMobileViewport,
   getMobileViewportSnapshot,
+  subscribeCompactTouchViewport,
+  getCompactTouchViewportSnapshot,
 } from '../categoryStatisticsHelpers.js';
 
 test('MONTH_OPTIONS defines 12 Indonesian months from 01 to 12', () => {
@@ -198,4 +203,46 @@ test('mobile viewport store helpers return safe defaults outside browser environ
   const unsubscribe = subscribeMobileViewport(() => {});
   assert.equal(typeof unsubscribe, 'function');
   unsubscribe();
+
+  assert.equal(getCompactTouchViewportSnapshot(), false);
+  const unsubscribeTouch = subscribeCompactTouchViewport(() => {});
+  assert.equal(typeof unsubscribeTouch, 'function');
+  unsubscribeTouch();
+});
+
+test('toFiniteNumber normalizes numeric values and rejects invalid inputs', () => {
+  assert.equal(toFiniteNumber(42), 42);
+  assert.equal(toFiniteNumber('18'), 18);
+  assert.equal(toFiniteNumber(0), 0);
+  assert.equal(toFiniteNumber(null), 0);
+  assert.equal(toFiniteNumber(undefined, 5), 5);
+  assert.equal(toFiniteNumber('', 3), 3);
+  assert.equal(toFiniteNumber('   ', 7), 7);
+  assert.equal(toFiniteNumber(true, 0), 0);
+  assert.equal(toFiniteNumber(Number.NaN, 0), 0);
+  assert.equal(toFiniteNumber('abc', 9), 9);
+});
+
+test('formatPercentLabel formats finite numbers as percentage strings and skips empty/invalid values', () => {
+  assert.equal(formatPercentLabel(85), '85%');
+  assert.equal(formatPercentLabel(0), '0%');
+  assert.equal(formatPercentLabel('92'), '92%');
+  assert.equal(formatPercentLabel(null), '');
+  assert.equal(formatPercentLabel(undefined), '');
+  assert.equal(formatPercentLabel(''), '');
+  assert.equal(formatPercentLabel('   '), '');
+  assert.equal(formatPercentLabel(false), '');
+  assert.equal(formatPercentLabel(Number.NaN), '');
+});
+
+test('resolveClickedBarItem prefers barData payload and falls back to indexed item', () => {
+  const items = [
+    { kelompok: 'Slogo', percentage: 80 },
+    { kelompok: 'Jati', percentage: 75 },
+  ];
+  assert.deepEqual(resolveClickedBarItem({ payload: items[1] }, 0, items), items[1]);
+  assert.deepEqual(resolveClickedBarItem({}, 0, items), items[0]);
+  assert.equal(resolveClickedBarItem({}, 5, items), null);
+  assert.equal(resolveClickedBarItem(null, -1, items), null);
+  assert.equal(resolveClickedBarItem(null, 0, []), null);
 });

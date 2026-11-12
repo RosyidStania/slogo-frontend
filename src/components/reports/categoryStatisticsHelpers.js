@@ -383,16 +383,60 @@ export function resolveClickedSeriesItem(chartState, items = [], labelField = 'l
   return null;
 }
 
-const MOBILE_VIEWPORT_QUERY = '(max-width: 639px)';
+/**
+ * Resolve the clicked item from Recharts `Bar` `onClick(barData, index)` arguments.
+ */
+export function resolveClickedBarItem(barData, index, items = []) {
+  if (barData?.payload) {
+    return barData.payload;
+  }
+  if (Array.isArray(items) && Number.isInteger(index) && index >= 0 && index < items.length) {
+    return items[index];
+  }
+  return null;
+}
 
 /**
- * Subscribe to `< sm` (`max-width: 639px`) media query changes for `useSyncExternalStore`.
+ * Coerce arbitrary numeric inputs into a finite number, falling back safely on empty/invalid values.
  */
-export function subscribeMobileViewport(callback) {
+export function toFiniteNumber(value, fallback = 0) {
+  if (value === null || value === undefined || typeof value === 'boolean') {
+    return fallback;
+  }
+  if (typeof value === 'string' && value.trim() === '') {
+    return fallback;
+  }
+  const numeric = Number(value);
+  return Number.isFinite(numeric) ? numeric : fallback;
+}
+
+/**
+ * Format a numeric value as a compact percentage label (`85%`), returning `''` for empty/non-finite inputs.
+ */
+export function formatPercentLabel(value) {
+  if (
+    value === null
+    || value === undefined
+    || typeof value === 'boolean'
+    || (typeof value === 'string' && value.trim() === '')
+  ) {
+    return '';
+  }
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) {
+    return '';
+  }
+  return `${numeric}%`;
+}
+
+const MOBILE_VIEWPORT_QUERY = '(max-width: 639px)';
+const COMPACT_TOUCH_VIEWPORT_QUERY = '(max-width: 1023px), (hover: none) and (pointer: coarse)';
+
+function subscribeMediaQuery(query, callback) {
   if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
     return () => {};
   }
-  const mediaQuery = window.matchMedia(MOBILE_VIEWPORT_QUERY);
+  const mediaQuery = window.matchMedia(query);
   if (typeof mediaQuery.addEventListener === 'function') {
     mediaQuery.addEventListener('change', callback);
     return () => mediaQuery.removeEventListener('change', callback);
@@ -401,12 +445,37 @@ export function subscribeMobileViewport(callback) {
   return () => mediaQuery.removeListener(callback);
 }
 
+function getMediaQuerySnapshot(query) {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+    return false;
+  }
+  return window.matchMedia(query).matches;
+}
+
+/**
+ * Subscribe to `< sm` (`max-width: 639px`) media query changes for `useSyncExternalStore`.
+ */
+export function subscribeMobileViewport(callback) {
+  return subscribeMediaQuery(MOBILE_VIEWPORT_QUERY, callback);
+}
+
 /**
  * Read current `< sm` (`max-width: 639px`) viewport state safely.
  */
 export function getMobileViewportSnapshot() {
-  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
-    return false;
-  }
-  return window.matchMedia(MOBILE_VIEWPORT_QUERY).matches;
+  return getMediaQuerySnapshot(MOBILE_VIEWPORT_QUERY);
+}
+
+/**
+ * Subscribe to compact/touch (`< lg` or coarse non-hover pointer) media query changes.
+ */
+export function subscribeCompactTouchViewport(callback) {
+  return subscribeMediaQuery(COMPACT_TOUCH_VIEWPORT_QUERY, callback);
+}
+
+/**
+ * Read current compact/touch (`< lg` or coarse non-hover pointer) viewport state safely.
+ */
+export function getCompactTouchViewportSnapshot() {
+  return getMediaQuerySnapshot(COMPACT_TOUCH_VIEWPORT_QUERY);
 }

@@ -13,28 +13,19 @@ import {
   YAxis,
 } from 'recharts';
 import {
+  formatPercentLabel,
+  getCompactTouchViewportSnapshot,
   getMobileViewportSnapshot,
+  resolveClickedBarItem,
   resolveClickedSeriesItem,
+  subscribeCompactTouchViewport,
   subscribeMobileViewport,
+  toFiniteNumber,
 } from './categoryStatisticsHelpers';
-
-function toFiniteNumber(value, fallback = 0) {
-  if (value === null || value === undefined || typeof value === 'boolean' || value === '') {
-    return fallback;
-  }
-  const numeric = Number(value);
-  return Number.isFinite(numeric) ? numeric : fallback;
-}
+import AttendanceStatMiniGrid from './AttendanceStatMiniGrid';
 
 function clampPercentage(value) {
   return Math.min(100, Math.max(0, toFiniteNumber(value, 0)));
-}
-
-function formatPercentLabel(value) {
-  if (value === null || value === undefined || value === '' || !Number.isFinite(Number(value))) {
-    return '';
-  }
-  return `${value}%`;
 }
 
 function computeYAxisMax(groupBreakdown, avgPercentage) {
@@ -124,6 +115,11 @@ export default function CategoryBreakdownSection({
   const isMobileViewport = useSyncExternalStore(
     subscribeMobileViewport,
     getMobileViewportSnapshot,
+    () => false
+  );
+  const isCompactMobile = useSyncExternalStore(
+    subscribeCompactTouchViewport,
+    getCompactTouchViewportSnapshot,
     () => false
   );
   const rawGroups = Array.isArray(category?.group_breakdown) ? category.group_breakdown : [];
@@ -252,10 +248,11 @@ export default function CategoryBreakdownSection({
     }
   };
 
-  const handleBarClick = (barData, index) => {
-    const clickedKelompok = barData?.payload?.kelompok ?? groupBreakdown[index]?.kelompok;
-    if (clickedKelompok) {
-      setInspectedGroup(clickedKelompok);
+  const handleBarClick = (barData, index, event) => {
+    event?.stopPropagation?.();
+    const clickedRow = resolveClickedBarItem(barData, index, groupBreakdown);
+    if (clickedRow?.kelompok) {
+      setInspectedGroup(clickedRow.kelompok);
     }
   };
 
@@ -375,6 +372,7 @@ export default function CategoryBreakdownSection({
                         dx={-4}
                       />
                       <Tooltip
+                        trigger={isCompactMobile ? 'click' : 'hover'}
                         cursor={{ fill: 'rgba(20, 184, 166, 0.06)', radius: 6 }}
                         content={
                           <CustomGroupTooltip
@@ -506,46 +504,13 @@ export default function CategoryBreakdownSection({
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                      {[
-                        {
-                          key: 'hadir_target',
-                          label: 'Hadir / Target',
-                          value: `${inspectedRow.hadir}/${inspectedRow.target_total}`,
-                          valueClass: 'text-[#0d9488]',
-                        },
-                        {
-                          key: 'terlambat',
-                          label: 'Terlambat',
-                          value: inspectedRow.terlambat,
-                          valueClass: 'text-amber-600',
-                        },
-                        {
-                          key: 'izin_sakit',
-                          label: 'Izin/Sakit',
-                          value: inspectedRow.izin_sakit,
-                          valueClass: 'text-amber-500',
-                        },
-                        {
-                          key: 'alpa',
-                          label: 'Alpa',
-                          value: inspectedRow.alpa,
-                          valueClass: 'text-rose-500',
-                        },
-                      ].map((metric) => (
-                        <div
-                          key={metric.key}
-                          className="bg-white border border-slate-200/70 rounded-lg px-2.5 py-2 min-w-0"
-                        >
-                          <p className="text-[11px] font-semibold text-slate-500 truncate">
-                            {metric.label}
-                          </p>
-                          <p className={`text-xs sm:text-sm font-extrabold tabular-nums mt-0.5 ${metric.valueClass}`}>
-                            {metric.value}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
+                    <AttendanceStatMiniGrid
+                      hadir={inspectedRow.hadir}
+                      targetTotal={inspectedRow.target_total}
+                      terlambat={inspectedRow.terlambat}
+                      izinSakit={inspectedRow.izin_sakit}
+                      alpa={inspectedRow.alpa}
+                    />
                   </div>
                 </div>
               )}
