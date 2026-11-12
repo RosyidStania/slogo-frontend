@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import api from '../api/axios';
 import CustomSelect from '../components/CustomSelect';
@@ -8,9 +8,8 @@ import {
   QrCode, Download, Check, ChevronRight, ChevronLeft,
   RotateCw, Clock, AlertTriangle, Phone
 } from 'lucide-react';
-import * as XLSX from 'xlsx';
 import { QRCodeCanvas } from 'qrcode.react';
-import { toPng } from 'html-to-image';
+import { loadXlsx, loadHtmlToImage } from '../utils/lazyImports';
 import logoImg from '../assets/logo.png';
 
 const JENJANG_LIST = [
@@ -285,6 +284,7 @@ export default function MtMembers() {
         'Hobi': item.hobi || '',
         'Terdaftar': item.created_at ? new Date(item.created_at).toLocaleDateString('id-ID') : ''
       }));
+      const XLSX = await loadXlsx();
       const ws = XLSX.utils.json_to_sheet(rows);
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "Data Anggota");
@@ -301,6 +301,7 @@ export default function MtMembers() {
   const downloadQr = async () => {
     if (!idCardRef.current) return;
     try {
+      const { toPng } = await loadHtmlToImage();
       const url = await toPng(idCardRef.current, { cacheBust: true, pixelRatio: 4 });
       const a = document.createElement('a');
       a.download = `IDCard_${selected?.nama_lengkap?.replace(/\s+/g, '_')}.png`;
@@ -312,38 +313,47 @@ export default function MtMembers() {
   };
 
   // Base filtered by query & jenjang
-  const baseFiltered = members.filter(g => {
+  const baseFiltered = useMemo(() => {
     const q = search.toLowerCase().trim();
-    const matchQuery = !q ||
-      g.nama_lengkap?.toLowerCase().includes(q) ||
-      g.jenjang?.toLowerCase().includes(q) ||
-      g.no_hp?.toLowerCase().includes(q);
-    const matchJenjang = filterJenjang.includes('Semua') || filterJenjang.some(j => {
-      if (j === 'PENGURUS USMAN') return g.is_pengurus === 1 || g.is_pengurus === true;
-      if (j === 'PENGURUS MUDA MUDI') return g.is_pengurus_muda_mudi === 1 || g.is_pengurus_muda_mudi === true;
-      if (j === 'KETUA/WAKIL KELOMPOK') return g.is_ketua_wakil_kelompok === 1 || g.is_ketua_wakil_kelompok === true;
-      return g.jenjang?.toLowerCase() === j.toLowerCase();
+    return members.filter(g => {
+      const matchQuery = !q ||
+        g.nama_lengkap?.toLowerCase().includes(q) ||
+        g.jenjang?.toLowerCase().includes(q) ||
+        g.no_hp?.toLowerCase().includes(q);
+      const matchJenjang = filterJenjang.includes('Semua') || filterJenjang.some(j => {
+        if (j === 'PENGURUS USMAN') return g.is_pengurus === 1 || g.is_pengurus === true;
+        if (j === 'PENGURUS MUDA MUDI') return g.is_pengurus_muda_mudi === 1 || g.is_pengurus_muda_mudi === true;
+        if (j === 'KETUA/WAKIL KELOMPOK') return g.is_ketua_wakil_kelompok === 1 || g.is_ketua_wakil_kelompok === true;
+        return g.jenjang?.toLowerCase() === j.toLowerCase();
+      });
+      return matchQuery && matchJenjang;
+    }).sort((a, b) => {
+      const sw = s => s?.toLowerCase() === 'tidak aktif' ? 2 : 1;
+      if (sw(a.status) !== sw(b.status)) return sw(a.status) - sw(b.status);
+      const ageA = calcAge(a.tanggal_lahir, a.umur) ?? 0;
+      const ageB = calcAge(b.tanggal_lahir, b.umur) ?? 0;
+      return ageB - ageA;
     });
-    return matchQuery && matchJenjang;
-  }).sort((a, b) => {
-    const sw = s => s?.toLowerCase() === 'tidak aktif' ? 2 : 1;
-    if (sw(a.status) !== sw(b.status)) return sw(a.status) - sw(b.status);
-    const ageA = calcAge(a.tanggal_lahir, a.umur) ?? 0;
-    const ageB = calcAge(b.tanggal_lahir, b.umur) ?? 0;
-    return ageB - ageA;
-  });
+  }, [members, search, filterJenjang]);
 
   // Stats
-  const totalAnggota  = baseFiltered.length;
-  const totalAktif    = baseFiltered.filter(g => (g.status?.toLowerCase() || 'aktif') === 'aktif').length;
-  const totalPasif    = baseFiltered.filter(g => g.status?.toLowerCase() === 'pasif').length;
-  const totalNonaktif = baseFiltered.filter(g => g.status?.toLowerCase() === 'tidak aktif').length;
+  const { totalAnggota, totalAktif, totalPasif, totalNonaktif } = useMemo(() => {
+    let aktif = 0;
+    let pasif = 0;
+    let nonaktif = 0;
+    for (const g of baseFiltered) {
+      const st = g.status?.toLowerCase() || 'aktif';
+      if (st === 'aktif') aktif++;
+      else if (st === 'pasif') pasif++;
+      else if (st === 'tidak aktif') nonaktif++;
+    }
+    return { totalAnggota: baseFiltered.length, totalAktif: aktif, totalPasif: pasif, totalNonaktif: nonaktif };
+  }, [baseFiltered]);
 
   // Apply status tab
-  const filtered = baseFiltered.filter(g => {
-    if (statusTab === 'semua') return true;
-    return (g.status?.toLowerCase() || 'aktif') === statusTab;
-  });
+  const filtered = statusTab === 'semua'
+    ? baseFiltered
+    : baseFiltered.filter(g => (g.status?.toLowerCase() || 'aktif') === statusTab);
 
   // Pagination logic
   const effectiveRowsPerPage = rowsPerPage === 'all' ? (filtered.length || 1) : Number(rowsPerPage);

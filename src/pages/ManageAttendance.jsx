@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef, useCallback, lazy, Suspense } from 'react';
 import ReactDOM from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
@@ -7,7 +7,75 @@ import {
   CalendarDays, Filter, Trash2, HelpCircle, MapPin,
   X, UserCheck, UserX, AlertTriangle, Loader2, QrCode, Plus, Check, ListChecks, History
 } from 'lucide-react';
-import { Scanner } from '@yudiel/react-qr-scanner';
+
+const QrScanner = lazy(() => import('@yudiel/react-qr-scanner').then((m) => ({ default: m.Scanner })));
+
+function checkEventLate(eventDate, startTime, customNow = null) {
+  if (!startTime || !eventDate) return false;
+  const now = customNow || new Date();
+  const eventDateTime = new Date(eventDate);
+  const [h, m] = startTime.split(':').map(Number);
+  eventDateTime.setHours(h, m, 59, 999);
+  return now > eventDateTime;
+}
+
+function LiveClockCard() {
+  const [now, setNow] = useState(() => new Date());
+
+  useEffect(() => {
+    const t = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  return (
+    <div className="col-span-1 bg-white border border-slate-200/80 rounded-2xl p-3 sm:p-4 shadow-2xs flex items-center justify-between">
+      <div className="min-w-0">
+        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">JAM SEKARANG</p>
+        <p className="text-lg sm:text-xl md:text-2xl font-black font-sans text-slate-800 tabular-nums leading-tight tracking-tight mt-0.5 truncate">
+          {now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }).replace(/:/g, '.')}
+        </p>
+      </div>
+      <div className="hidden sm:flex w-9 h-9 rounded-full bg-slate-50 border border-slate-100 items-center justify-center text-slate-400 shrink-0">
+        <Clock size={16} strokeWidth={2} />
+      </div>
+    </div>
+  );
+}
+
+function LateStatusCard({ eventDate, startTime }) {
+  const [late, setLate] = useState(() => checkEventLate(eventDate, startTime));
+
+  useEffect(() => {
+    if (late || !startTime || !eventDate) return undefined;
+    const target = new Date(eventDate);
+    const [h, m] = startTime.split(':').map(Number);
+    target.setHours(h, m, 59, 999);
+    const diff = target.getTime() - Date.now() + 50;
+    const timer = setTimeout(() => setLate(true), Math.max(0, Math.min(diff, 2147483647)));
+    return () => clearTimeout(timer);
+  }, [late, eventDate, startTime]);
+
+  return (
+    <div className="col-span-1 bg-white border border-slate-200/80 rounded-2xl p-3 sm:p-4 shadow-2xs flex items-center justify-between">
+      <div className="min-w-0">
+        <p className={`text-[10px] font-bold uppercase tracking-wider ${late ? 'text-rose-500' : 'text-teal-600'}`}>
+          BATAS HADIR
+        </p>
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-1.5 sm:gap-2 mt-0.5">
+          <span className={`text-lg sm:text-xl md:text-2xl font-black tabular-nums leading-tight ${late ? 'text-rose-600' : 'text-teal-700'}`}>
+            {startTime?.substring(0, 5) || '--:--'}
+          </span>
+          <span className={`text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap ${late ? 'bg-rose-50 text-rose-600 border border-rose-100' : 'bg-teal-50 text-teal-700 border border-teal-100'}`}>
+            {late ? 'Lewat' : 'Dibuka'}
+          </span>
+        </div>
+      </div>
+      <div className={`hidden sm:flex w-9 h-9 rounded-full items-center justify-center shrink-0 ${late ? 'bg-rose-50 text-rose-500' : 'bg-teal-50 text-teal-600'}`}>
+        {late ? <AlertTriangle size={18} strokeWidth={2} /> : <CheckCircle size={18} strokeWidth={2} />}
+      </div>
+    </div>
+  );
+}
 
 // ─── Constants & Color Palettes ───────────────────────────────────────────────
 
@@ -83,7 +151,6 @@ export default function ManageAttendance() {
   const [attendedList, setAttendedList]   = useState([]);
   const [allGenerusList, setAllGenerusList] = useState([]);
   const [loading, setLoading]             = useState(true);
-  const [currentTime, setCurrentTime]     = useState(new Date());
 
   // Filters & Tabs
   const [search, setSearch]                 = useState('');
@@ -109,12 +176,6 @@ export default function ManageAttendance() {
   useEffect(() => { generusRef.current    = generusList; },     [generusList]);
   useEffect(() => { allGenerusRef.current = allGenerusList; },  [allGenerusList]);
 
-  // Live ticking clock
-  useEffect(() => {
-    const t = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(t);
-  }, []);
-
   // Keyboard shortcut Cmd+K / Ctrl+K
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -131,12 +192,12 @@ export default function ManageAttendance() {
     setLoading(true);
     try {
       const [eventRes, generusRes, summaryRes] = await Promise.all([
-        api.get('/admin/events'),
+        api.get(`/admin/events/${eventId}`),
         api.get('/admin/generus'),
         api.get(`/admin/events/${eventId}/summary`),
       ]);
 
-      const currentEvent = eventRes.data.data.find(e => e.id.toString() === eventId);
+      const currentEvent = eventRes.data.data;
       setEvent(currentEvent);
       if (currentEvent?.kelompok) setFilterKelompok('Semua');
 
@@ -190,14 +251,7 @@ export default function ManageAttendance() {
     fetchData();
   }, [eventId]);
 
-  const isLate = (batas, customNow = null) => {
-    if (!batas || !event?.event_date) return false;
-    const now = customNow || new Date();
-    const eventDateTime = new Date(event.event_date);
-    const [h, m] = batas.split(':').map(Number);
-    eventDateTime.setHours(h, m, 59, 999);
-    return now > eventDateTime;
-  };
+  const isLate = (batas, customNow = null) => checkEventLate(event?.event_date, batas, customNow);
 
   const handleAbsen = async (generus, status) => {
     const now = new Date();
@@ -354,7 +408,6 @@ export default function ManageAttendance() {
     return matchName && matchKelompok && matchJenjang;
   });
 
-  const currentlyLate = isLate(event?.start_time);
   const totalHadir    = attendedList.filter(a => a.status_absen === 'hadir').length;
   const totalIzin     = attendedList.filter(a => a.status_absen === 'izin').length;
   const totalAlpa     = attendedList.filter(a => a.status_absen === 'alpa').length;
@@ -464,38 +517,15 @@ export default function ManageAttendance() {
           </div>
         </div>
 
-        {/* Card 2: Jam Sekarang */}
-        <div className="col-span-1 bg-white border border-slate-200/80 rounded-2xl p-3 sm:p-4 shadow-2xs flex items-center justify-between">
-          <div className="min-w-0">
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">JAM SEKARANG</p>
-            <p className="text-lg sm:text-xl md:text-2xl font-black font-sans text-slate-800 tabular-nums leading-tight tracking-tight mt-0.5 truncate">
-              {currentTime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }).replace(/:/g, '.')}
-            </p>
-          </div>
-          <div className="hidden sm:flex w-9 h-9 rounded-full bg-slate-50 border border-slate-100 items-center justify-center text-slate-400 shrink-0">
-            <Clock size={16} strokeWidth={2} />
-          </div>
-        </div>
+        {/* Card 2: Jam Sekarang (komponen terisolasi agar tidak memicu re-render halaman per detik) */}
+        <LiveClockCard />
 
         {/* Card 3: Batas Hadir */}
-        <div className="col-span-1 bg-white border border-slate-200/80 rounded-2xl p-3 sm:p-4 shadow-2xs flex items-center justify-between">
-          <div className="min-w-0">
-            <p className={`text-[10px] font-bold uppercase tracking-wider ${currentlyLate ? 'text-rose-500' : 'text-teal-600'}`}>
-              BATAS HADIR
-            </p>
-            <div className="flex flex-wrap sm:flex-nowrap items-center gap-1.5 sm:gap-2 mt-0.5">
-              <span className={`text-lg sm:text-xl md:text-2xl font-black tabular-nums leading-tight ${currentlyLate ? 'text-rose-600' : 'text-teal-700'}`}>
-                {event.start_time?.substring(0, 5) || '--:--'}
-              </span>
-              <span className={`text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap ${currentlyLate ? 'bg-rose-50 text-rose-600 border border-rose-100' : 'bg-teal-50 text-teal-700 border border-teal-100'}`}>
-                {currentlyLate ? 'Lewat' : 'Dibuka'}
-              </span>
-            </div>
-          </div>
-          <div className={`hidden sm:flex w-9 h-9 rounded-full items-center justify-center shrink-0 ${currentlyLate ? 'bg-rose-50 text-rose-500' : 'bg-teal-50 text-teal-600'}`}>
-            {currentlyLate ? <AlertTriangle size={18} strokeWidth={2} /> : <CheckCircle size={18} strokeWidth={2} />}
-          </div>
-        </div>
+        <LateStatusCard
+          key={`${event.event_date || ''}-${event.start_time || ''}`}
+          eventDate={event.event_date}
+          startTime={event.start_time}
+        />
       </div>
 
       {/* ── Stats 4 Cards (Responsive 2x2 on Mobile, 4x1 on Desktop) ────────── */}
@@ -980,13 +1010,22 @@ export default function ManageAttendance() {
           </div>
 
           <div className="relative rounded-2xl overflow-hidden bg-black aspect-square shadow-inner">
-            <Scanner
-              onScan={handleScan}
-              formats={['qr_code']}
-              allowMultiple
-              scanDelay={1200}
-              components={{ audio: false, onOff: true, torch: true, zoom: false, tracker: () => {} }}
-            />
+            <Suspense
+              fallback={
+                <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-white/80 text-xs">
+                  <Loader2 size={24} className="animate-spin text-teal-400" />
+                  <span>Menyiapkan kamera...</span>
+                </div>
+              }
+            >
+              <QrScanner
+                onScan={handleScan}
+                formats={['qr_code']}
+                allowMultiple
+                scanDelay={1200}
+                components={{ audio: false, onOff: true, torch: true, zoom: false, tracker: () => {} }}
+              />
+            </Suspense>
 
             {/* Overlay messages */}
             {scanStatus === 'success' && (

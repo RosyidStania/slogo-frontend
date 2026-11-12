@@ -60,3 +60,11 @@ input[type="password"]::-ms-reveal,
 input[type="password"]::-ms-clear {
   display: none;
 }
+
+/* Defer off-screen below-the-fold sections safely with intrinsic sizing */
+@supports (content-visibility: auto) {
+  .defer-section {
+    content-visibility: auto;
+    contain-intrinsic-size: auto none auto 700px;
+  }
+}

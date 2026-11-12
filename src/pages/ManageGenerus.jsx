@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import ReactDOM from 'react-dom';
 import api from '../api/axios';
@@ -10,11 +10,8 @@ import {
   QrCode, Download, AlertTriangle, Check, ChevronRight, ChevronLeft,
   SlidersHorizontal, RotateCw, Clock, ShieldCheck
 } from 'lucide-react';
-import * as XLSX from 'xlsx';
 import { QRCodeCanvas } from 'qrcode.react';
-import { toPng } from 'html-to-image';
-import JSZip from 'jszip';
-import { saveAs } from 'file-saver';
+import { loadXlsx, loadHtmlToImage, loadZipExportTools } from '../utils/lazyImports';
 import logoImg from '../assets/logo.png';
 
 
@@ -239,6 +236,7 @@ export default function ManageGenerus() {
   const [showSettings, setShowSettings]   = useState(() => location.search.includes('openSettings=1'));
   const [showQrZipModal, setShowQrZipModal] = useState(false);
   const [selectedQrZipJenjang, setSelectedQrZipJenjang] = useState(['Semua']);
+  const [bulkQrItems, setBulkQrItems] = useState([]);
   const [pengurusTypes, setPengurusTypes] = useState([]);
 
   const fileInputRef   = useRef(null);
@@ -371,6 +369,7 @@ export default function ManageGenerus() {
         'Akun Media': item.akun_media || '', 'Hobi': item.hobi || '',
         'Terdaftar': item.created_at ? new Date(item.created_at).toLocaleDateString('id-ID') : ''
       }));
+      const XLSX = await loadXlsx();
       const ws = XLSX.utils.json_to_sheet(rows);
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "Data Generus");
@@ -386,6 +385,7 @@ export default function ManageGenerus() {
     const reader = new FileReader();
     reader.onload = async (evt) => {
       try {
+        const XLSX = await loadXlsx();
         const wb   = XLSX.read(evt.target.result, { type: 'binary', cellDates: true });
         const ws   = wb.Sheets[wb.SheetNames[0]];
         const data = XLSX.utils.sheet_to_json(ws, { defval: '' });
@@ -426,6 +426,7 @@ export default function ManageGenerus() {
   const downloadQr = async () => {
     if (!idCardRef.current) return;
     try {
+      const { toPng } = await loadHtmlToImage();
       const url = await toPng(idCardRef.current, { cacheBust: true, pixelRatio: 4 });
       const a = document.createElement('a');
       a.download = `IDCard_${selected?.nama_lengkap?.replace(/\s+/g, '_')}.png`;
@@ -458,8 +459,12 @@ export default function ManageGenerus() {
     
     setDownloadingQrZip(true);
     setShowQrZipModal(false);
+    setBulkQrItems(activeGenerus);
     
     try {
+      // Tunggu canvas QR selesai ter-render di DOM sebelum dikonversi ke PNG
+      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      const { toPng, JSZip, saveAs } = await loadZipExportTools();
       const zip = new JSZip();
       
       for (let i = 0; i < activeGenerus.length; i++) {
@@ -490,45 +495,55 @@ export default function ManageGenerus() {
       console.error(err);
       alert('Gagal membuat file ZIP ID Card.');
     } finally {
+      setBulkQrItems([]);
       setDownloadingQrZip(false);
     }
   };
 
   // Filtered / sorted data (before status tab)
-  const baseFiltered = generusList.filter(g => {
+  const baseFiltered = useMemo(() => {
     const q = search.toLowerCase().trim();
-    const matchQuery = !q ||
-      g.nama_lengkap?.toLowerCase().includes(q) ||
-      g.kelompok?.toLowerCase().includes(q) ||
-      g.jenjang?.toLowerCase().includes(q);
-    const matchKelompok = filterKelompok.includes('Semua') || filterKelompok.some(k => g.kelompok?.toLowerCase() === k.toLowerCase());
-    const matchJenjang = filterJenjang.includes('Semua') || filterJenjang.some(j => {
-      if (j === 'PENGURUS USMAN') return g.is_pengurus === 1 || g.is_pengurus === true;
-      if (j === 'PENGURUS MUDA MUDI') return g.is_pengurus_muda_mudi === 1 || g.is_pengurus_muda_mudi === true;
-      if (j === 'KETUA/WAKIL KELOMPOK') return g.is_ketua_wakil_kelompok === 1 || g.is_ketua_wakil_kelompok === true;
-      return g.jenjang?.toLowerCase() === j.toLowerCase();
+    return generusList.filter(g => {
+      const matchQuery = !q ||
+        g.nama_lengkap?.toLowerCase().includes(q) ||
+        g.kelompok?.toLowerCase().includes(q) ||
+        g.jenjang?.toLowerCase().includes(q);
+      const matchKelompok = filterKelompok.includes('Semua') || filterKelompok.some(k => g.kelompok?.toLowerCase() === k.toLowerCase());
+      const matchJenjang = filterJenjang.includes('Semua') || filterJenjang.some(j => {
+        if (j === 'PENGURUS USMAN') return g.is_pengurus === 1 || g.is_pengurus === true;
+        if (j === 'PENGURUS MUDA MUDI') return g.is_pengurus_muda_mudi === 1 || g.is_pengurus_muda_mudi === true;
+        if (j === 'KETUA/WAKIL KELOMPOK') return g.is_ketua_wakil_kelompok === 1 || g.is_ketua_wakil_kelompok === true;
+        return g.jenjang?.toLowerCase() === j.toLowerCase();
+      });
+
+      return matchQuery && matchKelompok && matchJenjang;
+    }).sort((a, b) => {
+      const sw = s => s?.toLowerCase() === 'tidak aktif' ? 2 : 1;
+      if (sw(a.status) !== sw(b.status)) return sw(a.status) - sw(b.status);
+      const ageA = calcAge(a.tanggal_lahir, a.umur) ?? 0;
+      const ageB = calcAge(b.tanggal_lahir, b.umur) ?? 0;
+      return ageB - ageA;
     });
-    
-    return matchQuery && matchKelompok && matchJenjang;
-  }).sort((a, b) => {
-    const sw = s => s?.toLowerCase() === 'tidak aktif' ? 2 : 1;
-    if (sw(a.status) !== sw(b.status)) return sw(a.status) - sw(b.status);
-    const ageA = calcAge(a.tanggal_lahir, a.umur) ?? 0;
-    const ageB = calcAge(b.tanggal_lahir, b.umur) ?? 0;
-    return ageB - ageA;
-  });
+  }, [generusList, search, filterKelompok, filterJenjang]);
 
   // Stats based on baseFiltered
-  const totalKelompok = baseFiltered.length;
-  const totalAktif    = baseFiltered.filter(g => (g.status?.toLowerCase() || 'aktif') === 'aktif').length;
-  const totalPasif    = baseFiltered.filter(g => g.status?.toLowerCase() === 'pasif').length;
-  const totalNonaktif = baseFiltered.filter(g => g.status?.toLowerCase() === 'tidak aktif').length;
+  const { totalKelompok, totalAktif, totalPasif, totalNonaktif } = useMemo(() => {
+    let aktif = 0;
+    let pasif = 0;
+    let nonaktif = 0;
+    for (const g of baseFiltered) {
+      const st = g.status?.toLowerCase() || 'aktif';
+      if (st === 'aktif') aktif++;
+      else if (st === 'pasif') pasif++;
+      else if (st === 'tidak aktif') nonaktif++;
+    }
+    return { totalKelompok: baseFiltered.length, totalAktif: aktif, totalPasif: pasif, totalNonaktif: nonaktif };
+  }, [baseFiltered]);
 
   // Apply statusTab filter
-  const filtered = baseFiltered.filter(g => {
-    if (statusTab === 'semua') return true;
-    return (g.status?.toLowerCase() || 'aktif') === statusTab;
-  });
+  const filtered = statusTab === 'semua'
+    ? baseFiltered
+    : baseFiltered.filter(g => (g.status?.toLowerCase() || 'aktif') === statusTab);
 
   // Pagination logic
   const effectiveRowsPerPage = rowsPerPage === 'all' ? (filtered.length || 1) : Number(rowsPerPage);
@@ -1733,27 +1748,29 @@ export default function ManageGenerus() {
           </div>
         </div>
       </Modal>
-      {/* HIDDEN CONTAINER FOR BULK ID CARD GENERATION */}
-      <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
-        {generusList.filter(g => g.status?.toLowerCase() === 'aktif').map(g => (
-          <div key={g.id} id={`bulk-idcard-${g.id}`}
-            className="bg-white rounded-xl overflow-hidden border border-slate-200 shadow-lg flex flex-col max-w-full"
-            style={{ width: '54mm', height: '86mm', fontFamily: 'system-ui, sans-serif' }}>
-            <div className="bg-[#14b8a6] px-3 py-2 flex items-center justify-center gap-1.5 text-white shrink-0">
-              <img src={logoImg} alt="Logo" className="w-3.5 h-3.5 object-contain brightness-0 invert" />
-              <span className="font-black text-[10px] tracking-widest">DESA SLOGO</span>
-            </div>
-            <div className="px-3 py-3 text-center flex-1 flex flex-col items-center justify-center">
-              <p className="text-[7px] font-bold text-slate-400 uppercase tracking-widest mb-1">Kartu Absensi Generus</p>
-              <p className="font-black text-slate-800 text-sm uppercase leading-tight mb-0.5 max-w-full line-clamp-2 px-1">{g.nama_lengkap}</p>
-              <p className="text-[9px] font-semibold text-teal-600 mb-3">{g.kelompok}</p>
-              <div className="flex justify-center p-1.5 bg-slate-50 rounded-lg border border-slate-100">
-                <QRCodeCanvas value={`SLOGO-${g.kode_unik || `GEN-${g.id}`}`} size={110} level="H" includeMargin={false} />
+      {/* HIDDEN CONTAINER FOR BULK ID CARD GENERATION (mounted on demand during ZIP export) */}
+      {bulkQrItems.length > 0 && (
+        <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
+          {bulkQrItems.map(g => (
+            <div key={g.id} id={`bulk-idcard-${g.id}`}
+              className="bg-white rounded-xl overflow-hidden border border-slate-200 shadow-lg flex flex-col max-w-full"
+              style={{ width: '54mm', height: '86mm', fontFamily: 'system-ui, sans-serif' }}>
+              <div className="bg-[#14b8a6] px-3 py-2 flex items-center justify-center gap-1.5 text-white shrink-0">
+                <img src={logoImg} alt="Logo" className="w-3.5 h-3.5 object-contain brightness-0 invert" />
+                <span className="font-black text-[10px] tracking-widest">DESA SLOGO</span>
+              </div>
+              <div className="px-3 py-3 text-center flex-1 flex flex-col items-center justify-center">
+                <p className="text-[7px] font-bold text-slate-400 uppercase tracking-widest mb-1">Kartu Absensi Generus</p>
+                <p className="font-black text-slate-800 text-sm uppercase leading-tight mb-0.5 max-w-full line-clamp-2 px-1">{g.nama_lengkap}</p>
+                <p className="text-[9px] font-semibold text-teal-600 mb-3">{g.kelompok}</p>
+                <div className="flex justify-center p-1.5 bg-slate-50 rounded-lg border border-slate-100">
+                  <QRCodeCanvas value={`SLOGO-${g.kode_unik || `GEN-${g.id}`}`} size={110} level="H" includeMargin={false} />
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

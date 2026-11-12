@@ -1,25 +1,36 @@
+import { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import Layout from './components/Layout';
-import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
-import ManageUsers from './pages/ManageUsers';
-import ManageGenerus from './pages/ManageGenerus';
-import ManageEvents from './pages/ManageEvents';
-import UserDashboard from './pages/UserDashboard';
-import ManageAttendance from './pages/ManageAttendance';
-import EventSummary from './pages/EventSummary';
-import LandingPage from './pages/LandingPage';
-import ManageEventTypes from './pages/ManageEventTypes';
-import ReportByType from './pages/ReportByType';
-import UserQR from './pages/UserQR';
-import UserProfile from './pages/UserProfile';
-import MtMembers from './pages/MtMembers';
-import MtStatistics from './pages/MtStatistics';
-import MtAttendance from './pages/MtAttendance';
-import ManageSchedules from './pages/ManageSchedules';
-import ManageNotulen from './pages/ManageNotulen';
-import NotulenEditor from './pages/NotulenEditor';
-import ManagePengurus from './pages/ManagePengurus';
+
+const Layout = lazy(() => import('./components/Layout'));
+const LandingPage = lazy(() => import('./pages/LandingPage'));
+const Login = lazy(() => import('./pages/Login'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const ManageUsers = lazy(() => import('./pages/ManageUsers'));
+const ManageGenerus = lazy(() => import('./pages/ManageGenerus'));
+const ManageEvents = lazy(() => import('./pages/ManageEvents'));
+const UserDashboard = lazy(() => import('./pages/UserDashboard'));
+const ManageAttendance = lazy(() => import('./pages/ManageAttendance'));
+const EventSummary = lazy(() => import('./pages/EventSummary'));
+const ManageEventTypes = lazy(() => import('./pages/ManageEventTypes'));
+const ReportByType = lazy(() => import('./pages/ReportByType'));
+const UserQR = lazy(() => import('./pages/UserQR'));
+const UserProfile = lazy(() => import('./pages/UserProfile'));
+const MtMembers = lazy(() => import('./pages/MtMembers'));
+const MtStatistics = lazy(() => import('./pages/MtStatistics'));
+const MtAttendance = lazy(() => import('./pages/MtAttendance'));
+const ManageSchedules = lazy(() => import('./pages/ManageSchedules'));
+const ManageNotulen = lazy(() => import('./pages/ManageNotulen'));
+const NotulenEditor = lazy(() => import('./pages/NotulenEditor'));
+const ManagePengurus = lazy(() => import('./pages/ManagePengurus'));
+
+function RouteLoader() {
+  return (
+    <div className="min-h-[60vh] flex flex-col items-center justify-center gap-3 text-slate-500">
+      <div className="w-8 h-8 rounded-full border-3 border-teal-500 border-t-transparent animate-spin" />
+      <span className="text-xs font-semibold tracking-wide">Memuat halaman...</span>
+    </div>
+  );
+}
 // PrivateRoute untuk menjaga keamanan rute
 const PrivateRoute = ({ children, allowedRole, allowedRoles }) => {
   const token = localStorage.getItem('token');
@@ -45,7 +56,8 @@ const PrivateRoute = ({ children, allowedRole, allowedRoles }) => {
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
+      <Suspense fallback={<RouteLoader />}>
+        <Routes>
         
         {/* =========================================
             1. RUTE PUBLIK (Tanpa Sidebar Layout)
@@ -98,7 +110,8 @@ function App() {
         {/* Jika URL sembarangan, kembalikan ke Landing Page */}
         <Route path="*" element={<Navigate to="/" replace />} />
 
-      </Routes>
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }

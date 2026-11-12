@@ -1,12 +1,11 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import api from '../api/axios';
 import {
   Layers, Loader2, Search, AlertCircle, Filter,
   ChevronDown, FileUp, X, Check, Users, Calendar, Activity
 } from 'lucide-react';
-import ExcelJS from 'exceljs';
-import { saveAs } from 'file-saver';
+import { loadExcelJsAndSaver } from '../utils/lazyImports';
 
 function CustomSelect({ options, value, onChange, placeholder, multiple = false }) {
   const [open, setOpen] = useState(false);
@@ -211,23 +210,38 @@ export default function MtAttendance() {
     }
   }, [selectedType, selectedYear]);
 
-  const baseJenjang = ['MT', 'USMAN', '3 SMA/SMK', '2 SMA/SMK', '1 SMA/SMK', '3 SMP', '2 SMP', '1 SMP', '6 SD', '5 SD', '4 SD', '3 SD', '2 SD', '1 SD', 'TK', 'PAUD'];
-  const uniqueJenjang = baseJenjang.filter(j => reportData.some(g => g.jenjang === j));
+  const uniqueJenjang = useMemo(() => {
+    const baseJenjang = ['MT', 'USMAN', '3 SMA/SMK', '2 SMA/SMK', '1 SMA/SMK', '3 SMP', '2 SMP', '1 SMP', '6 SD', '5 SD', '4 SD', '3 SD', '2 SD', '1 SD', 'TK', 'PAUD'];
+    const jenjangSet = new Set();
+    let hasUsman = false;
+    let hasMudaMudi = false;
+    let hasKetua = false;
+    for (const g of reportData) {
+      if (g.jenjang) jenjangSet.add(g.jenjang);
+      if (g.is_pengurus) hasUsman = true;
+      if (g.is_pengurus_muda_mudi) hasMudaMudi = true;
+      if (g.is_ketua_wakil_kelompok) hasKetua = true;
+    }
+    const list = baseJenjang.filter(j => jenjangSet.has(j));
+    if (hasUsman) list.push('PENGURUS USMAN');
+    if (hasMudaMudi) list.push('PENGURUS MUDA MUDI');
+    if (hasKetua) list.push('KETUA/WAKIL KELOMPOK');
+    return list;
+  }, [reportData]);
 
-  if (reportData.some(g => g.is_pengurus)) uniqueJenjang.push('PENGURUS USMAN');
-  if (reportData.some(g => g.is_pengurus_muda_mudi)) uniqueJenjang.push('PENGURUS MUDA MUDI');
-  if (reportData.some(g => g.is_ketua_wakil_kelompok)) uniqueJenjang.push('KETUA/WAKIL KELOMPOK');
-
-  const filteredData = reportData.filter(g => {
-    const matchName = g.nama_lengkap.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchJenjang = filterJenjang.length === 0 ? true : filterJenjang.some(f => {
-      if (f === 'PENGURUS USMAN') return !!g.is_pengurus;
-      if (f === 'PENGURUS MUDA MUDI') return !!g.is_pengurus_muda_mudi;
-      if (f === 'KETUA/WAKIL KELOMPOK') return !!g.is_ketua_wakil_kelompok;
-      return g.jenjang === f;
+  const filteredData = useMemo(() => {
+    const q = searchTerm.toLowerCase();
+    return reportData.filter(g => {
+      const matchName = g.nama_lengkap.toLowerCase().includes(q);
+      const matchJenjang = filterJenjang.length === 0 ? true : filterJenjang.some(f => {
+        if (f === 'PENGURUS USMAN') return !!g.is_pengurus;
+        if (f === 'PENGURUS MUDA MUDI') return !!g.is_pengurus_muda_mudi;
+        if (f === 'KETUA/WAKIL KELOMPOK') return !!g.is_ketua_wakil_kelompok;
+        return g.jenjang === f;
+      });
+      return matchName && matchJenjang;
     });
-    return matchName && matchJenjang;
-  });
+  }, [reportData, searchTerm, filterJenjang]);
 
   const toggleJenjang = (j) => {
     if (j === '') setFilterJenjang([]);
@@ -235,28 +249,30 @@ export default function MtAttendance() {
   };
 
   // Metrics
-  const totalGenerus = filteredData.length;
-  let totalHadirCount = 0;
-  let totalRecordedCount = 0;
-
-  filteredData.forEach(g => {
-    eventsList.forEach(e => {
-      const stat = g.events_attendance[e.id];
-      if (stat && stat !== '-') {
-        totalRecordedCount++;
-        if (stat === 'H') totalHadirCount++;
+  const { totalGenerus, totalRecordedCount, avgAttendancePercent } = useMemo(() => {
+    let hadirCount = 0;
+    let recordedCount = 0;
+    for (const g of filteredData) {
+      for (const e of eventsList) {
+        const stat = g.events_attendance[e.id];
+        if (stat && stat !== '-') {
+          recordedCount++;
+          if (stat === 'H') hadirCount++;
+        }
       }
-    });
-  });
-
-  const avgAttendancePercent = totalRecordedCount > 0
-    ? Math.round((totalHadirCount / totalRecordedCount) * 100)
-    : 0;
+    }
+    return {
+      totalGenerus: filteredData.length,
+      totalRecordedCount: recordedCount,
+      avgAttendancePercent: recordedCount > 0 ? Math.round((hadirCount / recordedCount) * 100) : 0,
+    };
+  }, [filteredData, eventsList]);
 
   // Export to Excel matching ReportByType
   const exportToExcel = async () => {
     if (!filteredData.length) return;
 
+    const { ExcelJS, saveAs } = await loadExcelJsAndSaver();
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Rekapan Absensi', {
       views: [{ state: 'frozen', ySplit: 1, topLeftCell: 'A2' }]

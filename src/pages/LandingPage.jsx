@@ -286,7 +286,7 @@ export default function LandingPage() {
           {/* Brand Logo & Title */}
           <Link to="/" className="flex items-center gap-3 group active:scale-[0.98] transition-all">
             <div className="w-10 h-10 rounded-xl bg-white border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-1.5 flex items-center justify-center shrink-0 group-hover:border-teal-300 transition-colors">
-              <img src={logoImg} alt="DesaSlogo" className="w-full h-full object-contain" />
+              <img src={logoImg} alt="DesaSlogo" decoding="async" className="w-full h-full object-contain" />
             </div>
             <div className="leading-tight">
               <span className="font-extrabold text-slate-900 text-lg tracking-tight flex items-center gap-1.5">
@@ -349,6 +349,8 @@ export default function LandingPage() {
                 <img 
                   src={bgImage} 
                   alt="Generasi Luhur DesaSlogo" 
+                  fetchPriority="high"
+                  decoding="async"
                   className="w-full h-full object-cover object-center brightness-95 contrast-105"
                 />
               </div>
@@ -372,7 +374,7 @@ export default function LandingPage() {
       {/* ============================================================== */}
       {/* 3. Section 29 Karakter Luhur (iOS Interactive - Halaman Kedua)  */}
       {/* ============================================================== */}
-      <section id="karakter" className="min-h-screen pt-24 sm:pt-32 pb-20 sm:pb-28 px-4 sm:px-6 lg:px-8 relative border-t border-slate-200/60 scroll-mt-16 sm:scroll-mt-20 flex flex-col justify-center">
+      <section id="karakter" className="defer-section min-h-screen pt-24 sm:pt-32 pb-20 sm:pb-28 px-4 sm:px-6 lg:px-8 relative border-t border-slate-200/60 scroll-mt-16 sm:scroll-mt-20 flex flex-col justify-center">
         <div className="max-w-6xl mx-auto w-full">
 
           {/* Section Header */}
@@ -646,7 +648,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded-lg bg-white border border-slate-200 p-0.5 flex items-center justify-center">
-              <img src={logoImg} alt="Logo" className="w-full h-full object-contain" />
+              <img src={logoImg} alt="Logo" loading="lazy" decoding="async" className="w-full h-full object-contain" />
             </div>
             <span className="font-bold text-slate-700">DesaSlogo</span>
             <span className="text-slate-300">•</span>
