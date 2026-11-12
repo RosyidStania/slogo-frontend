@@ -113,11 +113,13 @@ function getTrendMeta(trendDelta, totalEvents) {
 function StatisticsSkeleton({ presentationMode = false }) {
   return (
     <div className={presentationMode ? 'space-y-5 sm:space-y-6' : 'space-y-4 sm:space-y-5'}>
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
         {[0, 1, 2, 3].map((idx) => (
           <div
             key={idx}
-            className="h-24 rounded-2xl bg-white border border-slate-200/80 p-4 animate-pulse flex flex-col justify-between"
+            className={`h-24 rounded-2xl bg-white border border-slate-200/80 p-4 animate-pulse flex flex-col justify-between ${
+              idx === 0 ? 'col-span-2 sm:col-span-1' : 'col-span-1'
+            }`}
           >
             <div className="h-3.5 w-24 rounded bg-slate-100" />
             <div className="h-6 w-32 rounded bg-slate-200" />
@@ -452,14 +454,14 @@ export default function CategoryStatisticsTab({ headerSlot }) {
 
   const presentationScopeBadges = (
     <>
-      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200/80 text-xs font-bold">
-        <Layers size={12} className="text-slate-500" />
-        <span>{getScopeLabel(scope)}</span>
+      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200/80 text-xs font-bold max-w-full truncate">
+        <Layers size={12} className="text-slate-500 shrink-0" />
+        <span className="truncate">{getScopeLabel(scope)}</span>
       </span>
       {selectedKelompok && (
-        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-sky-50 text-sky-700 border border-sky-200/80 text-xs font-bold">
-          <Filter size={12} />
-          <span>Kelompok: {selectedKelompok}</span>
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-sky-50 text-sky-700 border border-sky-200/80 text-xs font-bold max-w-full truncate">
+          <Filter size={12} className="shrink-0" />
+          <span className="truncate">Kelompok: {selectedKelompok}</span>
         </span>
       )}
     </>
@@ -488,15 +490,11 @@ export default function CategoryStatisticsTab({ headerSlot }) {
       headerSlot
     );
 
-  const kpiGridClass = isPresentationMode
-    ? showInfaqCard
-      ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 sm:gap-4'
-      : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4'
-    : showInfaqCard
-      ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4'
-      : 'grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4';
+  const kpiGridClass = showInfaqCard
+    ? 'grid grid-cols-2 lg:grid-cols-5 gap-2.5 sm:gap-3.5 lg:gap-4'
+    : 'grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3.5 lg:gap-4';
 
-  const kpiPaddingClass = isPresentationMode ? 'p-4 sm:p-5' : 'p-3.5 sm:p-4';
+  const kpiPaddingClass = isPresentationMode ? 'p-3.5 sm:p-5' : 'p-3.5 sm:p-4';
   const kpiLabelClass = isPresentationMode
     ? 'text-xs font-bold text-slate-500 uppercase tracking-wider'
     : 'text-[11px] font-bold text-slate-500 uppercase tracking-wider';
@@ -792,7 +790,7 @@ export default function CategoryStatisticsTab({ headerSlot }) {
             <div className={kpiGridClass}>
               {/* KPI 1: Rata-rata Kehadiran */}
               <div
-                className={`bg-white border border-slate-200/80 rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between ${kpiPaddingClass}`}
+                className={`col-span-2 sm:col-span-1 bg-white border border-slate-200/80 rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between ${kpiPaddingClass}`}
               >
                 <div className="flex items-center justify-between gap-2">
                   <p className={kpiLabelClass}>Rata-rata Kehadiran</p>
@@ -803,7 +801,7 @@ export default function CategoryStatisticsTab({ headerSlot }) {
                 <div className="mt-2 flex items-center gap-2.5 flex-wrap">
                   <span
                     className={`font-extrabold text-slate-900 tracking-tight leading-none tabular-nums ${
-                      isPresentationMode ? 'text-3xl sm:text-4xl' : 'text-2xl sm:text-[28px]'
+                      isPresentationMode ? 'text-3xl sm:text-4xl' : 'text-3xl sm:text-[28px]'
                     }`}
                   >
                     {avgPercentage}%
@@ -824,7 +822,7 @@ export default function CategoryStatisticsTab({ headerSlot }) {
 
               {/* KPI 2: Total Hadir / Target */}
               <div
-                className={`bg-white border border-slate-200/80 rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between ${kpiPaddingClass}`}
+                className={`col-span-1 bg-white border border-slate-200/80 rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between ${kpiPaddingClass}`}
               >
                 <div className="flex items-center justify-between gap-2">
                   <p className={kpiLabelClass}>Total Hadir / Target</p>
@@ -833,19 +831,19 @@ export default function CategoryStatisticsTab({ headerSlot }) {
                   </div>
                 </div>
                 <p
-                  className={`mt-2 font-extrabold text-slate-900 tracking-tight leading-none tabular-nums ${
-                    isPresentationMode ? 'text-3xl sm:text-4xl' : 'text-2xl sm:text-[28px]'
+                  className={`mt-2 font-extrabold text-slate-900 tracking-tight leading-snug tabular-nums ${
+                    isPresentationMode ? 'text-xl sm:text-4xl' : 'text-xl sm:text-[28px]'
                   }`}
                 >
                   {totalHadir}{' '}
-                  <span className="text-slate-400 font-bold text-lg sm:text-xl">/ {totalTarget}</span>
+                  <span className="text-slate-400 font-bold text-sm sm:text-xl">/ {totalTarget}</span>
                 </p>
                 <p className={kpiSubClass}>Akumulasi kehadiran terhadap target</p>
               </div>
 
               {/* KPI 3: Terlambat & Izin/Sakit */}
               <div
-                className={`bg-white border border-slate-200/80 rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between ${kpiPaddingClass}`}
+                className={`col-span-1 bg-white border border-slate-200/80 rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between ${kpiPaddingClass}`}
               >
                 <div className="flex items-center justify-between gap-2">
                   <p className={kpiLabelClass}>Terlambat &amp; Izin/Sakit</p>
@@ -855,7 +853,7 @@ export default function CategoryStatisticsTab({ headerSlot }) {
                 </div>
                 <p
                   className={`mt-2 font-extrabold text-slate-900 tracking-tight leading-snug tabular-nums ${
-                    isPresentationMode ? 'text-lg sm:text-xl' : 'text-base sm:text-lg'
+                    isPresentationMode ? 'text-sm sm:text-xl' : 'text-sm sm:text-lg'
                   }`}
                 >
                   <span className="text-amber-600">{totalTerlambat}</span> terlambat ·{' '}
@@ -866,7 +864,7 @@ export default function CategoryStatisticsTab({ headerSlot }) {
 
               {/* KPI 4: Alpa & Pertemuan */}
               <div
-                className={`bg-white border border-slate-200/80 rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between ${kpiPaddingClass}`}
+                className={`col-span-2 sm:col-span-1 bg-white border border-slate-200/80 rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between ${kpiPaddingClass}`}
               >
                 <div className="flex items-center justify-between gap-2">
                   <p className={kpiLabelClass}>Alpa &amp; Pertemuan</p>
@@ -876,7 +874,7 @@ export default function CategoryStatisticsTab({ headerSlot }) {
                 </div>
                 <p
                   className={`mt-2 font-extrabold text-slate-900 tracking-tight leading-snug tabular-nums ${
-                    isPresentationMode ? 'text-lg sm:text-xl' : 'text-base sm:text-lg'
+                    isPresentationMode ? 'text-sm sm:text-xl' : 'text-sm sm:text-lg'
                   }`}
                 >
                   <span className="text-rose-600">{totalAlpa}</span> alpa ·{' '}
@@ -889,7 +887,7 @@ export default function CategoryStatisticsTab({ headerSlot }) {
               {/* KPI 5 (Conditional): Total Infaq */}
               {showInfaqCard && (
                 <div
-                  className={`bg-white border border-amber-200/80 rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between ${kpiPaddingClass}`}
+                  className={`col-span-2 lg:col-span-1 bg-white border border-amber-200/80 rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between ${kpiPaddingClass}`}
                 >
                   <div className="flex items-center justify-between gap-2">
                     <p className={kpiLabelClass}>Total Infaq</p>
