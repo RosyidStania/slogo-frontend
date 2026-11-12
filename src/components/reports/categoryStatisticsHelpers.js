@@ -317,3 +317,96 @@ export function formatMobileFilterSummary(filters = {}) {
 
   return parts.join(' · ');
 }
+
+/**
+ * Pick the latest month key with `has_event === true`, falling back to the last entry or `''`.
+ */
+export function resolveDefaultInspectedMonth(seriesData = []) {
+  if (!Array.isArray(seriesData) || seriesData.length === 0) {
+    return '';
+  }
+
+  for (let i = seriesData.length - 1; i >= 0; i -= 1) {
+    const point = seriesData[i];
+    if (point?.has_event === true && typeof point?.month === 'string' && point.month.trim() !== '') {
+      return point.month;
+    }
+  }
+
+  for (let i = seriesData.length - 1; i >= 0; i -= 1) {
+    const month = seriesData[i]?.month;
+    if (typeof month === 'string' && month.trim() !== '') {
+      return month;
+    }
+  }
+
+  return '';
+}
+
+/**
+ * Shorten 4-digit year in chart X-axis labels (`'Nov 2026'` -> `'Nov 26'`).
+ */
+export function formatCompactTickLabel(label) {
+  if (typeof label !== 'string') {
+    return label === null || label === undefined ? '' : String(label);
+  }
+  const trimmed = label.trim();
+  if (!trimmed) return '';
+  return trimmed.replace(/^(.+?)\s+\d{2}(\d{2})$/, '$1 $2');
+}
+
+/**
+ * Resolve the clicked item from Recharts 3 `onClick` state (`activeTooltipIndex`, `activeLabel`, or legacy `activePayload`).
+ */
+export function resolveClickedSeriesItem(chartState, items = [], labelField = 'label') {
+  if (!chartState || !Array.isArray(items) || items.length === 0) {
+    return null;
+  }
+
+  const legacyPayload = chartState?.activePayload?.[0]?.payload;
+  if (legacyPayload) {
+    return legacyPayload;
+  }
+
+  const rawIndex = chartState?.activeTooltipIndex ?? chartState?.activeIndex;
+  if (rawIndex !== null && rawIndex !== undefined && rawIndex !== '' && typeof rawIndex !== 'boolean') {
+    const numericIndex = Number(rawIndex);
+    if (Number.isInteger(numericIndex) && numericIndex >= 0 && numericIndex < items.length) {
+      return items[numericIndex];
+    }
+  }
+
+  if (chartState?.activeLabel !== null && chartState?.activeLabel !== undefined) {
+    return items.find((item) => item?.[labelField] === chartState.activeLabel) || null;
+  }
+
+  return null;
+}
+
+const MOBILE_VIEWPORT_QUERY = '(max-width: 639px)';
+
+/**
+ * Subscribe to `< sm` (`max-width: 639px`) media query changes for `useSyncExternalStore`.
+ */
+export function subscribeMobileViewport(callback) {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+    return () => {};
+  }
+  const mediaQuery = window.matchMedia(MOBILE_VIEWPORT_QUERY);
+  if (typeof mediaQuery.addEventListener === 'function') {
+    mediaQuery.addEventListener('change', callback);
+    return () => mediaQuery.removeEventListener('change', callback);
+  }
+  mediaQuery.addListener(callback);
+  return () => mediaQuery.removeListener(callback);
+}
+
+/**
+ * Read current `< sm` (`max-width: 639px`) viewport state safely.
+ */
+export function getMobileViewportSnapshot() {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+    return false;
+  }
+  return window.matchMedia(MOBILE_VIEWPORT_QUERY).matches;
+}

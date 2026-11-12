@@ -10,6 +10,11 @@ import {
   formatRupiah,
   formatCompactMonthLabel,
   formatMobileFilterSummary,
+  resolveDefaultInspectedMonth,
+  formatCompactTickLabel,
+  resolveClickedSeriesItem,
+  subscribeMobileViewport,
+  getMobileViewportSnapshot,
 } from '../categoryStatisticsHelpers.js';
 
 test('MONTH_OPTIONS defines 12 Indonesian months from 01 to 12', () => {
@@ -138,4 +143,59 @@ test('formatMobileFilterSummary formats same-year, cross-year, and scoped labels
     formatMobileFilterSummary({}),
     'Periode Aktif · Semua'
   );
+});
+
+test('resolveDefaultInspectedMonth picks latest month with event or falls back safely', () => {
+  assert.equal(
+    resolveDefaultInspectedMonth([
+      { month: '2026-08', has_event: true },
+      { month: '2026-09', has_event: false },
+      { month: '2026-10', has_event: true },
+      { month: '2026-11', has_event: false },
+    ]),
+    '2026-10'
+  );
+  assert.equal(resolveDefaultInspectedMonth([{ month: '2026-11', has_event: false }]), '2026-11');
+  assert.equal(
+    resolveDefaultInspectedMonth([
+      { month: '2026-09', has_event: false },
+      { month: '2026-10', has_event: false },
+    ]),
+    '2026-10'
+  );
+  assert.equal(resolveDefaultInspectedMonth([]), '');
+  assert.equal(resolveDefaultInspectedMonth(null), '');
+});
+
+test('formatCompactTickLabel shortens 4-digit year for narrow chart axis', () => {
+  assert.equal(formatCompactTickLabel('Nov 2026'), 'Nov 26');
+  assert.equal(formatCompactTickLabel('Jan 2025'), 'Jan 25');
+  assert.equal(formatCompactTickLabel('Desember'), 'Desember');
+  assert.equal(formatCompactTickLabel('Nov 26'), 'Nov 26');
+  assert.equal(formatCompactTickLabel(''), '');
+  assert.equal(formatCompactTickLabel(null), '');
+});
+
+test('resolveClickedSeriesItem resolves Recharts 3 activeTooltipIndex, activeLabel, and activePayload', () => {
+  const items = [
+    { month: '2026-09', label: 'Sep 2026' },
+    { month: '2026-10', label: 'Okt 2026' },
+  ];
+  assert.deepEqual(resolveClickedSeriesItem({ activeTooltipIndex: '1' }, items), items[1]);
+  assert.deepEqual(resolveClickedSeriesItem({ activeIndex: 0 }, items), items[0]);
+  assert.deepEqual(resolveClickedSeriesItem({ activeLabel: 'Okt 2026' }, items), items[1]);
+  assert.deepEqual(
+    resolveClickedSeriesItem({ activePayload: [{ payload: items[0] }] }, items),
+    items[0]
+  );
+  assert.equal(resolveClickedSeriesItem({ activeTooltipIndex: null, activeLabel: 'Unknown' }, items), null);
+  assert.equal(resolveClickedSeriesItem(null, items), null);
+  assert.equal(resolveClickedSeriesItem({ activeTooltipIndex: 0 }, []), null);
+});
+
+test('mobile viewport store helpers return safe defaults outside browser environment', () => {
+  assert.equal(getMobileViewportSnapshot(), false);
+  const unsubscribe = subscribeMobileViewport(() => {});
+  assert.equal(typeof unsubscribe, 'function');
+  unsubscribe();
 });
