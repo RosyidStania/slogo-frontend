@@ -713,7 +713,7 @@ export default function CategoryStatisticsTab({ headerSlot }) {
               {/* Row 2: Scope Pills + Kelompok Filter */}
               <div className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center flex-wrap gap-2.5">
                 {/* Scope Switcher */}
-                <div className="inline-flex items-center gap-2 bg-slate-100/90 p-1 rounded-full border border-slate-200/70 self-start overflow-x-auto hide-scrollbar max-w-full">
+                <div className="flex flex-wrap sm:inline-flex items-center gap-2 bg-slate-100/90 p-1 rounded-2xl sm:rounded-full border border-slate-200/70 self-start max-w-full">
                   {SCOPE_OPTIONS.map((opt) => {
                     const active = scope === opt.value;
                     return (

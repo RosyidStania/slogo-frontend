@@ -480,35 +480,35 @@ export default function ReportByType() {
           <div
             role="tablist"
             aria-label="Tampilan Rekapan Absensi"
-            className="w-full sm:w-auto grid grid-cols-2 sm:inline-flex items-center bg-slate-100/90 p-1 rounded-full border border-slate-200/80 shadow-2xs"
+            className="w-full sm:w-auto grid grid-cols-2 sm:inline-flex items-center gap-1 bg-slate-100/90 p-1 rounded-full border border-slate-200/80 shadow-2xs"
           >
             <button
               type="button"
               role="tab"
               aria-selected={activeTab === 'statistik'}
               onClick={() => handleTabChange('statistik')}
-              className={`inline-flex items-center justify-center gap-1.5 min-h-[40px] px-3 py-2 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap active:scale-[0.98] ${
+              className={`min-w-0 overflow-hidden inline-flex items-center justify-center gap-1.5 min-h-[40px] px-2 sm:px-3.5 py-2 rounded-full text-xs font-bold transition-all cursor-pointer active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${
                 activeTab === 'statistik'
                   ? 'bg-white text-[#0d9488] shadow-xs'
                   : 'text-slate-500 hover:text-slate-800'
               }`}
             >
-              <BarChart3 size={14} strokeWidth={2.2} />
-              <span>Statistik &amp; Tren</span>
+              <BarChart3 size={14} strokeWidth={2.2} className="shrink-0" />
+              <span className="truncate">Statistik &amp; Tren</span>
             </button>
             <button
               type="button"
               role="tab"
               aria-selected={activeTab === 'matriks'}
               onClick={() => handleTabChange('matriks')}
-              className={`inline-flex items-center justify-center gap-1.5 min-h-[40px] px-3 py-2 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap active:scale-[0.98] ${
+              className={`min-w-0 overflow-hidden inline-flex items-center justify-center gap-1.5 min-h-[40px] px-2 sm:px-3.5 py-2 rounded-full text-xs font-bold transition-all cursor-pointer active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${
                 activeTab === 'matriks'
                   ? 'bg-white text-[#0d9488] shadow-xs'
                   : 'text-slate-500 hover:text-slate-800'
               }`}
             >
-              <Table2 size={14} strokeWidth={2.2} />
-              <span>Matriks Individu</span>
+              <Table2 size={14} strokeWidth={2.2} className="shrink-0" />
+              <span className="truncate">Matriks Individu</span>
             </button>
           </div>
         </div>
