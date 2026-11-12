@@ -21,7 +21,6 @@ import {
 import api from '../../api/axios';
 import CustomSelect from '../CustomSelect';
 import CategoryBreakdownSection from './CategoryBreakdownSection';
-import CategorySummaryCards from './CategorySummaryCards';
 import CategoryTrendChart from './CategoryTrendChart';
 import {
   MONTH_OPTIONS,
@@ -112,22 +111,6 @@ function getTrendMeta(trendDelta, totalEvents) {
 function StatisticsSkeleton({ presentationMode = false }) {
   return (
     <div className={presentationMode ? 'space-y-5 sm:space-y-6' : 'space-y-4 sm:space-y-5'}>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-        {[0, 1, 2, 3].map((idx) => (
-          <div
-            key={idx}
-            className="h-28 rounded-2xl bg-white border border-slate-200/80 p-4 animate-pulse flex flex-col justify-between"
-          >
-            <div className="flex justify-between gap-2">
-              <div className="h-4 w-28 rounded bg-slate-200" />
-              <div className="h-4 w-14 rounded-full bg-slate-100" />
-            </div>
-            <div className="h-7 w-20 rounded bg-slate-200" />
-            <div className="h-3 w-24 rounded bg-slate-100" />
-          </div>
-        ))}
-      </div>
-
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
         {[0, 1, 2, 3].map((idx) => (
           <div
@@ -430,6 +413,21 @@ export default function CategoryStatisticsTab({ headerSlot }) {
     label: cat.name,
   }));
 
+  const renderCategorySelect = (name) => {
+    if (categorySwitcherOptions.length === 0) return null;
+    return (
+      <div className="w-full sm:w-56">
+        <CustomSelect
+          name={name}
+          value={effectiveSelectedId !== null ? String(effectiveSelectedId) : ''}
+          onChange={(e) => setSelectedTypeId(Number(e.target.value))}
+          options={categorySwitcherOptions}
+          placeholder="Pilih Kategori..."
+        />
+      </div>
+    );
+  };
+
   const monthSelectOptions = MONTH_OPTIONS.map((option) => ({
     value: option.value,
     label: option.label,
@@ -513,17 +511,7 @@ export default function CategoryStatisticsTab({ headerSlot }) {
             </div>
 
             <div className="flex flex-wrap items-center gap-2.5 shrink-0">
-              {categorySwitcherOptions.length > 0 && (
-                <div className="w-full sm:w-56">
-                  <CustomSelect
-                    name="presentation_category"
-                    value={effectiveSelectedId !== null ? String(effectiveSelectedId) : ''}
-                    onChange={(e) => setSelectedTypeId(Number(e.target.value))}
-                    options={categorySwitcherOptions}
-                    placeholder="Pilih Kategori..."
-                  />
-                </div>
-              )}
+              {renderCategorySelect('presentation_category')}
 
               <div className="w-full sm:w-44">
                 <CustomSelect
@@ -645,9 +633,9 @@ export default function CategoryStatisticsTab({ headerSlot }) {
               </div>
             </div>
 
-            {/* Row 2: Scope Pills + Kelompok Filter + Period Indicator */}
-            <div className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2.5">
+            {/* Row 2: Scope Pills + Kelompok Filter + Category Switcher + Period Indicator */}
+            <div className="pt-3 border-t border-slate-100 flex flex-col lg:flex-row lg:items-center justify-between gap-2.5">
+              <div className="flex flex-col sm:flex-row sm:items-center flex-wrap gap-2.5">
                 {/* Scope Switcher */}
                 <div className="inline-flex items-center bg-slate-100/90 p-1 rounded-full border border-slate-200/70 self-start overflow-x-auto max-w-full">
                   {SCOPE_OPTIONS.map((opt) => {
@@ -680,6 +668,9 @@ export default function CategoryStatisticsTab({ headerSlot }) {
                     placeholder="Semua Kelompok"
                   />
                 </div>
+
+                {/* Pilih Kategori Acara */}
+                {renderCategorySelect('filter_category')}
               </div>
 
               {/* Active Period Pill & Loading Feedback */}
@@ -740,15 +731,7 @@ export default function CategoryStatisticsTab({ headerSlot }) {
               isLoading ? 'opacity-65 pointer-events-none transition-opacity duration-150' : 'transition-opacity duration-150'
             }`}
           >
-            {/* 1. Cross-Category Summary Strip */}
-            <CategorySummaryCards
-              categories={sortedCategories}
-              selectedTypeId={effectiveSelectedId}
-              onSelectCategory={(id) => setSelectedTypeId(Number(id))}
-              presentationMode={isPresentationMode}
-            />
-
-            {/* 2. Selected Category KPI Row (4 or 5 Cards) */}
+            {/* 1. Selected Category KPI Row (4 or 5 Cards) */}
             <div className={kpiGridClass}>
               {/* KPI 1: Rata-rata Kehadiran */}
               <div
