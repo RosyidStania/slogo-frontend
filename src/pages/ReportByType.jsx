@@ -448,18 +448,35 @@ export default function ReportByType() {
       {activeTab === 'matriks' && mobileTopActions}
 
       {/* ── Page Header ─────────────────────────────────────────────────── */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Rekapan Absensi</h1>
-          <p className="text-slate-500 text-xs sm:text-sm mt-1">
-            {activeTab === 'statistik'
-              ? 'Pantau perkembangan tren kehadiran dan capaian tiap kategori kegiatan.'
-              : 'Pantau matriks kehadiran generus berdasarkan kategori kegiatan dan tahun.'}
-          </p>
+      <div className="space-y-3">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+          <div>
+            <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Rekapan Absensi</h1>
+            <p className="text-slate-500 text-xs sm:text-sm mt-1">
+              {activeTab === 'statistik'
+                ? 'Pantau perkembangan tren kehadiran dan capaian tiap kategori kegiatan.'
+                : 'Pantau matriks kehadiran generus berdasarkan kategori kegiatan dan tahun.'}
+            </p>
+          </div>
+
+          {/* Desktop Export Button */}
+          {activeTab === 'matriks' && (
+            <div className="hidden lg:flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={exportToExcel}
+                disabled={!filteredData.length}
+                className="flex items-center justify-center gap-1.5 px-4 py-2 bg-[#14b8a6] hover:bg-[#0d9488] active:scale-95 disabled:opacity-50 text-white rounded-full font-bold text-xs shadow-xs transition-all cursor-pointer whitespace-nowrap"
+              >
+                <FileUp size={14} strokeWidth={2.5} />
+                <span>Export Excel</span>
+              </button>
+            </div>
+          )}
         </div>
 
-        <div className="flex flex-wrap items-center justify-between lg:justify-end gap-2.5 shrink-0">
-          {/* Segmented Tab Switcher */}
+        {/* Segmented Tab Switcher (Left Aligned) */}
+        <div className="flex items-center justify-start">
           <div
             role="tablist"
             aria-label="Tampilan Rekapan Absensi"
@@ -494,21 +511,6 @@ export default function ReportByType() {
               <span>Matriks Individu</span>
             </button>
           </div>
-
-          {/* Desktop Export Button */}
-          {activeTab === 'matriks' && (
-            <div className="hidden lg:flex items-center gap-2 shrink-0">
-              <button
-                type="button"
-                onClick={exportToExcel}
-                disabled={!filteredData.length}
-                className="flex items-center justify-center gap-1.5 px-4 py-2 bg-[#14b8a6] hover:bg-[#0d9488] active:scale-95 disabled:opacity-50 text-white rounded-full font-bold text-xs shadow-xs transition-all cursor-pointer whitespace-nowrap"
-              >
-                <FileUp size={14} strokeWidth={2.5} />
-                <span>Export Excel</span>
-              </button>
-            </div>
-          )}
         </div>
       </div>
 
